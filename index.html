@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ugly Cookies - Cafetería</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Chewy para nombres y Lato para descripciones -->
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        h1, h2, h3, h4, h5 { font-family: 'Chewy', system-ui; font-weight: normal; }
+        body { font-family: 'Lato', sans-serif; }
+        .font-chewy { font-family: 'Chewy', system-ui; }
+        .font-lato-desc { font-family: 'Lato', sans-serif; text-transform: lowercase; letter-spacing: 0.01em; font-weight: 400; font-size: 1.25rem; }
+        
+        /* Esconde la barra de scroll para que el slider se vea limpio */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+</head>
+    <body class="bg-[#efe6da] min-h-screen">
+    <script>
+        // FUNCIONES DEL MENÚ LATERAL (Justo al inicio del body para asegurar carga)
+        window.toggleSideMenu = function() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('side-menu-overlay');
+            const panel = document.getElementById('side-menu-panel');
+            
+            if (menu && menu.classList.contains('invisible')) {
+                menu.classList.remove('invisible');
+                overlay.classList.add('opacity-100');
+                panel.classList.remove('-translate-x-full');
+            } else if (menu) {
+                overlay.classList.remove('opacity-100');
+                panel.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('invisible');
+                }, 300);
+            }
+        };
+
+        window.handleAuthClickFromMenu = function() {
+            toggleSideMenu(); 
+            if (typeof handleAuthClick === 'function') handleAuthClick(); 
+        };
+    </script>
+
+    <!-- Header -->
+    <header class="bg-[#b574f4] p-2 sticky top-0 z-50 shadow-md h-[80px] flex items-center">
+        <div class="max-w-6xl mx-auto w-full flex items-center relative">
+            <!-- Izquierda: Botón Hamburguesa -->
+            <div class="z-[60] relative">
+                <button onclick="toggleSideMenu()" class="text-5xl text-[#512874] p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer" style="line-height: 1;">☰</button>
+            </div>
+
+            <!-- Centro: Logo header.png -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <img src="./assets/header.png" alt="Logo" style="width: 250px; height: 60px;" class="object-contain">
+            </div>
+        </div>
+    </header>
+
+    <!-- Menú Lateral (Side Menu) -->
+    <div id="side-menu" class="fixed inset-0 z-[200] invisible transition-all duration-300">
+        <!-- Fondo oscuro detrás del menú -->
+        <div id="side-menu-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleSideMenu()"></div>
+        
+        <!-- Contenedor blanco del menú (El que desliza) -->
+        <div id="side-menu-panel" class="absolute inset-y-0 left-0 w-72 bg-[#efe6da] shadow-2xl flex flex-col p-6 transform -translate-x-full transition-transform duration-300">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-2xl font-chewy text-[#512874]">Menú</h3>
+                <button onclick="toggleSideMenu()" class="text-3xl text-[#a55641]">&times;</button>
+            </div>
+            <div class="mb-8">
+                <button id="auth-button-menu" onclick="handleAuthClickFromMenu()" class="w-full bg-[#b574f4] text-white font-chewy py-3 px-4 rounded-xl text-xl transition transform hover:scale-105">
+                    Iniciar Sesión
+                </button>
+            </div>
+            <nav class="flex flex-col gap-6">
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">inicio</a>
+                <a href="#menu-section" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">menú</a>
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">nosotros</a>
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">contacto</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="bg-[#b574f4] py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Imagen Principal desde carpeta assets -->
+            <img src="./assets/hero-image.png" alt="Ugly Cookies Hero" class="mx-auto mb-8 w-[250px] h-[250px] object-contain">
+            
+            <a href="#menu-section" class="inline-block bg-[#ecd3ff] text-[#b574f4] border border-[#b574f4] hover:bg-white font-bold py-3 px-8 rounded-xl transition transform hover:scale-105">
+                Ver Menú
+            </a>
+        </div>
+    </section>
+
+    <!-- Cookie Highlights (Zig-Zag) -->
+    <section class="py-12 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto space-y-12 md:space-y-24">
+            <!-- Cookie 1: Foto Izquierda -->
+            <div class="flex flex-row items-center justify-center">
+                <div class="w-1/2 relative flex justify-end -mr-4 md:mr-0 z-10">
+                    <img src="./assets/cookie-1.png" alt="Cookie Destacada 1" class="w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain transform transition hover:scale-110">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-sm md:text-base font-lato-desc">calificación: 5.0</p>
+                        <div class="flex items-center justify-center gap-0.5">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-1/2 text-left pl-4 md:pl-12">
+                    <h3 class="text-3xl md:text-5xl text-[#512874] mb-2 font-chewy">Classic Choco</h3>
+                    <p class="text-[#a55641] text-xl md:text-3xl font-lato-desc leading-tight">nuestra receta original con chips de chocolate belga que se derriten en cada mordisco.</p>
+                </div>
+            </div>
+
+            <!-- Cookie 2: Foto Derecha -->
+            <div class="flex flex-row-reverse items-center justify-center">
+                <div class="w-1/2 relative flex justify-start -ml-4 md:ml-0 z-10">
+                    <img src="./assets/cookie-2.png" alt="Cookie Destacada 2" class="w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain transform transition hover:scale-110">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-sm md:text-base font-lato-desc">calificación: 4.2</p>
+                        <div class="flex items-center justify-center gap-0.5">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★☆</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-1/2 text-right pr-4 md:pr-12">
+                    <h3 class="text-3xl md:text-5xl text-[#512874] mb-2 font-chewy">S'mores Marshmallow</h3>
+                    <p class="text-[#a55641] text-xl md:text-3xl font-lato-desc leading-tight">la combinación perfecta de chocolate derretido y malvaviscos tostados al fuego.</p>
+                </div>
+            </div>
+
+            <!-- Cookie 3: Foto Izquierda -->
+            <div class="flex flex-row items-center justify-center">
+                <div class="w-1/2 relative flex justify-end -mr-4 md:mr-0 z-10">
+                    <img src="./assets/cookie-3.png" alt="Cookie Destacada 3" class="w-[180px] h-[180px] md:w-[250px] md:h-[250px] object-contain transform transition hover:scale-110">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-sm md:text-base font-lato-desc">calificación: 4.8</p>
+                        <div class="flex items-center justify-center gap-0.5">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-1/2 text-left pl-4 md:pl-12">
+                    <h3 class="text-3xl md:text-5xl text-[#512874] mb-2 font-chewy">Peanut Butter Cup</h3>
+                    <p class="text-[#a55641] text-xl md:text-3xl font-lato-desc leading-tight">una explosión de sabor con mantequilla de maní real, reese's y m&ms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-8 px-4 bg-[#efe6da]">
+        <p class="max-w-6xl mx-auto text-center font-bold text-[#512874] mb-6 uppercase text-sm tracking-widest">Nuestros Secretos</p>
+        <div class="max-w-6xl mx-auto flex md:grid md:grid-cols-3 overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
+            <div class="snap-center shrink-0 w-[280px] bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-4xl mb-3">☕</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Café Artesanal</h3>
+                <p class="text-[#a55641]">Granos seleccionados y tostados con amor</p>
+            </div>
+            <div class="snap-center shrink-0 w-[280px] bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-4xl mb-3">🍪</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Cookies Caseras</h3>
+                <p class="text-[#a55641]">Recetas únicas y deliciosas</p>
+            </div>
+            <div class="snap-center shrink-0 w-[280px] bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-4xl mb-3">🏠</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Ambiente Acogedor</h3>
+                <p class="text-[#a55641]">El lugar perfecto para relajarte</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Preview -->
+    <section id="menu-section" class="py-12 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#512874] mb-8">Nuestro Menú</h2>
+            <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-center text-[#a55641]">Cargando productos...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#b574f4] text-white py-8 pb-32 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-amber-200">© 2024 Ugly Cookies - Cafetería Artesanal</p>
+            <p class="text-amber-300 text-sm mt-2">📍 Calle Principal 123, Ciudad</p>
+            <p class="text-amber-300 text-sm">📞 (555) 123-4567</p>
+        </div>
+    </footer>
+
+    <!-- Barra inferior fija del carrito -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-amber-200 shadow-lg z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-xs text-[#a55641] opacity-70">Total del carrito</span>
+                <span class="text-xl font-bold text-[#a55641]" id="cart-total">$0.00</span>
+            </div>
+            <button class="bg-[#efe6da] text-[#b574f4] border border-[#b574f4] hover:bg-white font-bold py-3 px-6 rounded-xl transition transform active:scale-95 flex items-center gap-2">
+                <span class="text-lg">🛒</span>
+                <span>Ver Carrito</span>
+                <span class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full" id="cart-count">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Login/Registro -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]" id="auth-title">Iniciar Sesión</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <!-- Formulario de Login -->
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Email</label>
+                    <input type="email" id="login-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="tu@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Contraseña</label>
+                    <input type="password" id="login-password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <!-- Formulario de Registro -->
+            <form id="register-form" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Nombre Completo</label>
+                    <input type="text" id="register-name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Juan Pérez">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Email</label>
+                    <input type="email" id="register-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="tu@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Teléfono Celular</label>
+                    <input type="tel" id="register-phone" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="+54 11 1234-5678">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#a55641] mb-1">Contraseña</label>
+                    <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95">
+                    Crear Cuenta
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <button onclick="toggleAuthMode()" class="text-[#a55641] hover:underline font-medium text-sm" id="auth-toggle">
+                    ¿No tienes cuenta? Regístrate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil de Usuario -->
+    <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Mi Perfil</h3>
+                <button onclick="closeProfileModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <div id="profile-content" class="space-y-4">
+                <div class="text-center py-4">
+                    <div class="text-5xl mb-3">👤</div>
+                    <h4 class="text-xl font-bold text-[#512874]" id="profile-name">Cargando...</h4>
+                    <p class="text-[#a55641]" id="profile-email">...</p>
+                    <p class="text-[#a55641]" id="profile-phone">...</p>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h5 class="font-bold text-[#512874] mb-3">📋 Mis Pedidos</h5>
+                    <div id="orders-list" class="space-y-3">
+                        <p class="text-[#a55641] text-sm opacity-70">Cargando pedidos...</p>
+                    </div>
+                </div>
+                
+                <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 mt-4">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <!-- SECCIÓN 1: Selección de Pago -->
+            <div id="payment-selection-ui" class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-[#512874]">Finalizar Pedido</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center py-2 border-b">
+                        <span class="text-[#a55641]">Subtotal</span>
+                        <span class="font-bold text-[#a55641]" id="payment-subtotal">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b">
+                        <span class="text-[#a55641]">Descuento</span>
+                        <span class="font-bold text-green-600" id="payment-discount">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-xl font-bold text-[#512874]">Total</span>
+                        <span class="text-2xl font-bold text-[#512874]" id="payment-total">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="processPayment('card')" class="w-full bg-[#512874] text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                        <span class="text-2xl">💳</span>
+                        <div class="text-left">
+                            <span class="block font-chewy">Pagar con Tarjeta</span>
+                            <span class="text-xs opacity-80">Precio Normal</span>
+                        </div>
+                    </button>
+                    <button onclick="processPayment('account')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                        <span class="text-2xl">📱</span>
+                        <div class="text-left">
+                            <span class="block font-chewy">Pagar con Dinero/QR</span>
+                            <span class="text-xs opacity-80">10% OFF</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: El Ticket (Se muestra después de pagar) -->
+            <div id="payment-ticket-ui" class="hidden">
+                <div class="bg-[#b574f4] p-8 text-center text-white relative">
+                    <h3 class="text-4xl font-chewy mb-2">¡Pedido Exitoso!</h3>
+                    <p class="font-lato opacity-90">Presentá esto en el mostrador</p>
+                </div>
+                
+                <div class="p-8 space-y-6 text-center">
+                    <div class="bg-[#efe6da] py-4 rounded-2xl border-2 border-dashed border-[#b574f4]">
+                        <span class="block text-[#a55641] text-xs font-bold uppercase mb-1">Reloj Sincronizado</span>
+                        <span class="text-5xl font-mono font-black text-[#512874] anti-fraude-clock">00:00:00</span>
+                    </div>
+
+                    <div>
+                        <h4 class="text-[#512874] text-5xl font-chewy" id="display-ticket-number">#00000</h4>
+                        <p class="text-[#a55641] font-bold text-xl mt-2 mb-0" id="display-customer-name">Cliente</p>
+                        <p class="text-[#a55641] text-sm opacity-70 font-lato-desc" id="display-customer-email"></p>
+                    </div>
+
+                    <div id="display-order-items" class="text-[#a55641] text-lg font-lato italic border-t border-b py-4">
+                        Detalle del pedido...
+                    </div>
+
+                    <button onclick="closePaymentModal()" class="w-full bg-[#512874] text-white font-chewy py-4 rounded-2xl text-xl shadow-lg active:scale-95 transition">¡Listo!</button>
+                    
+                    <div id="valoracion-section" class="mt-4 pt-2 border-t border-dashed border-gray-200">
+                        <button id="rating-button" onclick="toggleRatingStars()" class="w-full bg-[#b574f4] text-white font-chewy py-3 rounded-2xl text-lg shadow-md active:scale-95 transition">valoranos</button>
+                        
+                        <!-- Panel de Estrellas oculto -->
+                        <div id="stars-container" class="hidden overflow-hidden transition-all duration-500 max-h-0">
+                            <div class="flex flex-col items-center py-4">
+                                <div class="flex gap-2 mb-2">
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(1)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(2)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(3)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(4)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(5)">★</span>
+                                </div>
+                                <p id="rating-message" class="text-[#512874] font-chewy text-lg h-6"></p>
+                            </div>
+                        </div>
+
+                        <p class="text-[#a55641] text-sm font-lato-desc mt-2 opacity-80 italic">tu puntuacion trae sorpresas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de sucursal -->
+    <div id="branch-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-3">📍</div>
+                <h3 class="text-2xl font-bold text-[#512874] mb-2">Selecciona tu sucursal</h3>
+                <p class="text-[#a55641] text-sm opacity-80">No pudimos detectar tu ubicación automáticamente</p>
+            </div>
+            <div class="space-y-3">
+                <button onclick="selectBranch('Pilar')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🏢</span>
+                    <span>Pilar</span>
+                </button>
+                <button onclick="selectBranch('San Isidro')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🏛️</span>
+                    <span>San Isidro</span>
+                </button>
+            </div>
+            <p class="text-center text-gray-400 text-xs mt-4">Tu selección se guardará para futuras visitas</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN DE FIREBASE
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
+            authDomain: "ugly-cookies.firebaseapp.com",
+            projectId: "ugly-cookies",
+            storageBucket: "ugly-cookies.firebasestorage.app",
+            messagingSenderId: "27770165162",
+            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
+            measurementId: "G-J6RZ1L894K"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ============================================
+        // GESTIÓN DE AUTENTICACIÓN
+        // ============================================
+        let currentUser = null;
+        let isLoginMode = true;
+
+        // Mostrar modal de auth
+        function showAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Cerrar modal de auth
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Toggle entre login y registro
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const authTitle = document.getElementById('auth-title');
+            const authToggle = document.getElementById('auth-toggle');
+
+            if (isLoginMode) {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                authTitle.textContent = 'Iniciar Sesión';
+                authToggle.textContent = '¿No tienes cuenta? Regístrate';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                authTitle.textContent = 'Crear Cuenta';
+                authToggle.textContent = '¿Ya tienes cuenta? Inicia Sesión';
+            }
+        }
+
+        // Manejar click en botón de auth
+        function handleAuthClick() {
+            if (currentUser) {
+                showProfileModal();
+            } else {
+                showAuthModal();
+            }
+        }
+
+        // Registro de usuario
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                // Crear usuario en Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Guardar datos adicionales en Firestore
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    branch: localStorage.getItem('selectedBranch') || 'No seleccionada'
+                });
+
+                console.log('Usuario registrado exitosamente');
+                closeAuthModal();
+                alert('¡Cuenta creada exitosamente!');
+            } catch (error) {
+                console.error('Error al registrar:', error);
+                alert('Error al registrar: ' + error.message);
+            }
+        });
+
+        // Login de usuario con enrutador inteligente por mail
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        const mailLogueado = email.toLowerCase().trim();
+        console.log('Usuario logueado exitosamente:', mailLogueado);
+
+        // 1. SI SOS VOS (ADMINISTRADOR)
+        if (mailLogueado === 'stefy@gmail.com') {
+            window.location.href = 'admin.html';
+            return;
+        }
+
+        // 2. SI ES LA SUCURSAL PILAR
+        if (mailLogueado === 'cookiepilar@gmail.com') {
+            localStorage.setItem('currentBranch', 'pilar');
+            window.location.href = 'mostrador.html';
+            return;
+        }
+
+        // 3. SI ES LA SUCURSAL SAN ISIDRO
+        if (mailLogueado === 'cookiesanisidro@gmail.com') {
+            localStorage.setItem('currentBranch', 'san_isidro');
+            window.location.href = 'mostrador.html';
+            return;
+        }
+
+        // 4. SI ES UN CLIENTE COMÚN
+        closeAuthModal();
+
+    } catch (error) {
+        console.error('Error al hacer login:', error);
+        alert('Error al iniciar sesión: ' + error.message);
+    }
+});
+
+// Logout
+async function logout() {
+    try {
+        await auth.signOut();
+        closeProfileModal();
+        console.log('Usuario deslogueado');
+    } catch (error) {
+        console.error('Error al hacer logout:', error);
+    }
+}
+
+
+        // ============================================
+        // GESTIÓN DE PERFIL Y PEDIDOS
+        // ============================================
+        function showProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            loadUserProfile();
+            loadUserOrders();
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Cargar perfil de usuario
+        async function loadUserProfile() {
+            if (!currentUser) {
+                document.getElementById('profile-name').textContent = "Invitado";
+                return;
+            }
+
+            // Ponemos datos básicos del login mientras busca en la base de datos
+            document.getElementById('profile-name').textContent = currentUser.displayName || 'Usuario';
+            document.getElementById('profile-email').textContent = currentUser.email;
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    document.getElementById('profile-name').textContent = userData.name || 'Sin nombre';
+                    document.getElementById('profile-phone').textContent = userData.phone || 'Sin teléfono';
+                }
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+            }
+        }
+
+        // Cargar pedidos del usuario
+        async function loadUserOrders() {
+            if (!currentUser) return;
+
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '<p class="text-gray-500 text-sm">Cargando pedidos...</p>';
+
+            try {
+                const ordersSnapshot = await db.collection('orders')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                if (ordersSnapshot.empty) {
+                    ordersList.innerHTML = '<p class="text-gray-500 text-sm">No tienes pedidos aún</p>';
+                    return;
+                }
+
+                // Convertimos a lista y ordenamos por fecha nosotros mismos (descendente)
+                let orders = [];
+                ordersSnapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                orders.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+
+                ordersList.innerHTML = '';
+                orders.slice(0, 10).forEach(order => {
+                    const orderDate = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'Pendiente';
+                    
+                    // Creamos el texto con la lista de productos
+                    const itemsText = order.items ? order.items.map(i => `${i.quantity}x ${i.name}`).join(', ') : 'Detalle no disponible';
+                    
+                    const statusClass = order.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-[#b574f4] text-white';
+                    
+                    const orderElement = document.createElement('div');
+                    orderElement.className = 'bg-white p-4 rounded-xl border border-purple-100 shadow-sm';
+                    orderElement.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-[#512874]">Pedido #${order.id.slice(0, 8)}</p>
+                                <p class="text-xs text-[#a55641] opacity-70">${orderDate}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">
+                                ${order.status === 'active' ? 'Activo' : 'Completado'}
+                            </span>
+                        </div>
+                        <div class="mt-2 text-sm text-[#a55641]">
+                            <p class="italic">"${itemsText}"</p>
+                            <p class="font-bold mt-1">Total: $${order.total?.toFixed(2) || '0.00'}</p>
+                        </div>
+                    `;
+                    ordersList.appendChild(orderElement);
+                });
+            } catch (error) {
+                console.error('Error al cargar pedidos:', error);
+                ordersList.innerHTML = '<p class="text-red-500 text-sm">Error al cargar pedidos</p>';
+            }
+        }
+
+        // ============================================
+        // OBSERVADOR DE ESTADO DE AUTENTICACIÓN
+        // ============================================
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            const authButton = document.getElementById('auth-button-menu');
+
+            if (user) {
+                authButton.textContent = '👤 Mi Perfil';
+                authButton.classList.add('bg-[#512874]');
+                authButton.classList.remove('bg-[#b574f4]');
+            } else {
+                authButton.textContent = 'Iniciar Sesión';
+                authButton.classList.add('bg-[#b574f4]');
+                authButton.classList.remove('bg-[#512874]');
+            }
+        });
+    </script>
+
+    <script>
+        // ============================================
+        // CARRITO DE COMPRAS Y EFECTO AKATSUKI
+        // ============================================
+        let cart = [];
+        let products = [];
+        let currentBranch = (localStorage.getItem('selectedBranch') || 'pilar').toLowerCase().replace(' ', '_');
+
+        // ============================================
+        // SINCRONIZACIÓN DE PRODUCTOS CON FIRESTORE
+        // ============================================
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '<p class="text-center text-gray-500">Cargando productos...</p>';
+
+            try {
+                // Escuchar cambios en tiempo real
+                db.collection('products')
+                    .onSnapshot((snapshot) => {
+                        products = [];
+                        container.innerHTML = '';
+
+                        if (snapshot.empty) {
+                            container.innerHTML = '<p class="text-center text-gray-500">No hay productos disponibles</p>';
+                            return;
+                        }
+
+                        snapshot.forEach(doc => {
+                            const product = { id: doc.id, ...doc.data() };
+                            
+                            // Si el producto está marcado como oculto en Mostrador, no lo mostramos
+                            if (product.isVisible === false) return;
+                            
+                            products.push(product);
+                            renderProduct(product);
+                        });
+                    }, (error) => {
+                        console.error('Error al cargar productos:', error);
+                        container.innerHTML = '<p class="text-center text-red-500">Error al cargar productos</p>';
+                    });
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                container.innerHTML = '<p class="text-center text-red-500">Error al cargar productos</p>';
+            }
+        }
+
+        // Renderizar producto individual con efecto Akatsuki
+        function renderProduct(product) {
+            const container = document.getElementById('products-container');
+            const branchStock = product.stock?.[currentBranch] || 0;
+            const isAkatsuki = branchStock <= 3;
+            
+            const productElement = document.createElement('div');
+            productElement.className = `bg-amber-50 p-4 rounded-lg ${isAkatsuki ? 'line-through opacity-40 pointer-events-none' : ''}`;
+            
+            productElement.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="text-3xl mb-2">${product.emoji || '🍪'}</div>
+                        <h4 class="font-bold text-[#512874]">${product.name}</h4>
+                        <p class="text-[#a55641] text-sm">${product.description || ''}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <p class="text-amber-600 font-bold">$${product.price?.toFixed(2) || '0.00'}</p>
+                            ${isAkatsuki ? '<span class="text-xs text-red-500 font-bold">¡Últimos!</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        ${!isAkatsuki ? `
+                            <button onclick="addToCart('${product.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition transform hover:scale-105 active:scale-95 text-sm">
+                                + Agregar
+                            </button>
+                        ` : `
+                            <span class="text-xs text-red-500 font-bold">Agotado</span>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(productElement);
+        }
+
+        // ============================================
+        // LÓGICA DEL CARRITO
+        // ============================================
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const branchStock = product.stock?.[currentBranch] || 0;
+            const cartItem = cart.find(item => item.id === productId);
+            const currentQuantity = cartItem ? cartItem.quantity : 0;
+
+            if (currentQuantity >= branchStock) {
+                alert('No hay suficiente stock disponible');
+                return;
+            }
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    emoji: product.emoji
+                });
+            }
+
+            updateCartUI();
+            saveCartToLocalStorage();
+        }
+
+        function removeFromCart(productId) {
+            const index = cart.findIndex(item => item.id === productId);
+            if (index > -1) {
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity--;
+                } else {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+            saveCartToLocalStorage();
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        function getCartCount() {
+            return cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+        function updateCartUI() {
+            const total = getCartTotal();
+            const count = getCartCount();
+
+            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function loadCartFromLocalStorage() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartUI();
+            }
+        }
+
+        // ============================================
+        // MODAL DE PAGO Y DESCUENTOS
+        // ============================================
+        function showPaymentModal() {
+            if (cart.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+
+            const modal = document.getElementById('payment-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            updatePaymentModal('card'); // Mostrar precio normal por defecto
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            // Al cerrar, nos aseguramos de resetear la vista para la próxima compra
+            setTimeout(() => {
+                document.getElementById('payment-selection-ui').classList.remove('hidden');
+                document.getElementById('payment-ticket-ui').classList.add('hidden');
+            }, 500);
+        }
+
+        function updatePaymentModal(paymentMethod) {
+            const subtotal = getCartTotal();
+            let discount = 0;
+            let total = subtotal;
+
+            if (paymentMethod === 'account') {
+                discount = subtotal * 0.10; // 10% de descuento
+                total = subtotal - discount;
+            }
+
+            document.getElementById('payment-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('payment-discount').textContent = `-$${discount.toFixed(2)}`;
+            document.getElementById('payment-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCartFromLocalStorage();
+            loadProducts();
+        });
+
+        // Actualizar productos cuando cambia la sucursal
+        function updateBranchDisplay(branchName) {
+            currentBranch = branchName;
+            localStorage.setItem('selectedBranch', branchName);
+            loadProducts(); // Recargar productos con nueva sucursal
+        }
+
+        // Conectar botón del carrito
+        document.querySelector('#cart-total').parentElement.parentElement.querySelector('button').addEventListener('click', showPaymentModal);
+    </script>
+
+    <script>
+        // ============================================
+        // RETORNO DE MERCADO PAGO Y TICKET ANTI-FRAUDE
+        // ============================================
+        
+        // Capturar parámetros de URL de retorno de Mercado Pago
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Procesar retorno de Mercado Pago
+        async function processMercadoPagoReturn() {
+            const paymentId = getQueryParam('payment_id');
+            const status = getQueryParam('status');
+            const preferenceId = getQueryParam('preference_id');
+
+            if (status === 'approved' && paymentId) {
+                // Recortar últimos 5 dígitos para número de ticket
+                const ticketNumber = paymentId.slice(-5);
+                
+                try {
+                    // Buscamos la orden para traer el nombre y qué compró
+                    const orderDoc = await db.collection('orders').doc(preferenceId).get();
+                    const orderData = orderDoc.data() || {};
+                    const userEmail = currentUser?.email || 'Sin correo registrado';
+
+                    // Crear ticket en Firestore
+                    const ticketData = {
+                        paymentId: paymentId,
+                        ticketNumber: ticketNumber,
+                        preferenceId: preferenceId,
+                        orderId: preferenceId,
+                    status: 'pago_confirmado',
+                        userId: currentUser?.uid || null,
+                        branch: currentBranch,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('tickets').add(ticketData);
+                    
+                    // Abrimos el modal de pago pero para mostrar el ticket directamente
+                    const paymentModal = document.getElementById('payment-modal');
+                    paymentModal.classList.remove('hidden');
+                    paymentModal.classList.add('flex');
+
+                    showActiveTicketPopup({
+                        number: ticketNumber,
+                        name: orderData.userName || currentUser?.displayName || 'Cliente',
+                        email: userEmail,
+                        items: orderData.items || []
+                    });
+                    
+                    // Limpiar parámetros de URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                } catch (error) {
+                    console.error('Error al crear ticket:', error);
+                }
+            }
+        }
+
+        // ============================================
+        // SISTEMA DE TICKET ANTI-FRAUDE
+        // ============================================
+        
+        // Iniciar reloj titilante para tickets
+        function startAntiFraudeClock() {
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('es-AR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false 
+                });
+                
+                // Actualizar todos los elementos con clase anti-fraude-clock
+                document.querySelectorAll('.anti-fraude-clock').forEach(el => {
+                    el.textContent = timeString;
+                });
+            }, 1000);
+        }
+
+        // Funciones del Popup del Ticket Activo
+        function showActiveTicketPopup(data) {
+            document.getElementById('display-ticket-number').textContent = `#${data.number || '00000'}`;
+            document.getElementById('display-customer-name').textContent = data.name;
+            document.getElementById('display-customer-email').textContent = data.email || '';
+            
+            const itemsHtml = data.items.map(i => `${i.quantity}x ${i.name}`).join('<br>');
+            document.getElementById('display-order-items').innerHTML = itemsHtml || 'Detalle del pedido';
+
+            // OCULTAMOS LA SELECCIÓN Y MOSTRAMOS EL TICKET EN EL MISMO MODAL
+            document.getElementById('payment-selection-ui').classList.add('hidden');
+            document.getElementById('payment-ticket-ui').classList.remove('hidden');
+        }
+
+        // ============================================
+        // LÓGICA DE VALORACIÓN (ESTRELLAS)
+        // ============================================
+        function toggleRatingStars() {
+            const container = document.getElementById('stars-container');
+            const btn = document.getElementById('rating-button');
+
+            // Si el botón ya dice "enviar", al clickearlo confirmamos y quitamos la sección de valoración
+            if (btn.textContent === 'enviar') {
+                document.getElementById('valoracion-section').innerHTML = '<p class="text-[#512874] font-chewy text-xl py-3">¡Gracias por tu reseña! ❤️</p>';
+                return;
+            }
+
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                setTimeout(() => { container.style.maxHeight = '200px'; }, 10);
+            } else {
+                container.style.maxHeight = '0px';
+                setTimeout(() => { container.classList.add('hidden'); }, 500);
+            }
+        }
+
+        function rateCookie(rating) {
+            const stars = document.querySelectorAll('.star');
+            const btn = document.getElementById('rating-button');
+            const container = document.getElementById('stars-container');
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.replace('text-gray-300', 'text-yellow-400');
+                } else {
+                    star.classList.replace('text-yellow-400', 'text-gray-300');
+                }
+            });
+
+            // Cambiamos el texto a "enviar" y minimizamos la sección de estrellas
+            btn.textContent = 'enviar';
+            container.style.maxHeight = '0px';
+            setTimeout(() => { 
+                container.classList.add('hidden');
+            }, 500);
+        }
+
+        // ============================================
+        // CARGAR TICKETS ACTIVOS EN MIS PEDIDOS
+        // ============================================
+        async function loadActiveTickets() {
+            if (!currentUser) return;
+
+            const ordersList = document.getElementById('orders-list');
+            
+            try {
+                // Escuchar cambios en tickets en tiempo real
+                db.collection('tickets')
+                    .where('userId', '==', currentUser.uid)
+                    .where('status', '==', 'pago_confirmado')
+                    .onSnapshot((snapshot) => {
+                        // Eliminar tickets antiguos del DOM
+                        document.querySelectorAll('.ticket-anti-fraude').forEach(el => el.remove());
+                        
+                        // Ordenar manualmente para evitar error de índice
+                        let tickets = [];
+                        snapshot.forEach(doc => tickets.push({ id: doc.id, ...doc.data() }));
+                        tickets.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+
+                        tickets.slice(0, 5).forEach(ticket => {
+                            const ticketElement = createAntiFraudeTicket(ticket, ticket.id);
+                            
+                            // Insertar al principio de la lista
+                            ordersList.insertBefore(ticketElement, ordersList.firstChild);
+                        });
+                    });
+            } catch (error) {
+                console.error('Error al cargar tickets:', error);
+            }
+        }
+
+        // Crear elemento de ticket anti-fraude
+        function createAntiFraudeTicket(ticket, ticketId) {
+            const element = document.createElement('div');
+            element.className = 'ticket-anti-fraude bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border-2 border-green-300 shadow-lg';
+            
+            element.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="font-bold text-green-800 text-lg">🎫 Ticket #${ticket.ticketNumber}</p>
+                        <p class="text-xs text-gray-600">ID: ${ticket.paymentId}</p>
+                    </div>
+                    <div class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                        PAGO CONFIRMADO
+                    </div>
+                </div>
+                
+                <!-- Distintivo anti-fraude con hora titilando -->
+                <div class="bg-white rounded-lg p-3 border border-green-200 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-2xl">⏰</span>
+                        <span class="text-2xl font-mono font-bold text-green-700 anti-fraude-clock">
+                            ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                        </span>
+                    </div>
+                    <p class="text-center text-xs text-gray-500 mt-1">Hora en tiempo real</p>
+                </div>
+                
+                <div class="mt-3 flex justify-between items-center text-xs text-gray-600">
+                    <span>Sucursal: ${ticket.branch}</span>
+                    <span>${ticket.createdAt ? new Date(ticket.createdAt.toDate()).toLocaleDateString() : 'Pendiente'}</span>
+                </div>
+            `;
+            
+            return element;
+        }
+
+        // ============================================
+        // INTEGRACIÓN CON MERCADO PAGO
+        // ============================================
+        
+        // Modificar función processPayment para redirigir a Mercado Pago
+        async function processPayment(paymentMethod) {
+            if (!currentUser) {
+                alert('Debes iniciar sesión para realizar un pedido');
+                closePaymentModal();
+                showAuthModal();
+                return;
+            }
+
+            const subtotal = getCartTotal();
+            let discount = 0;
+            let total = subtotal;
+
+            if (paymentMethod === 'account') {
+                discount = subtotal * 0.10;
+                total = subtotal - discount;
+            }
+
+            try {
+                // Buscamos el nombre real en el perfil del usuario
+                let nombreCliente = currentUser.displayName || 'Cliente';
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    nombreCliente = userDoc.data().name || nombreCliente;
+                }
+
+                // Crear orden en Firestore
+                const orderData = {
+                    userId: currentUser.uid,
+                    userName: nombreCliente,
+                    items: cart,
+                    subtotal: subtotal,
+                    discount: discount,
+                    total: total,
+                    paymentMethod: paymentMethod,
+                    branch: currentBranch,
+                    status: 'active',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const orderRef = await db.collection('orders').add(orderData);
+
+                // Actualizar stock de productos
+                for (const item of cart) {
+                    const productRef = db.collection('products').doc(item.id);
+                    const productDoc = await productRef.get();
+                    
+                    if (productDoc.exists) {
+                        const currentStock = productDoc.data().stock?.[currentBranch] || 0;
+                        const newStock = Math.max(0, currentStock - item.quantity);
+                        
+                        await productRef.update({
+                            [`stock.${currentBranch}`]: newStock
+                        });
+                    }
+                }
+
+                // Limpiar carrito
+                cart = [];
+                updateCartUI();
+                saveCartToLocalStorage();
+                closePaymentModal();
+
+                // Redirigir a Mercado Pago (simulado - en producción usar la API real)
+                const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${orderRef.id}`;
+                
+                // Por ahora, simulamos el retorno para pruebas
+                // En producción, descomentar la siguiente línea:
+                // window.location.href = mercadoPagoUrl;
+                
+                // Simulación para pruebas (Compatible con GitHub Pages)
+                const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.location.href = `${baseUrl}?payment_id=MP${orderRef.id}&status=approved&preference_id=${orderRef.id}`;
+
+            } catch (error) {
+                console.error('Error al procesar pago:', error);
+                alert('Error al procesar el pedido: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Procesar retorno de Mercado Pago si hay parámetros
+            processMercadoPagoReturn();
+            
+            // Iniciar reloj anti-fraude
+            startAntiFraudeClock();
+            
+            // Cargar tickets activos si hay usuario
+            if (currentUser) {
+                loadActiveTickets();
+            }
+        });
+
+        // Cargar tickets cuando el usuario inicia sesión
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadActiveTickets();
+            }
+        });
+    </script>
+
+    <script>
+        // Coordenadas de las sucursales (aproximadas para Buenos Aires)
+        const branches = {
+            'Pilar': { lat: -34.45, lng: -58.92 },
+            'San Isidro': { lat: -34.47, lng: -58.53 }
+        };
+
+        // Fórmula Haversine para calcular distancia entre dos coordenadas (en km)
+        function haversineDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // Radio de la Tierra en km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        // Detectar sucursal más cercana por GPS
+        function detectBranchByGPS() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject('Geolocalización no soportada');
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        
+                        let closestBranch = null;
+                        let minDistance = Infinity;
+
+                        for (const [branchName, coords] of Object.entries(branches)) {
+                            const distance = haversineDistance(userLat, userLng, coords.lat, coords.lng);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestBranch = branchName;
+                            }
+                        }
+
+                        // Consideramos cercano si está a menos de 10km
+                        if (minDistance < 10) {
+                            resolve(closestBranch);
+                        } else {
+                            reject('Fuera del rango de sucursales');
+                        }
+                    },
+                    (error) => {
+                        reject(error.message);
+                    },
+                    { timeout: 10000, enableHighAccuracy: true }
+                );
+            });
+        }
+
+        // Detectar sucursal por IP
+        async function detectBranchByIP() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                
+                const city = data.city?.toLowerCase() || '';
+                const region = data.region?.toLowerCase() || '';
+
+                // Detectar por ciudad o región
+                if (city.includes('pilar') || region.includes('pilar')) {
+                    return 'Pilar';
+                } else if (city.includes('san isidro') || city.includes('isidro') || region.includes('san isidro')) {
+                    return 'San Isidro';
+                } else {
+                    throw new Error('Ciudad no reconocida');
+                }
+            } catch (error) {
+                throw new Error('Error al detectar por IP: ' + error.message);
+            }
+        }
+
+        // Mostrar modal de selección manual
+        function showBranchModal() {
+            const modal = document.getElementById('branch-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Ocultar modal
+        function hideBranchModal() {
+            const modal = document.getElementById('branch-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Seleccionar sucursal manualmente
+        function selectBranch(branchName) {
+            const cleanName = branchName.toLowerCase().trim().replace(/\s+/g, '_');
+            localStorage.setItem('selectedBranch', cleanName);
+            currentBranch = cleanName;
+            hideBranchModal();
+            loadProducts();
+        }
+
+        // Función principal de detección en cascada
+        async function detectBranch() {
+            // Verificar si ya hay una sucursal guardada
+            const savedBranch = localStorage.getItem('selectedBranch')?.toLowerCase().replace(' ', '_');
+            if (savedBranch) {
+                console.log('Sucursal guardada:', savedBranch);
+                selectBranch(savedBranch);
+                return;
+            }
+
+            // Paso 1: Intentar GPS
+            try {
+                const branch = await detectBranchByGPS();
+                localStorage.setItem('selectedBranch', branch);
+                console.log('Sucursal detectada por GPS:', branch);
+                updateBranchDisplay(branch);
+                return;
+            } catch (gpsError) {
+                console.log('GPS falló:', gpsError);
+            }
+
+            // Paso 2: Intentar por IP
+            try {
+                const branch = await detectBranchByIP();
+                localStorage.setItem('selectedBranch', branch);
+                console.log('Sucursal detectada por IP:', branch);
+                updateBranchDisplay(branch);
+                return;
+            } catch (ipError) {
+                console.log('IP falló:', ipError);
+            }
+
+            // Paso 3: Mostrar modal manual
+            console.log('Mostrando modal de selección manual');
+            showBranchModal();
+        }
+
+        // Ejecutar detección al cargar la página
+        document.addEventListener('DOMContentLoaded', detectBranch);
+    </script>
+</body>
+</html>
