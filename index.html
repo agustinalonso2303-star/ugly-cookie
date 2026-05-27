@@ -718,6 +718,8 @@
             try {
                 // Crear usuario en Auth
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                console.log("Usuario creado:", userCredential.user);
+
                 const user = userCredential.user;
                 
                 // Actualizar perfil de auth inmediatamente
@@ -734,6 +736,7 @@
 
                 // Enviar correo de verificación
                 await user.sendEmailVerification();
+                console.log("MAIL ENVIADO");
                 
                 // IMPORTANTE: Cerrar sesión inmediatamente después del registro
                 // Firebase loguea automáticamente tras crear la cuenta, pero queremos evitarlo si no está verificado.
@@ -741,10 +744,10 @@
                 
                 console.log('Usuario registrado exitosamente. Correo de verificación enviado.');
                 closeAuthModal();
-                alert('¡Cuenta creada! Se ha enviado un correo de verificación. Por favor confírmalo para poder comprar.');
+                alert("Correo enviado");
             } catch (error) {
-                console.error('Error al registrar:', error);
-                alert('Error al registrar: ' + error.message);
+                console.error("ERROR REAL:", error);
+                alert(error.code + " - " + error.message);
             }
         });
 
