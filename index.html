@@ -627,11 +627,21 @@
         // GESTIÓN DE AUTENTICACIÓN
         // ============================================
         let currentUser = null;
-        let isLoginMode = true;
+
+        // Configuración de Persistencia y Seguridad
+        async function configureAuth() {
+            try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            } catch (error) {
+                console.error("Error persistencia:", error);
+            }
+        }
+        configureAuth();
 
         // Mostrar modal de auth
         function showAuthModal() {
             const modal = document.getElementById('auth-modal');
+            if (!modal) return;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
@@ -639,7 +649,7 @@
         // Cerrar modal de auth
         function closeAuthModal() {
             const modal = document.getElementById('auth-modal');
-            modal.classList.add('hidden');
+            if (modal) modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
 
@@ -655,6 +665,9 @@
         // Login con Google
         window.loginWithGoogle = async function() {
             const provider = new firebase.auth.GoogleAuthProvider();
+            // Forzar selección de cuenta para evitar errores de sesión previa
+            provider.setCustomParameters({ prompt: 'select_account' });
+
             try {
                 const result = await auth.signInWithPopup(provider);
                 const user = result.user;
@@ -664,27 +677,34 @@
                 await db.collection('users').doc(user.uid).set({
                     name: user.displayName,
                     email: email,
+                    photoURL: user.photoURL,
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                     branch: localStorage.getItem('selectedBranch') || 'No seleccionada'
                 }, { merge: true });
                 
-                // Redirecciones inteligentes según el email
-                if (email === 'stefy@gmail.com') {
-                    window.location.href = 'admin.html';
-                } else if (email === 'cookiespilar@gmail.com') {
-                    localStorage.setItem('currentBranch', 'pilar');
-                    closeAuthModal();
-                } else if (email === 'cookiesanisidro@gmail.com') {
-                    localStorage.setItem('currentBranch', 'san_isidro');
-                    window.location.href = 'mostrador.html';
-                } else {
-                    closeAuthModal();
-                }
+                console.log("Login exitoso:", email);
+                closeAuthModal();
+                handleSmartRedirect(email);
+
             } catch (error) {
-                console.error("Error Google Login:", error);
-                alert("Error al iniciar sesión con Google: " + error.message);
+                console.error("ERROR AUTH REAL:", error.code, error.message);
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert("Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase.");
+                } else {
+                    alert("Error al ingresar: " + error.message);
+                }
             }
         };
+
+        function handleSmartRedirect(email) {
+            if (email === 'stefy@gmail.com') {
+                window.location.href = 'admin.html';
+            } else if (email === 'cookiespilar@gmail.com' || email === 'cookiesanisidro@gmail.com') {
+                const branch = email.includes('pilar') ? 'pilar' : 'san_isidro';
+                localStorage.setItem('currentBranch', branch);
+                window.location.href = branch === 'pilar' ? 'index.html' : 'mostrador.html';
+            }
+        }
 
 // Logout
 async function logout() {
@@ -966,8 +986,6 @@ async function logout() {
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 const userData = userDoc.exists ? userDoc.data() : {};
                 
-                console.log('Datos de usuario cargados:', userData);
-
                 if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
                     enableEditMode();
                 }
