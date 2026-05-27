@@ -337,52 +337,19 @@
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-[#512874]" id="auth-title">Iniciar Sesión</h3>
+                <h3 class="text-2xl font-bold text-[#512874]" id="auth-title">Identificate</h3>
                 <button onclick="closeAuthModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             </div>
             
-            <!-- Formulario de Login -->
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Email</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="tu@email.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Contraseña</label>
-                    <input type="password" id="login-password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95">
-                    Iniciar Sesión
+            <div class="text-center space-y-6">
+                <p class="text-[#a55641] text-lg font-lato-desc">Accedé para realizar tus pedidos de forma rápida y segura.</p>
+                
+                <button onclick="loginWithGoogle()" class="w-full bg-white border-2 border-gray-200 hover:border-[#512874] text-gray-700 font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-4">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-6 h-6">
+                    <span class="text-lg">Continuar con Google</span>
                 </button>
-            </form>
 
-            <!-- Formulario de Registro -->
-            <form id="register-form" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Nombre Completo</label>
-                    <input type="text" id="register-name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Juan Pérez">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Email</label>
-                    <input type="email" id="register-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="tu@email.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Teléfono Celular</label>
-                    <input type="tel" id="register-phone" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="+54 11 1234-5678">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[#a55641] mb-1">Contraseña</label>
-                    <input type="password" id="register-password" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Mínimo 6 caracteres">
-                </div>
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95">
-                    Crear Cuenta
-                </button>
-            </form>
-
-            <div class="mt-4 text-center">
-                <button onclick="toggleAuthMode()" class="text-[#a55641] hover:underline font-medium text-sm" id="auth-toggle">
-                    ¿No tienes cuenta? Regístrate
-                </button>
+                <p class="text-xs text-gray-400 mt-4">Al ingresar aceptás nuestros Términos y Condiciones.</p>
             </div>
         </div>
     </div>
@@ -676,27 +643,6 @@
             modal.classList.remove('flex');
         }
 
-        // Toggle entre login y registro
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const authTitle = document.getElementById('auth-title');
-            const authToggle = document.getElementById('auth-toggle');
-
-            if (isLoginMode) {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                authTitle.textContent = 'Iniciar Sesión';
-                authToggle.textContent = '¿No tienes cuenta? Regístrate';
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                authTitle.textContent = 'Crear Cuenta';
-                authToggle.textContent = '¿Ya tienes cuenta? Inicia Sesión';
-            }
-        }
-
         // Manejar click en botón de auth
         function handleAuthClick() {
             if (currentUser) {
@@ -706,99 +652,39 @@
             }
         }
 
-        // Registro de usuario
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const phone = document.getElementById('register-phone').value;
-            const password = document.getElementById('register-password').value;
-
+        // Login con Google
+        window.loginWithGoogle = async function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                // Crear usuario en Auth
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                console.log("Usuario creado:", userCredential.user);
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                const email = user.email.toLowerCase().trim();
 
-                const user = userCredential.user;
-                
-                // Actualizar perfil de auth inmediatamente
-                await user.updateProfile({ displayName: name });
-
-                // Guardar datos adicionales en Firestore
+                // Guardar/Actualizar datos en Firestore automáticamente
                 await db.collection('users').doc(user.uid).set({
-                    name: String(name),
+                    name: user.displayName,
                     email: email,
-                    phone: String(phone),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                     branch: localStorage.getItem('selectedBranch') || 'No seleccionada'
-                });
-
-                // Enviar correo de verificación
-                await user.sendEmailVerification();
-                console.log("MAIL ENVIADO");
+                }, { merge: true });
                 
-                // IMPORTANTE: Cerrar sesión inmediatamente después del registro
-                // Firebase loguea automáticamente tras crear la cuenta, pero queremos evitarlo si no está verificado.
-                await auth.signOut();
-                
-                console.log('Usuario registrado exitosamente. Correo de verificación enviado.');
-                closeAuthModal();
-                alert("Correo enviado");
+                // Redirecciones inteligentes según el email
+                if (email === 'stefy@gmail.com') {
+                    window.location.href = 'admin.html';
+                } else if (email === 'cookiespilar@gmail.com') {
+                    localStorage.setItem('currentBranch', 'pilar');
+                    closeAuthModal();
+                } else if (email === 'cookiesanisidro@gmail.com') {
+                    localStorage.setItem('currentBranch', 'san_isidro');
+                    window.location.href = 'mostrador.html';
+                } else {
+                    closeAuthModal();
+                }
             } catch (error) {
-                console.error("ERROR REAL:", error);
-                alert(error.code + " - " + error.message);
+                console.error("Error Google Login:", error);
+                alert("Error al iniciar sesión con Google: " + error.message);
             }
-        });
-
-        // Login de usuario con enrutador inteligente por mail
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-        await auth.signInWithEmailAndPassword(email, password);
-        const user = auth.currentUser;
-
-        // Validar si el correo electrónico ha sido verificado
-        if (!user.emailVerified) {
-            alert('Por favor, verifica tu correo electrónico para poder ingresar. Se envió un link a tu mail al momento del registro.');
-            await auth.signOut();
-            return;
-        }
-
-        const mailLogueado = email.toLowerCase().trim();
-        console.log('Usuario logueado exitosamente:', mailLogueado);
-
-        // 1. SI SOS VOS (ADMINISTRADOR)
-        if (mailLogueado === 'stefy@gmail.com') {
-            window.location.href = 'admin.html';
-            return;
-        }
-
-        // 2. SI ES LA SUCURSAL PILAR
-        if (mailLogueado === 'cookiespilar@gmail.com') {
-            localStorage.setItem('currentBranch', 'pilar');
-            closeAuthModal();
-            return;
-        }
-
-        // 3. SI ES LA SUCURSAL SAN ISIDRO
-        if (mailLogueado === 'cookiesanisidro@gmail.com') {
-            localStorage.setItem('currentBranch', 'san_isidro');
-            window.location.href = 'mostrador.html';
-            return;
-        }
-
-        // 4. SI ES UN CLIENTE COMÚN
-        closeAuthModal();
-
-    } catch (error) {
-        console.error('Error al hacer login:', error);
-        alert('Error al iniciar sesión: ' + error.message);
-    }
-});
+        };
 
 // Logout
 async function logout() {
