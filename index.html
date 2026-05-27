@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ugly Cookies - Cafetería</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Chewy para nombres y Lato para descripciones -->
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Google reCAPTCHA v3 - Reemplaza con tu SITE_KEY real -->
+    <script src="https://www.google.com/recaptcha/api.js?render=TU_SITE_KEY_AQUI"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        h1, h2, h3, h4, h5 { font-family: 'Chewy', system-ui; font-weight: normal; }
+        body { font-family: 'Lato', sans-serif; }
+        .font-chewy { font-family: 'Chewy', system-ui; }
+        .font-lato-desc { font-family: 'Lato', sans-serif; text-transform: lowercase; letter-spacing: 0.01em; font-weight: 400; font-size: 1.25rem; }
+        
+        /* Esconde la barra de scroll para que el slider se vea limpio */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- MEDIA QUERIES (ESTRATEGIA MOBILE FIRST) --- */
+
+        /* 1. Estilos base para MÓVIL */
+        /* Estos estilos se aplican por defecto a pantallas pequeñas (celulares) */
+        .responsive-logo { width: 150px; height: auto; transition: all 0.3s ease; }
+        .responsive-hero { width: 220px; height: 220px; transition: all 0.3s ease; }
+
+        /* 2. Estilos para DESKTOP / TABLET (Mínimo 768px de ancho) */
+        @media (min-width: 768px) {
+            /* Ajustamos las medidas para que en PC se vea más grande y con aire */
+            .responsive-logo { width: 250px; height: 60px; }
+            .responsive-hero { width: 400px; height: 400px; }
+            
+            /* Ejemplo de espaciado extra que solo se activa en pantallas grandes */
+            .desktop-spacing { padding: 4rem 0; }
+        }
+
+        /* --- ANIMACIONES DE REVELADO (SCROLL) --- */
+        .reveal {
+            opacity: 0;
+            filter: blur(5px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+        .reveal-left { transform: translateX(-80px); }
+        .reveal-right { transform: translateX(80px); }
+        .reveal.active {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+        }
+
+        /* Estilos del Ticket Térmico para Impresión */
+        @media print {
+            body * { visibility: hidden; }
+            #ticket-print-area, #ticket-print-area * { visibility: visible; }
+            #ticket-print-area {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 0;
+                width: 100%;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+
+</head>
+    <body class="bg-[#efe6da] min-h-screen">
+    <script>
+        // FUNCIONES DEL MENÚ LATERAL (Justo al inicio del body para asegurar carga)
+        window.toggleSideMenu = function() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('side-menu-overlay');
+            const panel = document.getElementById('side-menu-panel');
+            
+            if (menu && menu.classList.contains('invisible')) {
+                menu.classList.remove('invisible');
+                overlay.classList.add('opacity-100');
+                panel.classList.remove('-translate-x-full');
+            } else if (menu) {
+                overlay.classList.remove('opacity-100');
+                panel.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('invisible');
+                }, 300);
+            }
+        };
+
+        window.handleAuthClickFromMenu = function() {
+            toggleSideMenu(); 
+            if (typeof handleAuthClick === 'function') handleAuthClick(); 
+        };
+    </script>
+
+    <!-- Header -->
+    <header class="bg-[#512874] p-2 sticky top-0 z-50 shadow-md h-[65px] flex items-center">
+        <div class="max-w-6xl mx-auto w-full flex items-center relative">
+            <!-- Izquierda: Botón Hamburguesa -->
+            <div class="z-[60] relative">
+                <button onclick="toggleSideMenu()" class="text-5xl text-white p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer" style="line-height: 1;">☰</button>
+            </div>
+
+            <!-- Centro: Logo header.png -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <img src="./assets/header.png" alt="Logo" class="object-contain responsive-logo">
+            </div>
+
+            <!-- Derecha: Sucursal Seleccionada -->
+            <div class="z-[60] relative ml-auto pr-2 text-right">
+                <span id="edit-mode-badge" class="hidden bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase mb-1 inline-block select-none">modo edicion</span>
+                <span id="header-branch-label" class="text-white font-bold text-[10px] md:text-xs uppercase block leading-none">sucursal</span>
+                <span id="header-branch-name" class="text-white font-chewy text-base md:text-xl block leading-tight">...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menú Lateral (Side Menu) -->
+    <div id="side-menu" class="fixed inset-0 z-[200] invisible transition-all duration-300">
+        <!-- Fondo oscuro detrás del menú -->
+        <div id="side-menu-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleSideMenu()"></div>
+        
+        <!-- Contenedor blanco del menú (El que desliza) -->
+        <div id="side-menu-panel" class="absolute inset-y-0 left-0 w-72 bg-[#efe6da] shadow-2xl flex flex-col p-6 transform -translate-x-full transition-transform duration-300">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-2xl font-chewy text-[#512874]">Menú</h3>
+                <button onclick="toggleSideMenu()" class="text-3xl text-[#a55641]">&times;</button>
+            </div>
+            <div class="mb-8">
+                <button id="auth-button-menu" onclick="handleAuthClickFromMenu()" class="w-full bg-[#512874] text-white font-chewy py-3 px-4 rounded-xl text-xl transition transform hover:scale-105">
+                    Iniciar Sesión
+                </button>
+            </div>
+            <nav id="side-menu-nav" class="flex flex-col gap-6">
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">inicio</a>
+                <a href="#menu-section" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">menú</a>
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">nosotros</a>
+                <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">contacto</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="bg-[#512874] py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Imagen Principal desde carpeta assets -->
+            <img src="./assets/hero-image.png" alt="Ugly Cookies Hero" class="mx-auto mb-8 object-contain responsive-hero">
+            
+            <a href="#menu-section" class="inline-block bg-[#ecd3ff] text-[#512874] border border-[#512874] hover:bg-white font-bold py-3 px-8 rounded-xl transition transform hover:scale-105">
+                Ver Menú
+            </a>
+        </div>
+    </section>
+
+    <!-- Banner Cookie del Mes -->
+    <section id="cookie-month-banner" class="w-full hidden bg-[#efe6da]">
+        <div class="max-w-7xl mx-auto py-8 px-4">
+            <p class="text-center font-bold text-[#512874] mb-4 uppercase text-sm tracking-widest">Cookie del Mes</p>
+            <img id="cookie-month-img" src="" alt="Cookie del Mes" class="w-full h-auto object-cover max-h-[500px] rounded-3xl shadow-2xl block mx-auto transition-opacity duration-500">
+        </div>
+    </section>
+
+    <!-- Cookie Highlights (Zig-Zag) -->
+    <section class="py-16 md:py-32 px-4 bg-[#efe6da] overflow-hidden">
+        <div class="max-w-7xl mx-auto space-y-24 md:space-y-48">
+            <!-- Cookie 1: Foto Izquierda -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 reveal reveal-left">
+                <div class="w-full md:w-1/2 relative flex justify-center md:justify-end z-10">
+                    <img src="./assets/cookie-1.png" alt="Classic Choco" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:rotate-3">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 5.0</p>
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-center md:text-left px-4">
+                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">Classic Choco</h3>
+                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl">nuestra receta original con chips de chocolate belga que se derriten en cada mordisco.</p>
+                </div>
+            </div>
+
+            <!-- Cookie 2: Foto Derecha -->
+            <div class="flex flex-col-reverse md:flex-row-reverse items-center justify-center gap-8 md:gap-16 reveal reveal-right">
+                <div class="w-full md:w-1/2 relative flex justify-center md:justify-start z-10">
+                    <img src="./assets/cookie-2.png" alt="S'mores Marshmallow" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:-rotate-3">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 4.2</p>
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★☆</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-center md:text-right px-4">
+                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">S'mores Marshmallow</h3>
+                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl ml-auto">la combinación perfecta de chocolate derretido y malvaviscos tostados al fuego.</p>
+                </div>
+            </div>
+
+            <!-- Cookie 3: Foto Izquierda -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 reveal reveal-left">
+                <div class="w-full md:w-1/2 relative flex justify-center md:justify-end z-10">
+                    <img src="./assets/cookie-3.png" alt="Peanut Butter Cup" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:rotate-3">
+                    <!-- Texto superpuesto en la base de la imagen -->
+                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
+                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 4.8</p>
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-center md:text-left px-4">
+                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">Peanut Butter Cup</h3>
+                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl">una explosión de sabor con mantequilla de maní real, reese's y m&ms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-8 px-4 bg-[#efe6da]">
+        <p class="max-w-6xl mx-auto text-center font-bold text-[#512874] mb-6 uppercase text-sm tracking-widest">Nuestros Secretos</p>
+        <div class="max-w-6xl mx-auto flex md:grid md:grid-cols-3 overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
+            <!-- Catering -->
+            <a href="catering.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+                <div class="text-4xl mb-3">🥂</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Catering</h3>
+                <p class="text-[#a55641]">Llevamos la experiencia Ugly a tus eventos especiales</p>
+            </a>
+            <!-- Tarjetas de Regalo -->
+            <a href="giftcards.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+                <div class="text-4xl mb-3">🎁</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Tarjetas de regalo</h3>
+                <p class="text-[#a55641]">Regalá momentos dulces y originales a quienes quieras</p>
+            </a>
+            <!-- Sabores -->
+            <a href="sabores.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+                <div class="text-4xl mb-3">✨</div>
+                <h3 class="text-2xl text-[#512874] mb-2">Sabores</h3>
+                <p class="text-[#a55641]">Conocé toda nuestra variedad y combinaciones únicas</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Menu Preview -->
+    <section id="menu-section" class="py-12 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#512874] mb-8">Nuestro Menú</h2>
+            <div id="products-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-center text-[#a55641]">Cargando productos...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Botones Flotantes -->
+    <div class="fixed bottom-6 right-6 z-[200] flex flex-col gap-4">
+        <!-- Botón Ayuda General (Arriba) -->
+        <a id="help-float-btn" href="https://wa.me/5491170983414?text=Hola!%20Necesito%20ayuda%20con%20Ugly%20Cookies" target="_blank" class="bg-[#512874] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+            <span class="absolute right-full mr-3 bg-[#512874] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">¿Necesitás Ayuda?</span>
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </a>
+        
+        <!-- Botón WhatsApp Sucursal (Abajo) -->
+        <a id="wa-float-btn" href="#" target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+            <span class="absolute right-full mr-3 bg-[#25D366] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">WhatsApp Local</span>
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+    </div>
+
+    <!-- Footer Dinámico -->
+    <footer class="bg-[#512874] text-white pt-[5px] pb-[20px] px-4">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+            <!-- Ubicación y Mapa Dinámico -->
+            <div class="text-center mb-5 w-full max-w-2xl">
+                <p class="text-amber-200 font-bold uppercase tracking-widest text-xs mb-3 mt-0">Nuestra Casa</p>
+                <p id="footer-address" class="text-2xl font-chewy mb-6">Cargando ubicación...</p>
+                
+                <!-- Contenedor del Mapa -->
+                <div class="w-full h-64 md:h-80 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/5 relative bg-purple-900/20 group">
+                    <iframe id="footer-map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src=""></iframe>
+                </div>
+            </div>
+
+            <!-- Redes Sociales Fix -->
+            <div class="flex gap-8 mb-5">
+                <a id="footer-ig" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Instagram">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a id="footer-tt" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="TikTok">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                </a>
+                <a id="footer-th" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Threads">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M15.42 13.56c-.53 0-.96-.44-.96-.98V9.17c0-1.63-1.09-2.25-2.43-2.25-.87 0-1.7.3-2.35.81l-.64-1.57c1-.76 2.16-1.16 3.42-1.16 2.76 0 4.38 1.57 4.38 4.2v5.82c0 .7.21.95.53.95.17 0 .33-.05.47-.15l.59 1.46c-.38.28-.9.44-1.45.44-1.1 0-1.66-.7-1.66-1.78v-.5c-.65.51-1.54.78-2.48.78-.01 0-.01 0-.02 0-3.7 0-5.74-1.9-5.74-4.04 0-2.12 1.84-3.73 4.67-3.73.51 0 1 .04 1.46.11v1.83c-.47-.07-.94-.1-1.42-.1-1.7 0-2.62.77-2.62 1.93 0 1.15 1.1 1.75 2.21 1.75.99 0 1.83-.4 2.25-1.02v.01zm-3.42-13.56C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 22c-5.52 0-10-4.48-10-10S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/></svg>
+                </a>
+            </div>
+
+            <img src="./assets/header.png" alt="Logo" class="w-48 mb-5 opacity-80">
+
+            <div class="flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs text-amber-300 opacity-60 uppercase font-bold tracking-widest">
+                <a href="terminos.html" class="hover:text-white">Términos y Condiciones</a>
+                <a href="privacidad.html" class="hover:text-white">Privacidad</a>
+                <button onclick="showArrepentimientoModal()" class="hover:text-white cursor-pointer">Botón de Arrepentimiento</button>
+                <p>© 2024 Ugly Cookies</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Barra inferior fija del carrito -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-amber-200 shadow-lg z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-xs text-[#a55641] opacity-70">Total del carrito</span>
+                <span class="text-xl font-bold text-[#a55641]" id="cart-total">$0.00</span>
+            </div>
+            <button class="bg-[#efe6da] text-[#512874] border border-[#512874] hover:bg-white font-bold py-3 px-6 rounded-xl transition transform active:scale-95 flex items-center gap-2">
+                <span class="text-lg">🛒</span>
+                <span>Ver Carrito</span>
+                <span class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full" id="cart-count">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Login/Registro -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]" id="auth-title">Identificate</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <div class="text-center space-y-6">
+                <p class="text-[#a55641] text-lg font-lato-desc">Accedé para realizar tus pedidos de forma rápida y segura.</p>
+                
+                <button onclick="loginWithGoogle()" class="w-full bg-white border-2 border-gray-200 hover:border-[#512874] text-gray-700 font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-4">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-6 h-6">
+                    <span class="text-lg">Continuar con Google</span>
+                </button>
+
+                <p class="text-xs text-gray-400 mt-4">Al ingresar aceptás nuestros Términos y Condiciones.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil de Usuario -->
+    <div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Mi Perfil</h3>
+                <button onclick="closeProfileModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <div id="profile-content" class="space-y-4">
+                <div class="text-center py-4">
+                    <div class="text-5xl mb-3">👤</div>
+                    <h4 class="text-xl font-bold text-[#512874]" id="profile-name">Cargando...</h4>
+                    <p class="text-[#a55641]" id="profile-email">...</p>
+                    <p class="text-[#a55641]" id="profile-phone">...</p>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h5 class="font-bold text-[#512874] mb-3">📋 Mis Pedidos</h5>
+                    <div id="orders-list" class="space-y-3">
+                        <p class="text-[#a55641] text-sm opacity-70">Cargando pedidos...</p>
+                    </div>
+                </div>
+                
+                <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 mt-4">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <!-- SECCIÓN 1: Selección de Pago -->
+            <div id="payment-selection-ui" class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-[#512874]">Finalizar Pedido</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    <!-- Listado de productos en el pedido -->
+                    <div id="payment-items-list" class="max-h-40 overflow-y-auto space-y-2 border-b pb-4 mb-2 no-scrollbar">
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b">
+                        <span class="text-[#a55641]">Subtotal</span>
+                        <span class="font-bold text-[#a55641]" id="payment-subtotal">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b">
+                        <span class="text-[#a55641]">Descuento</span>
+                        <span class="font-bold text-green-600" id="payment-discount">-$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-xl font-bold text-[#512874]">Total</span>
+                        <span class="text-2xl font-bold text-[#512874]" id="payment-total">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="processPayment('card')" class="w-full bg-[#009EE3] text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                        <span class="text-2xl">💳</span>
+                        <div class="text-left">
+                            <span class="block font-chewy">Pagar con Mercado Pago</span>
+                            <span class="text-xs opacity-80">Crédito, Débito o Dinero en cuenta</span>
+                        </div>
+                    </button>
+                    <button onclick="processPayment('account')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                        <span class="text-2xl">📱</span>
+                        <div class="text-left">
+                            <span class="block font-chewy">Pagar</span>
+                            <span class="text-xs opacity-80">10% OFF</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: El Ticket (Se muestra después de pagar) -->
+            <div id="payment-ticket-ui" class="hidden">
+                <div class="bg-[#512874] p-8 text-center text-white relative">
+                    <h3 class="text-4xl font-chewy mb-2">¡Pedido Exitoso!</h3>
+                    <p class="font-lato opacity-90">Presentá esto en el mostrador</p>
+                </div>
+                
+                <div class="p-8 space-y-6 text-center">
+                    <div class="bg-[#efe6da] py-4 rounded-2xl border-2 border-dashed border-[#512874]">
+                        <span class="block text-[#a55641] text-xs font-bold uppercase mb-1">Reloj Sincronizado</span>
+                        <span class="text-5xl font-mono font-black text-[#512874] anti-fraude-clock">00:00:00</span>
+                    </div>
+
+                    <div>
+                        <h4 class="text-[#512874] text-5xl font-chewy" id="display-ticket-number">#00000</h4>
+                        <p class="text-[#a55641] font-bold text-xl mt-2 mb-0" id="display-customer-name">Cliente</p>
+                        <p class="text-[#a55641] text-sm opacity-70 font-lato-desc" id="display-customer-email"></p>
+                    </div>
+
+                    <div id="display-order-items" class="text-[#a55641] text-lg font-lato italic border-t border-b py-4">
+                        Detalle del pedido...
+                    </div>
+
+                    <button onclick="closePaymentModal()" class="w-full bg-[#512874] text-white font-chewy py-4 rounded-2xl text-xl shadow-lg active:scale-95 transition">¡Listo!</button>
+                    
+                    <div id="valoracion-section" class="mt-4 pt-2 border-t border-dashed border-gray-200">
+                        <button id="rating-button" onclick="toggleRatingStars()" class="w-full bg-[#512874] text-white font-chewy py-3 rounded-2xl text-lg shadow-md active:scale-95 transition">valoranos</button>
+                        
+                        <!-- Panel de Estrellas oculto -->
+                        <div id="stars-container" class="hidden overflow-hidden transition-all duration-500 max-h-0">
+                            <div class="flex flex-col items-center py-4">
+                                <div class="flex gap-2 mb-2">
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(1)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(2)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(3)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(4)">★</span>
+                                    <span class="star text-4xl cursor-pointer transition transform hover:scale-125 text-gray-300" onclick="rateCookie(5)">★</span>
+                                </div>
+                                <p id="rating-message" class="text-[#512874] font-chewy text-lg h-6"></p>
+                            </div>
+                        </div>
+
+                        <p class="text-[#a55641] text-sm font-lato-desc mt-2 opacity-80 italic">tu puntuacion trae sorpresas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de sucursal -->
+    <div id="branch-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-3">📍</div>
+                <h3 class="text-2xl font-bold text-[#512874] mb-2">Selecciona tu sucursal</h3>
+                <p class="text-[#a55641] text-sm opacity-80">Elige la sucursal donde retirarás tu pedido</p>
+            </div>
+            <div class="space-y-3">
+                <button onclick="selectBranch('Pilar')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🏢</span>
+                    <span>Pilar</span>
+                </button>
+                <button onclick="selectBranch('San Isidro')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                    <span class="text-2xl">🏛️</span>
+                    <span>San Isidro</span>
+                </button>
+            </div>
+            <p class="text-center text-gray-400 text-xs mt-4">Tu selección se guardará para futuras visitas</p>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo Producto (Exclusivo Modo Edición) -->
+    <div id="new-product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[110] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Añadir a <span id="target-branch-display">...</span></h3>
+                <button onclick="closeNewProductModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <form id="new-product-form" class="space-y-4">
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="col-span-1">
+                        <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Emoji</label>
+                        <input type="text" id="np-emoji" placeholder="🍪" class="w-full px-3 py-2 border rounded-xl text-center text-xl">
+                    </div>
+                    <div class="col-span-3">
+                        <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Nombre</label>
+                        <input type="text" id="np-name" required placeholder="Nombre de la Cookie" class="w-full px-4 py-2 border rounded-xl">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Categoría</label>
+                    <select id="np-category" class="w-full px-4 py-2 border rounded-xl">
+                        <option value="producto">Producto (Sabor de Cookie)</option>
+                        <option value="box">Box (Combo de Cookies)</option>
+                        <option value="insumo">Insumo (Gaseosa, Adicionales, etc.)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Descripción corta</label>
+                    <textarea id="np-desc" rows="2" class="w-full px-4 py-2 border rounded-xl" placeholder="Describe el sabor..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Precio ($)</label>
+                        <input type="number" id="np-price" required step="0.01" class="w-full px-4 py-2 border rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#a55641] uppercase mb-1">Stock Inicial</label>
+                        <input type="number" id="np-stock" required class="w-full px-4 py-2 border rounded-xl" value="10">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-[#512874] text-white font-chewy py-3 rounded-xl text-xl mt-4 hover:scale-105 transition shadow-lg">
+                    Crear Producto en <span class="current-branch-label">...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Cookie del Mes (Exclusivo Modo Edición) -->
+    <div id="cookie-month-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[110] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Banner Cookie del Mes</h3>
+                <button onclick="closeCookieMonthModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <div class="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center">
+                    <input type="file" id="cm-image-input" accept="image/*" class="hidden" onchange="document.getElementById('cm-file-name').textContent = this.files[0]?.name || 'No hay archivo'">
+                    <button onclick="document.getElementById('cm-image-input').click()" class="bg-[#efe6da] text-[#512874] font-bold py-2 px-4 rounded-xl mb-2">Seleccionar Imagen</button>
+                    <p id="cm-file-name" class="text-xs text-[#a55641] italic">Ninguna imagen seleccionada</p>
+                </div>
+                <button id="btn-upload-cm" onclick="uploadCookieMonthImage()" class="w-full bg-[#512874] text-white font-chewy py-3 rounded-xl text-xl shadow-lg transition transform hover:scale-105">
+                    Subir y Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Selección de Sabores para Box -->
+    <div id="flavor-selection-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[150] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#efe6da] rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+            <div class="bg-[#512874] p-6 text-white text-center">
+                <h3 class="text-3xl font-chewy mb-1">Armá tu Box</h3>
+                <p id="flavor-counter-text" class="text-amber-200 font-bold uppercase text-sm tracking-widest">Seleccioná 4 cookies</p>
+            </div>
+            
+            <!-- Buscador de Sabores -->
+            <div class="px-6 pt-4">
+                <div class="relative">
+                    <input type="text" id="flavor-search-input" oninput="filterFlavors()" placeholder="Buscar tu cookie favorita..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-amber-200 focus:ring-2 focus:ring-[#512874] outline-none text-[#512874]">
+                    <span class="absolute left-3 top-2.5 opacity-40">🔍</span>
+                </div>
+            </div>
+
+            <div id="flavors-list-container" class="p-6 overflow-y-auto space-y-4 flex-1 no-scrollbar">
+                <!-- Los sabores se cargarán aquí -->
+            </div>
+
+            <div class="p-6 bg-white border-t border-amber-100 space-y-3">
+                <div id="selected-flavors-summary" class="text-xs text-[#a55641] italic text-center min-h-[1.5rem]">
+                    Aún no seleccionaste sabores
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeFlavorModal()" class="flex-1 py-3 px-4 rounded-xl border-2 border-[#512874] text-[#512874] font-bold hover:bg-gray-50 transition">Cancelar</button>
+                    <button id="confirm-box-btn" disabled onclick="confirmBoxSelection()" class="flex-[2] py-3 px-4 rounded-xl bg-[#512874] text-white font-chewy text-xl opacity-50 cursor-not-allowed transition transform">
+                        Confirmar Box
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN DE FIREBASE
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
+            authDomain: "ugly-cookies.firebaseapp.com",
+            projectId: "ugly-cookies",
+            storageBucket: "ugly-cookies.firebasestorage.app",
+            messagingSenderId: "27770165162",
+            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
+            measurementId: "G-J6RZ1L894K"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // ============================================
+        // GESTIÓN DE AUTENTICACIÓN
+        // ============================================
+        let currentUser = null;
+
+        // Configuración de Persistencia y Seguridad
+        async function configureAuth() {
+            try {
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            } catch (error) {
+                console.error("Error persistencia:", error);
+            }
+        }
+        configureAuth();
+
+        // Mostrar modal de auth
+        function showAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Cerrar modal de auth
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Manejar click en botón de auth
+        function handleAuthClick() {
+            if (currentUser) {
+                showProfileModal();
+            } else {
+                showAuthModal();
+            }
+        }
+
+        // Login con Google
+        window.loginWithGoogle = async function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // Forzar selección de cuenta para evitar errores de sesión previa
+            provider.setCustomParameters({ prompt: 'select_account' });
+
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                const email = user.email.toLowerCase().trim();
+
+                // Guardar/Actualizar datos en Firestore automáticamente
+                await db.collection('users').doc(user.uid).set({
+                    name: user.displayName,
+                    email: email,
+                    photoURL: user.photoURL,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    branch: localStorage.getItem('selectedBranch') || 'No seleccionada'
+                }, { merge: true });
+                
+                console.log("Login exitoso:", email);
+                closeAuthModal();
+                handleSmartRedirect(email);
+
+            } catch (error) {
+                console.error("ERROR AUTH REAL:", error.code, error.message);
+                if (error.code === 'auth/unauthorized-domain') {
+                    alert("Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase.");
+                } else {
+                    alert("Error al ingresar: " + error.message);
+                }
+            }
+        };
+
+        function handleSmartRedirect(email) {
+            if (email === 'stefy@gmail.com') {
+                window.location.href = 'admin.html';
+            } else if (email === 'cookiespilar@gmail.com' || email === 'cookiesanisidro@gmail.com') {
+                const branch = email.includes('pilar') ? 'pilar' : 'san_isidro';
+                localStorage.setItem('currentBranch', branch);
+                window.location.href = branch === 'pilar' ? 'index.html' : 'mostrador.html';
+            }
+        }
+
+// Logout
+async function logout() {
+    try {
+        await auth.signOut();
+        closeProfileModal();
+        console.log('Usuario deslogueado');
+    } catch (error) {
+        console.error('Error al hacer logout:', error);
+    }
+}
+
+
+        // ============================================
+        // GESTIÓN DE PERFIL Y PEDIDOS
+        // ============================================
+        function showProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            loadUserProfile();
+            loadUserOrders();
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Cargar perfil de usuario
+        async function loadUserProfile() {
+            if (!currentUser) {
+                document.getElementById('profile-name').textContent = "Invitado";
+                return;
+            }
+
+            // Ponemos datos básicos del login mientras busca en la base de datos
+            document.getElementById('profile-name').textContent = currentUser.displayName || 'Usuario';
+            document.getElementById('profile-email').textContent = currentUser.email;
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    document.getElementById('profile-name').textContent = userData.name || 'Sin nombre';
+                    document.getElementById('profile-phone').textContent = userData.phone || 'Sin teléfono';
+                }
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+            }
+        }
+
+        // Cargar pedidos del usuario
+        async function loadUserOrders() {
+            if (!currentUser) return;
+
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '<p class="text-gray-500 text-sm">Cargando pedidos...</p>';
+
+            try {
+                const ordersSnapshot = await db.collection('orders')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+
+                if (ordersSnapshot.empty) {
+                    ordersList.innerHTML = '<p class="text-gray-500 text-sm">No tienes pedidos aún</p>';
+                    return;
+                }
+
+                // Convertimos a lista y ordenamos por fecha nosotros mismos (descendente)
+                let orders = [];
+                ordersSnapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                orders.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+
+                ordersList.innerHTML = '';
+                orders.slice(0, 10).forEach(order => {
+                    const orderDate = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'Pendiente';
+                    
+                    // Creamos el texto con la lista de productos
+                    const itemsText = order.items ? order.items.map(i => `${i.quantity}x ${i.name}`).join(', ') : 'Detalle no disponible';
+                    
+                    const statusClass = order.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-[#512874] text-white';
+                    
+                    const orderElement = document.createElement('div');
+                    orderElement.className = 'bg-white p-4 rounded-xl border border-purple-100 shadow-sm';
+                    orderElement.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-[#512874]">Pedido #${order.id.slice(0, 8)}</p>
+                                <p class="text-xs text-[#a55641] opacity-70">${orderDate}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">
+                                ${order.status === 'active' ? 'Activo' : 'Completado'}
+                            </span>
+                        </div>
+                        <div class="mt-2 text-sm text-[#a55641]">
+                            <p class="italic">"${itemsText}"</p>
+                            <p class="font-bold mt-1">Total: $${order.total?.toFixed(2) || '0.00'}</p>
+                        </div>
+                    `;
+                    ordersList.appendChild(orderElement);
+                });
+            } catch (error) {
+                console.error('Error al cargar pedidos:', error);
+                ordersList.innerHTML = '<p class="text-red-500 text-sm">Error al cargar pedidos</p>';
+            }
+        }
+
+        // ============================================
+        // LÓGICA DE MODO EDICIÓN (Definida antes del observador)
+        // ============================================
+        window.enableEditMode = function() {
+            console.log("Activando Modo Edición para Sucursal...");
+            
+            // 1. Header: Cambiar sucursal por Modo Edición y resaltar logo
+            const label = document.getElementById('header-branch-label');
+            const name = document.getElementById('header-branch-name');
+            if (label) label.textContent = 'modo edicion';
+            
+            // Mostrar el badge de modo edición
+            const badge = document.getElementById('edit-mode-badge');
+            if (badge) badge.classList.remove('hidden');
+
+            // 2. Menú Lateral: Items específicos
+            const nav = document.getElementById('side-menu-nav');
+            if (nav) {
+                const branchNameDisplay = localStorage.getItem('selectedBranch') || 'Pilar';
+                nav.innerHTML = `
+                    <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">inicio</a>
+                    <a href="#menu-section" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">menú</a>
+                    <a href="#" onclick="showNewProductModal(); toggleSideMenu();" class="text-xl font-lato-desc text-[#a55641]">nuevo producto</a>
+                    <a href="#" onclick="showCookieMonthModal(); toggleSideMenu();" class="text-xl font-lato-desc text-[#a55641]">cookie del mes</a>
+                    <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">modificar combo catering</a>
+                    
+                    <div class="mt-12 pt-8 border-t border-gray-300">
+                        <button id="btn-save-edit" onclick="saveEdits()" class="w-full bg-[#512874] text-white font-chewy py-4 rounded-xl text-xl shadow-lg transition transform hover:scale-105">
+                            Guardar
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Forzar recarga de productos para que aparezcan los botones de edición y todos los items
+            console.log("Refrescando lista de productos para Modo Edición...");
+            if (typeof loadProducts === 'function') loadProducts();
+        };
+
+        // FUNCIONES DEL MODAL DE PRODUCTO
+        window.showNewProductModal = function() {
+            const modal = document.getElementById('new-product-modal');
+            const branchDisplay = document.getElementById('target-branch-display');
+            const currentBranch = localStorage.getItem('selectedBranch') || 'pilar';
+            
+            if(branchDisplay) branchDisplay.textContent = currentBranch.toUpperCase();
+            document.querySelectorAll('.current-branch-label').forEach(el => el.textContent = currentBranch.toUpperCase());
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeNewProductModal = function() {
+            document.getElementById('new-product-modal').classList.add('hidden');
+            document.getElementById('new-product-modal').classList.remove('flex');
+        };
+
+        // Guardar nuevo producto específico de la sucursal logueada
+        document.getElementById('new-product-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentBranch = localStorage.getItem('selectedBranch') || 'pilar';
+            
+            const newProduct = {
+                name: document.getElementById('np-name').value,
+                category: document.getElementById('np-category').value,
+                price: parseFloat(document.getElementById('np-price').value),
+                emoji: document.getElementById('np-emoji').value || '🍪',
+                description: document.getElementById('np-desc').value,
+                isVisible: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                // IMPORTANTE: Solo inicializamos el stock de la sucursal actual
+                stock: {
+                    [currentBranch]: parseInt(document.getElementById('np-stock').value)
+                }
+            };
+
+            try {
+                await db.collection('products').add(newProduct);
+                alert(`¡Producto añadido exitosamente a ${currentBranch}!`);
+                closeNewProductModal();
+                document.getElementById('new-product-form').reset();
+                
+                // Feedback visual en el botón de guardado del menú si está abierto
+                const saveBtn = document.getElementById('btn-save-edit');
+                if (saveBtn) {
+                    saveBtn.textContent = '¡Cambio detectado!';
+                    saveBtn.style.backgroundColor = '#512874';
+                }
+            } catch (error) {
+                console.error("Error al guardar producto:", error);
+                alert("Hubo un error al guardar el producto.");
+            }
+        });
+
+        // FUNCIONES BANNER COOKIE DEL MES
+        window.loadCookieMonthBanner = async function() {
+            const branch = localStorage.getItem('selectedBranch') || 'pilar';
+            const bannerSec = document.getElementById('cookie-month-banner');
+            const bannerImg = document.getElementById('cookie-month-img');
+            if (!bannerSec || !bannerImg) return;
+            try {
+                const doc = await db.collection('settings').doc(`cookie_month_${branch}`).get();
+                if (doc.exists && doc.data().imageUrl) {
+                    bannerImg.src = doc.data().imageUrl;
+                    bannerSec.classList.remove('hidden');
+                } else {
+                    bannerSec.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Error al cargar banner:", error);
+                bannerSec.classList.add('hidden');
+            }
+        };
+
+        window.showCookieMonthModal = () => {
+            const modal = document.getElementById('cookie-month-modal');
+            if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+        window.closeCookieMonthModal = () => {
+            const modal = document.getElementById('cookie-month-modal');
+            if(modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.uploadCookieMonthImage = async function() {
+            const fileInput = document.getElementById('cm-image-input');
+            const file = fileInput?.files[0];
+            const branch = localStorage.getItem('selectedBranch') || 'pilar';
+            const btn = document.getElementById('btn-upload-cm');
+            if (!file) { alert("Por favor selecciona una imagen."); return; }
+            btn.disabled = true; btn.textContent = 'Subiendo...';
+            try {
+                const storageRef = storage.ref(`banners/${branch}/cookie_del_mes.png`);
+                await storageRef.put(file);
+                const downloadURL = await storageRef.getDownloadURL();
+                await db.collection('settings').doc(`cookie_month_${branch}`).set({
+                    imageUrl: downloadURL,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('¡Cookie del mes actualizada!');
+                closeCookieMonthModal();
+                loadCookieMonthBanner();
+            } catch (error) {
+                console.error("Error:", error); alert("Error al subir imagen.");
+            } finally { btn.disabled = false; btn.textContent = 'Subir y Actualizar'; }
+        };
+
+        window.saveEdits = function() {
+            const btn = document.getElementById('btn-save-edit');
+            if (btn) {
+                btn.textContent = 'guardado exitoso';
+                btn.style.backgroundColor = '#10b981'; // Verde
+                btn.style.color = 'white';
+                console.log('Cambios guardados en base de datos');
+            }
+        };
+
+        // ============================================
+        // OBSERVADOR DE ESTADO DE AUTENTICACIÓN
+        // ============================================
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user;
+            const authButton = document.getElementById('auth-button-menu');
+
+            if (user) {
+                authButton.textContent = '👤 Mi Perfil';
+                
+                // Lógica de Rango/Email
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userData = userDoc.exists ? userDoc.data() : {};
+                
+                if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
+                    enableEditMode();
+                }
+            } else {
+                authButton.textContent = 'Iniciar Sesión';
+            }
+        });
+    </script>
+
+    <script>
+        // ============================================
+        // CARRITO DE COMPRAS Y PRODUCTOS
+        // ============================================
+        let cart = [];
+        let products = [];
+        let productsUnsubscribe = null; // Para evitar duplicados de listeners
+        let flavorSelection = {
+            boxId: null,
+            boxName: '',
+            boxPrice: 0,
+            size: 0,
+            selected: {} // { "Flavor Name": quantity }
+        };
+        let currentBranch = localStorage.getItem('selectedBranch') || null;
+
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            if(!container) return;
+            
+            const editBadge = document.getElementById('edit-mode-badge');
+            const isEditMode = editBadge && !editBadge.classList.contains('hidden');
+
+            container.innerHTML = '<p class="text-center text-gray-500">Cargando productos...</p>';
+
+            try {
+                // Cancelar listener previo si existe
+                if (productsUnsubscribe) productsUnsubscribe();
+
+                // Escuchar cambios en tiempo real
+                productsUnsubscribe = db.collection('products')
+                    .onSnapshot((snapshot) => {
+                        products = [];
+                        
+                        if (isEditMode) {
+                            // Layout de dos columnas para Admin
+                            container.className = "flex flex-col md:flex-row gap-12 items-start";
+                            container.innerHTML = `
+                                <div id="stock-column" class="flex-1 w-full space-y-10">
+                                    <h3 class="text-4xl text-[#512874] border-b-4 border-[#512874] pb-2 mb-8 uppercase">📦 Stock (Gestión)</h3>
+                                    <div id="cat-producto" class="bg-white/40 p-6 rounded-3xl shadow-inner border border-amber-200">
+                                        <h4 class="text-amber-800 font-black mb-4 uppercase tracking-tighter">🍪 Gustos de Cookies</h4>
+                                        <div class="list space-y-2"></div>
+                                    </div>
+                                    <div id="cat-box" class="bg-white/40 p-6 rounded-3xl shadow-inner border border-amber-200">
+                                        <h4 class="text-amber-800 font-black mb-4 uppercase tracking-tighter">🎁 Boxes / Combos</h4>
+                                        <div class="list space-y-2"></div>
+                                    </div>
+                                    <div id="cat-insumo" class="bg-white/40 p-6 rounded-3xl shadow-inner border border-amber-200">
+                                        <h4 class="text-amber-800 font-black mb-4 uppercase tracking-tighter">🥤 Insumos / Otros</h4>
+                                        <div class="list space-y-2"></div>
+                                    </div>
+                                </div>
+                                <div id="mostrador-preview" class="flex-1 w-full p-8 bg-white/60 rounded-[3rem] border-4 border-dashed border-[#512874] sticky top-24">
+                                    <h3 class="text-4xl text-[#512874] border-b-4 border-[#512874] pb-2 mb-8 text-center uppercase">🖥️ Mostrador (Público)</h3>
+                                    <div id="mostrador-list" class="grid grid-cols-1 gap-6"></div>
+                                </div>
+                            `;
+                        } else {
+                            container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+                            container.innerHTML = '';
+                        }
+
+                        if (snapshot.empty) {
+                            if (!isEditMode) container.innerHTML = '<p class="text-center text-gray-500">No hay productos disponibles</p>';
+                            return;
+                        }
+
+                        snapshot.forEach(doc => {
+                            const product = { id: doc.id, ...doc.data() };
+
+                            // Retrocompatibilidad: Inferir categoría si no existe
+                            if (!product.category) {
+                                product.category = product.name.toLowerCase().includes('box') ? 'box' : 'producto';
+                            }
+
+                            products.push(product);
+                            
+                            if (isEditMode) {
+                                // 1. Columna de Stock (Se muestra TODO agrupado)
+                                const catList = document.querySelector(`#cat-${product.category} .list`);
+                                if (catList) renderProduct(product, catList, true);
+
+                                // 2. Columna de Mostrador (Solo Boxes/Insumos visibles)
+                                if (product.isVisible !== false && (product.category === 'box' || product.category === 'insumo')) {
+                                    renderProduct(product, document.getElementById('mostrador-list'), false);
+                                }
+                            } else {
+                                // Vista pública normal
+                                if (product.isVisible !== false && (product.category === 'box' || product.category === 'insumo')) {
+                                    renderProduct(product, container, false);
+                                }
+                            }
+                        });
+                    }, (error) => {
+                        console.error('Error al cargar productos:', error);
+                        container.innerHTML = '<p class="text-center text-red-500">Error al cargar productos</p>';
+                    });
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                container.innerHTML = '<p class="text-center text-red-500">Error al cargar productos</p>';
+            }
+        }
+
+        // Renderizar producto con dos variantes: Gestión (Stock) o Público (Mostrador)
+        function renderProduct(product, targetContainer, isStockView = false) {
+            const container = targetContainer || document.getElementById('products-container');
+            const branchStock = product.stock?.[currentBranch] || 0;
+            const branchBuffer = product.stockBuffer?.[currentBranch] || 0;
+            const availableStock = Math.max(0, branchStock - branchBuffer);
+            const isOutOfStock = availableStock <= 0;
+            
+            const productElement = document.createElement('div');
+            
+            if (isStockView) {
+                // Vista de Gestión (Columna Stock)
+                productElement.className = "flex flex-col bg-white p-3 rounded-2xl shadow-sm border border-amber-50 hover:border-amber-200 transition-all gap-2";
+                productElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${product.emoji || '🍪'}</span>
+                            <p class="font-bold text-[#512874] text-sm ${product.isVisible === false ? 'opacity-40 italic' : ''}">${product.name}</p>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="toggleProductVisibility('${product.id}', ${product.isVisible !== false})" class="p-1.5 text-gray-400 hover:text-[#512874] hover:bg-purple-50 rounded-lg transition">
+                                ${product.isVisible !== false ? '👁️' : '🙈'}
+                            </button>
+                            <button onclick="deleteProduct('${product.id}')" class="p-1.5 hover:bg-red-50 text-red-500 rounded-lg transition">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <div class="flex flex-col">
+                            <label class="text-[8px] font-black uppercase text-purple-500">Precio $</label>
+                            <input type="number" value="${product.price}" onchange="updateProductPrice('${product.id}', this.value)" 
+                                class="w-full text-[10px] font-bold border rounded px-1 py-1 focus:ring-1 focus:ring-purple-400">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[8px] font-black uppercase text-amber-600">Stock Total</label>
+                            <input type="number" value="${branchStock}" onchange="updateProductStock('${product.id}', this.value)" 
+                                class="w-full text-[10px] font-bold border rounded px-1 py-1 focus:ring-1 focus:ring-amber-400">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[8px] font-black uppercase text-red-500">Reserva Local</label>
+                            <input type="number" value="${branchBuffer}" onchange="updateProductBuffer('${product.id}', this.value)" 
+                                class="w-full text-[10px] font-bold border rounded px-1 py-1 focus:ring-1 focus:ring-red-400"
+                                title="Stock reservado para mostrador (No disponible online)">
+                        </div>
+                    </div>
+                    <div class="text-[9px] text-center font-bold text-emerald-600 bg-emerald-50 rounded-lg py-0.5">
+                        Disponible Online: ${availableStock}
+                    </div>
+                `;
+            } else {
+                // Vista de Público (Columna Mostrador o Home)
+                const isAkatsuki = availableStock <= 3 && availableStock > 0;
+                const isBox = product.category === 'box';
+                
+                // Verificar si estamos en modo edición para la previsualización
+                const editBadge = document.getElementById('edit-mode-badge');
+                const isEditMode = editBadge && !editBadge.classList.contains('hidden');
+
+                productElement.className = `bg-amber-50 p-4 rounded-lg ${isOutOfStock ? 'opacity-60' : ''}`;
+                
+                productElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="text-3xl mb-2">${product.emoji || '🍪'}</div>
+                            <h4 class="font-bold text-[#512874]">${product.name}</h4>
+                            <p class="text-[#a55641] text-sm ${isOutOfStock ? 'line-through' : ''}">${product.description || ''}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <p class="text-[#512874] font-bold ${isOutOfStock ? 'line-through' : ''}">$${product.price?.toFixed(2) || '0.00'}</p>
+                                ${isAkatsuki ? '<span class="text-xs text-red-500 font-bold">¡Últimos!</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            ${!isOutOfStock ? `
+                                <button onclick="addToCart('${product.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition transform hover:scale-105 active:scale-95 text-sm">
+                                    ${isBox ? 'Armar Box' : '+ Agregar'}
+                                </button>
+                            ` : `
+                                <span class="text-xs text-red-500 font-bold">Agotado</span>
+                            `}
+
+                            ${isEditMode ? `
+                                <div class="flex gap-2 mt-4 bg-white/50 p-1 rounded-xl border border-amber-200 shadow-sm">
+                                    <button onclick="toggleProductVisibility('${product.id}', ${product.isVisible !== false})" class="p-2 hover:bg-white rounded-lg transition" title="Ocultar del público">
+                                        ${product.isVisible !== false ? '👁️' : '🙈'}
+                                    </button>
+                                    <button onclick="deleteProduct('${product.id}')" class="p-2 hover:bg-red-50 text-red-500 rounded-lg transition" title="Eliminar">
+                                        🗑️
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(productElement);
+        }
+
+        // Función para eliminar producto de la base de datos (Admin)
+        window.deleteProduct = async function(productId) {
+            if (confirm('¿Estás seguro de que quieres borrar este producto de la carta?')) {
+                try {
+                    await db.collection('products').doc(productId).delete();
+                    console.log('Producto eliminado:', productId);
+                } catch (error) {
+                    console.error('Error al borrar producto:', error);
+                    alert('Error al eliminar el producto');
+                }
+            }
+        };
+
+        // Función para activar/desactivar visibilidad (Admin)
+        window.toggleProductVisibility = async function(productId, currentVisible) {
+            try {
+                await db.collection('products').doc(productId).update({
+                    isVisible: !currentVisible
+                });
+                console.log(`Producto ${productId} ahora es ${!currentVisible ? 'Visible' : 'Oculto'}`);
+            } catch (error) {
+                console.error('Error al cambiar visibilidad:', error);
+                alert('Error al actualizar la visibilidad');
+            }
+        };
+
+        // Funciones para actualizar precio, stock y reserva (Admin)
+        window.updateProductPrice = async function(id, newPrice) {
+            try {
+                await db.collection('products').doc(id).update({ price: parseFloat(newPrice) });
+                console.log('Precio actualizado:', id, newPrice);
+            } catch (error) { console.error("Error al actualizar precio:", error); }
+        };
+
+        window.updateProductStock = async function(id, newStock) {
+            try {
+                await db.collection('products').doc(id).update({
+                    [`stock.${currentBranch}`]: parseInt(newStock)
+                });
+                console.log('Stock actualizado:', id, newStock);
+            } catch (error) { console.error("Error al actualizar stock:", error); }
+        };
+
+        window.updateProductBuffer = async function(id, newBuffer) {
+            try {
+                await db.collection('products').doc(id).update({
+                    [`stockBuffer.${currentBranch}`]: parseInt(newBuffer)
+                });
+                console.log('Reserva mostrador actualizada:', id, newBuffer);
+            } catch (error) { console.error("Error al actualizar reserva:", error); }
+        };
+
+        // ============================================
+        // LÓGICA DE SELECCIÓN DE SABORES
+        // ============================================
+        window.addToCart = function(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const branchStock = product.stock?.[currentBranch] || 0;
+            const branchBuffer = product.stockBuffer?.[currentBranch] || 0;
+            const availableStock = Math.max(0, branchStock - branchBuffer);
+
+            if (availableStock <= 0) {
+                alert('Este producto no tiene stock disponible para compra online.');
+                return;
+            }
+
+            if (product.category === 'box') {
+                // Lógica de Box: Elegir sabores
+                let size = 4;
+                if (product.name.includes('8')) size = 8;
+                if (product.name.includes('12')) size = 12;
+
+                flavorSelection = {
+                    boxId: product.id, boxName: product.name, boxPrice: product.price,
+                    size: size, selected: {}
+                };
+                openFlavorModal();
+            } else {
+                // Lógica de Insumo: Agregar directo al carrito
+                executeAddToCartSimple(product.id);
+            }
+        };
+
+        // Función para renderizar la lista filtrada de sabores
+        window.renderFlavorList = function(flavorsToRender) {
+            const list = document.getElementById('flavors-list-container');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (flavorsToRender.length === 0) {
+                list.innerHTML = '<p class="text-center text-[#a55641] py-8 italic opacity-60">No encontramos esa cookie...</p>';
+                return;
+            }
+
+            flavorsToRender.forEach(f => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${f.emoji || '🍪'}</span>
+                        <span class="font-bold text-[#512874]">${f.name}</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="changeFlavorQuantity('${f.name}', -1)" class="w-8 h-8 rounded-full border-2 border-amber-200 text-[#a55641] flex items-center justify-center font-bold">-</button>
+                        <span id="count-${f.name}" class="font-bold text-[#512874] w-4 text-center">${flavorSelection.selected[f.name] || 0}</span>
+                        <button onclick="changeFlavorQuantity('${f.name}', 1)" class="w-8 h-8 rounded-full bg-[#512874] text-white flex items-center justify-center font-bold">+</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        };
+
+        // Función que se activa al escribir en el buscador
+        window.filterFlavors = function() {
+            const searchTerm = document.getElementById('flavor-search-input').value.toLowerCase().trim();
+            const allFlavors = products.filter(p => p.category === 'producto');
+            const filtered = allFlavors.filter(f => f.name.toLowerCase().includes(searchTerm));
+            renderFlavorList(filtered);
+        };
+
+        function openFlavorModal() {
+            const modal = document.getElementById('flavor-selection-modal');
+            
+            // Resetear el buscador cada vez que se abre el modal
+            const searchInput = document.getElementById('flavor-search-input');
+            if (searchInput) searchInput.value = '';
+
+            const flavors = products.filter(p => p.category === 'producto');
+            renderFlavorList(flavors);
+
+            updateFlavorUI();
+            modal.classList.replace('hidden', 'flex');
+        }
+
+        window.closeFlavorModal = () => {
+            document.getElementById('flavor-selection-modal').classList.replace('flex', 'hidden');
+        };
+
+        window.changeFlavorQuantity = function(flavorName, delta) {
+            const currentTotal = Object.values(flavorSelection.selected).reduce((a, b) => a + b, 0);
+            const currentVal = flavorSelection.selected[flavorName] || 0;
+
+            if (delta > 0 && currentTotal >= flavorSelection.size) return;
+            if (delta < 0 && currentVal <= 0) return;
+
+            flavorSelection.selected[flavorName] = currentVal + delta;
+            if (flavorSelection.selected[flavorName] === 0) delete flavorSelection.selected[flavorName];
+
+            updateFlavorUI();
+        };
+
+        function updateFlavorUI() {
+            const total = Object.values(flavorSelection.selected).reduce((a, b) => a + b, 0);
+            document.getElementById('flavor-counter-text').textContent = `Seleccionados: ${total} de ${flavorSelection.size}`;
+            
+            // Actualizar números en la lista
+            products.forEach(f => {
+                const el = document.getElementById(`count-${f.name}`);
+                if (el) el.textContent = flavorSelection.selected[f.name] || 0;
+            });
+
+            // Resumen de texto
+            const summary = Object.entries(flavorSelection.selected).map(([name, qty]) => `${qty}x ${name}`).join(', ');
+            document.getElementById('selected-flavors-summary').textContent = summary || 'Elegí tus cookies favoritas';
+
+            // Botón confirmar
+            const btn = document.getElementById('confirm-box-btn');
+            btn.disabled = total !== flavorSelection.size;
+            btn.classList.toggle('opacity-50', total !== flavorSelection.size);
+            btn.classList.toggle('cursor-not-allowed', total !== flavorSelection.size);
+        }
+
+        window.confirmBoxSelection = function() {
+            const flavorsSummary = Object.entries(flavorSelection.selected)
+                .map(([name, qty]) => `${qty} ${name}`)
+                .join(', ');
+
+            cart.push({
+                id: `${flavorSelection.boxId}-${Date.now()}`,
+                name: `${flavorSelection.boxName} (${flavorsSummary})`,
+                price: flavorSelection.boxPrice,
+                quantity: 1,
+                emoji: '🎁'
+            });
+
+            updateCartUI();
+            saveCartToLocalStorage();
+            closeFlavorModal();
+        };
+
+        // ============================================
+        // LÓGICA DEL CARRITO
+        // ============================================
+        function executeAddToCartSimple(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const branchStock = product.stock?.[currentBranch] || 0;
+            const branchBuffer = product.stockBuffer?.[currentBranch] || 0;
+            const availableStock = Math.max(0, branchStock - branchBuffer);
+
+            const cartItem = cart.find(item => item.id === productId);
+            const currentQuantity = cartItem ? cartItem.quantity : 0;
+
+            if (currentQuantity >= availableStock) {
+                alert('No hay más stock disponible para compra online (se prioriza stock de mostrador)');
+                return;
+            }
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    emoji: product.emoji
+                });
+            }
+
+            updateCartUI();
+            saveCartToLocalStorage();
+        }
+
+        function removeFromCart(productId) {
+            const index = cart.findIndex(item => item.id === productId);
+            if (index > -1) {
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity--;
+                } else {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+            saveCartToLocalStorage();
+
+            // Actualizar lista en el modal de pago si está visible
+            const paymentModal = document.getElementById('payment-modal');
+            if (paymentModal && !paymentModal.classList.contains('hidden')) {
+                const discText = document.getElementById('payment-discount').textContent;
+                const method = (discText && discText !== '-$0.00') ? 'account' : 'card';
+                updatePaymentModal(method);
+                if (cart.length === 0) closePaymentModal();
+            }
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        function getCartCount() {
+            return cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+        function updateCartUI() {
+            const total = getCartTotal();
+            const count = getCartCount();
+
+            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function loadCartFromLocalStorage() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartUI();
+            }
+        }
+
+        // ============================================
+        // MODAL DE PAGO Y DESCUENTOS
+        // ============================================
+        function showPaymentModal() {
+            if (cart.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+
+            const modal = document.getElementById('payment-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            updatePaymentModal('card'); // Mostrar precio normal por defecto
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            // Al cerrar, nos aseguramos de resetear la vista para la próxima compra
+            setTimeout(() => {
+                document.getElementById('payment-selection-ui').classList.remove('hidden');
+                document.getElementById('payment-ticket-ui').classList.add('hidden');
+            }, 500);
+        }
+
+        function updatePaymentModal(paymentMethod) {
+            // Renderizar listado de items con opción de borrar
+            const listContainer = document.getElementById('payment-items-list');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+                cart.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = "flex justify-between items-center text-sm py-1";
+                    itemEl.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <button onclick="removeFromCart('${item.id}')" class="text-red-500 hover:scale-110 transition">🗑️</button>
+                            <span class="text-[#a55641] font-medium">${item.quantity}x ${item.name}</span>
+                        </div>
+                        <span class="font-bold text-[#512874]">$${(item.price * item.quantity).toFixed(2)}</span>
+                    `;
+                    listContainer.appendChild(itemEl);
+                });
+            }
+
+            const subtotal = getCartTotal();
+            let discount = 0;
+            let total = subtotal;
+
+            if (paymentMethod === 'account') {
+                discount = subtotal * 0.10; // 10% de descuento
+                total = subtotal - discount;
+            }
+
+            document.getElementById('payment-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('payment-discount').textContent = `-$${discount.toFixed(2)}`;
+            document.getElementById('payment-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCartFromLocalStorage();
+            if (currentBranch) {
+                loadProducts();
+            }
+        });
+
+        // Actualizar productos cuando cambia la sucursal
+        function updateBranchDisplay(branchName) {
+            currentBranch = branchName;
+            localStorage.setItem('selectedBranch', branchName);
+            loadProducts(); // Recargar productos con nueva sucursal
+        }
+
+        // Conectar botón del carrito
+        document.querySelector('#cart-total').parentElement.parentElement.querySelector('button').addEventListener('click', showPaymentModal);
+    </script>
+
+    <script>
+        // ============================================
+        // RETORNO DE MERCADO PAGO Y TICKET ANTI-FRAUDE
+        // ============================================
+        
+        // Capturar parámetros de URL de retorno de Mercado Pago
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Procesar retorno de Mercado Pago
+        async function processMercadoPagoReturn() {
+            const paymentId = getQueryParam('payment_id');
+            const status = getQueryParam('status');
+            const preferenceId = getQueryParam('preference_id');
+
+            if (status === 'approved' && paymentId) {
+                // Recortar últimos 5 dígitos para número de ticket
+                const ticketNumber = paymentId.slice(-5);
+                
+                try {
+                    // Buscamos la orden para traer el nombre y qué compró
+                    const orderDoc = await db.collection('orders').doc(preferenceId).get();
+                    const orderData = orderDoc.data() || {};
+                    const userEmail = currentUser?.email || 'Sin correo registrado';
+
+                    // Crear ticket en Firestore
+                    const ticketData = {
+                        paymentId: paymentId,
+                        ticketNumber: ticketNumber,
+                        preferenceId: preferenceId,
+                        orderId: preferenceId,
+                    status: 'pago_confirmado',
+                        userId: currentUser?.uid || null,
+                        branch: currentBranch,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('tickets').add(ticketData);
+                    
+                    // Abrimos el modal de pago pero para mostrar el ticket directamente
+                    const paymentModal = document.getElementById('payment-modal');
+                    paymentModal.classList.remove('hidden');
+                    paymentModal.classList.add('flex');
+
+                    showActiveTicketPopup({
+                        number: ticketNumber,
+                        name: orderData.userName || currentUser?.displayName || 'Cliente',
+                        email: userEmail,
+                        items: orderData.items || []
+                    });
+                    
+                    // Limpiar parámetros de URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                } catch (error) {
+                    console.error('Error al crear ticket:', error);
+                }
+            }
+        }
+
+        // ============================================
+        // SISTEMA DE TICKET ANTI-FRAUDE
+        // ============================================
+        
+        // Iniciar reloj titilante para tickets
+        function startAntiFraudeClock() {
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('es-AR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false 
+                });
+                
+                // Actualizar todos los elementos con clase anti-fraude-clock
+                document.querySelectorAll('.anti-fraude-clock').forEach(el => {
+                    el.textContent = timeString;
+                });
+            }, 1000);
+        }
+
+        // Funciones del Popup del Ticket Activo
+        function showActiveTicketPopup(data) {
+            document.getElementById('display-ticket-number').textContent = `#${data.number || '00000'}`;
+            document.getElementById('display-customer-name').textContent = data.name;
+            document.getElementById('display-customer-email').textContent = data.email || '';
+            
+            const itemsHtml = data.items.map(i => `${i.quantity}x ${i.name}`).join('<br>');
+            document.getElementById('display-order-items').innerHTML = itemsHtml || 'Detalle del pedido';
+
+            // OCULTAMOS LA SELECCIÓN Y MOSTRAMOS EL TICKET EN EL MISMO MODAL
+            document.getElementById('payment-selection-ui').classList.add('hidden');
+            document.getElementById('payment-ticket-ui').classList.remove('hidden');
+        }
+
+        // ============================================
+        // LÓGICA DE VALORACIÓN (ESTRELLAS)
+        // ============================================
+        function toggleRatingStars() {
+            const container = document.getElementById('stars-container');
+            const btn = document.getElementById('rating-button');
+
+            // Si el botón ya dice "enviar", al clickearlo confirmamos y quitamos la sección de valoración
+            if (btn.textContent === 'enviar') {
+                document.getElementById('valoracion-section').innerHTML = '<p class="text-[#512874] font-chewy text-xl py-3">¡Gracias por tu reseña! ❤️</p>';
+                return;
+            }
+
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                setTimeout(() => { container.style.maxHeight = '200px'; }, 10);
+            } else {
+                container.style.maxHeight = '0px';
+                setTimeout(() => { container.classList.add('hidden'); }, 500);
+            }
+        }
+
+        function rateCookie(rating) {
+            const stars = document.querySelectorAll('.star');
+            const btn = document.getElementById('rating-button');
+            const container = document.getElementById('stars-container');
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.replace('text-gray-300', 'text-yellow-400');
+                } else {
+                    star.classList.replace('text-yellow-400', 'text-gray-300');
+                }
+            });
+
+            // Cambiamos el texto a "enviar" y minimizamos la sección de estrellas
+            btn.textContent = 'enviar';
+            container.style.maxHeight = '0px';
+            setTimeout(() => { 
+                container.classList.add('hidden');
+            }, 500);
+        }
+
+        // ============================================
+        // CARGAR TICKETS ACTIVOS EN MIS PEDIDOS
+        // ============================================
+        async function loadActiveTickets() {
+            if (!currentUser) return;
+
+            const ordersList = document.getElementById('orders-list');
+            
+            try {
+                // Escuchar cambios en tickets en tiempo real
+                db.collection('tickets')
+                    .where('userId', '==', currentUser.uid)
+                    .where('status', '==', 'pago_confirmado')
+                    .onSnapshot((snapshot) => {
+                        // Eliminar tickets antiguos del DOM
+                        document.querySelectorAll('.ticket-anti-fraude').forEach(el => el.remove());
+                        
+                        // Ordenar manualmente para evitar error de índice
+                        let tickets = [];
+                        snapshot.forEach(doc => tickets.push({ id: doc.id, ...doc.data() }));
+                        tickets.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+
+                        tickets.slice(0, 5).forEach(ticket => {
+                            const ticketElement = createAntiFraudeTicket(ticket, ticket.id);
+                            
+                            // Insertar al principio de la lista
+                            ordersList.insertBefore(ticketElement, ordersList.firstChild);
+                        });
+                    });
+            } catch (error) {
+                console.error('Error al cargar tickets:', error);
+            }
+        }
+
+        // Crear elemento de ticket anti-fraude
+        function createAntiFraudeTicket(ticket, ticketId) {
+            const element = document.createElement('div');
+            element.className = 'ticket-anti-fraude bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border-2 border-green-300 shadow-lg';
+            
+            element.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <p class="font-bold text-green-800 text-lg">🎫 Ticket #${ticket.ticketNumber}</p>
+                        <p class="text-xs text-gray-600">ID: ${ticket.paymentId}</p>
+                    </div>
+                    <div class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                        PAGO CONFIRMADO
+                    </div>
+                </div>
+                
+                <!-- Distintivo anti-fraude con hora titilando -->
+                <div class="bg-white rounded-lg p-3 border border-green-200 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-2xl">⏰</span>
+                        <span class="text-2xl font-mono font-bold text-green-700 anti-fraude-clock">
+                            ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                        </span>
+                    </div>
+                    <p class="text-center text-xs text-gray-500 mt-1">Hora en tiempo real</p>
+                </div>
+                
+                <div class="mt-3 flex justify-between items-center text-xs text-gray-600">
+                    <span>Sucursal: ${ticket.branch}</span>
+                    <span>${ticket.createdAt ? new Date(ticket.createdAt.toDate()).toLocaleDateString() : 'Pendiente'}</span>
+                </div>
+            `;
+            
+            return element;
+        }
+
+        // ============================================
+        // INTEGRACIÓN CON MERCADO PAGO
+        // ============================================
+        
+        // Modificar función processPayment para redirigir a Mercado Pago
+        async function processPayment(paymentMethod) {
+            if (!currentUser) {
+                alert('Debes iniciar sesión para realizar un pedido');
+                closePaymentModal();
+                showAuthModal();
+                return;
+            }
+
+            // reCAPTCHA v3: Validación de seguridad con Promesa para evitar bloqueos
+            if (paymentMethod === 'card') {
+                try {
+                    const token = await new Promise((resolve, reject) => {
+                        grecaptcha.ready(async () => {
+                            try {
+                                const res = await grecaptcha.execute('TU_SITE_KEY_AQUI', {action: 'payment'});
+                                resolve(res);
+                            } catch (e) { 
+                                console.error("Error al ejecutar reCAPTCHA:", e);
+                                reject(e); 
+                            }
+                        });
+                        // Timeout de seguridad para reCAPTCHA
+                        setTimeout(() => reject(new Error("reCAPTCHA timeout")), 5000);
+                    });
+                    console.log('Token de seguridad generado:', token);
+                    // El token debe enviarse a tu backend/Cloud Function para validación real.
+                } catch (error) {
+                    console.error('Error de reCAPTCHA:', error);
+                    alert('No se pudo verificar la seguridad de la transacción. Intenta de nuevo.');
+                    return;
+                }
+            }
+
+            const subtotal = getCartTotal();
+            let discount = 0;
+            let total = subtotal;
+
+            if (paymentMethod === 'account') {
+                discount = subtotal * 0.10;
+                total = subtotal - discount;
+            }
+
+            try {
+                // Recuperamos los datos completos del usuario para el envío a Fudo
+                let userData = {};
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                }
+
+                // Crear orden en Firestore
+                const orderData = {
+                    userId: currentUser.uid,
+                    userName: userData.name || currentUser.displayName || 'Cliente',
+                    userEmail: userData.email || currentUser.email,
+                    userPhone: userData.phone || '',
+                    items: cart,
+                    subtotal: subtotal,
+                    discount: discount,
+                    total: total,
+                    paymentMethod: paymentMethod,
+                    branch: currentBranch,
+                    status: 'active',
+                    fudoStatus: 'pending', // Control de integración con Fudo
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const orderRef = await db.collection('orders').add(orderData);
+
+                // Actualizar stock de productos
+                for (const item of cart) {
+                    const productRef = db.collection('products').doc(item.id);
+                    const productDoc = await productRef.get();
+                    
+                    if (productDoc.exists) {
+                        const currentStock = productDoc.data().stock?.[currentBranch] || 0;
+                        const newStock = Math.max(0, currentStock - item.quantity);
+                        
+                        await productRef.update({
+                            [`stock.${currentBranch}`]: newStock
+                        });
+                    }
+                }
+
+                // Limpiar carrito
+                cart = [];
+                updateCartUI();
+                saveCartToLocalStorage();
+                closePaymentModal();
+
+                // Redirigir a Mercado Pago (simulado - en producción usar la API real)
+                const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${orderRef.id}`;
+                
+                // Por ahora, simulamos el retorno para pruebas
+                // En producción, descomentar la siguiente línea:
+                // window.location.href = mercadoPagoUrl;
+                
+                // Simulación para pruebas (Compatible con GitHub Pages)
+                const baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.location.href = `${baseUrl}?payment_id=MP${orderRef.id}&status=approved&preference_id=${orderRef.id}`;
+
+            } catch (error) {
+                console.error('Error al procesar pago:', error);
+                alert('Error al procesar el pedido: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Procesar retorno de Mercado Pago si hay parámetros
+            processMercadoPagoReturn();
+            
+            // Iniciar reloj anti-fraude
+            startAntiFraudeClock();
+            
+            // Cargar tickets activos si hay usuario
+            if (currentUser) {
+                loadActiveTickets();
+            }
+
+            // Inicializar Observer para animaciones de revelado
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        });
+    </script>
+
+    <script>
+        // Mostrar modal de selección manual
+        function showBranchModal() {
+            const modal = document.getElementById('branch-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Ocultar modal
+        function hideBranchModal() {
+            const modal = document.getElementById('branch-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // ============================================
+        // INFORMACIÓN DE SUCURSALES (FOOTER & WA)
+        // ============================================
+        const branchDetails = {
+            pilar: {
+                address: "Rua Caamaño 850, Pilar",
+                maps: "https://www.google.com/maps?q=Rua%20Caamaño%20850,%20Pilar&output=embed",
+                whatsapp: "5491123456789",
+                ig: "https://instagram.com/uglycookiespilar",
+                tt: "https://tiktok.com/@uglycookiespilar",
+                th: "https://threads.net/@uglycookiespilar"
+            },
+            san_isidro: {
+                address: "Av. Libertador 1234, San Isidro", // Cambiar por link real
+                maps: "https://www.google.com/maps?q=Av.%20Libertador%201234,%20San%20Isidro&output=embed",
+                whatsapp: "5491198765432",
+                ig: "https://instagram.com/uglycookiesanisidro",
+                tt: "https://tiktok.com/@uglycookiesanisidro",
+                th: "https://threads.net/@uglycookiesanisidro"
+            }
+        };
+
+        function updateFooterAndWA(branchKey) {
+            const data = branchDetails[branchKey];
+            if (!data) return;
+
+            // Actualizar Texto Dirección
+            document.getElementById('footer-address').textContent = data.address;
+            
+            // Actualizar Iframe Maps
+            document.getElementById('footer-map-iframe').src = data.maps;
+
+            // Actualizar WhatsApp Flotante
+            const waLink = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
+            document.getElementById('wa-float-btn').href = waLink;
+
+            // Actualizar Redes Sociales
+            document.getElementById('footer-ig').href = data.ig;
+            document.getElementById('footer-tt').href = data.tt;
+            document.getElementById('footer-th').href = data.th;
+        }
+
+        // Seleccionar sucursal manualmente
+        function selectBranch(branchName) {
+            const cleanName = branchName.toLowerCase().trim().replace(/\s+/g, '_');
+            localStorage.setItem('selectedBranch', cleanName);
+            currentBranch = cleanName;
+
+            // Actualizar el nombre en el header
+            const headerEl = document.getElementById('header-branch-name');
+            if (headerEl) {
+                const formatted = cleanName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                headerEl.textContent = formatted;
+            }
+
+            // Actualizar Footer y WA
+            updateFooterAndWA(cleanName);
+
+            hideBranchModal();
+            loadProducts();
+            if (typeof loadCookieMonthBanner === 'function') loadCookieMonthBanner();
+        }
+
+        // Función principal de selección de sucursal
+        function detectBranch() {
+            const savedBranch = localStorage.getItem('selectedBranch');
+            if (savedBranch) {
+                console.log('Cargando sucursal guardada:', savedBranch);
+                selectBranch(savedBranch);
+            } else {
+                console.log('No hay sucursal, solicitando selección manual');
+                showBranchModal();
+            }
+        }
+
+        // Ejecutar detección al cargar la página
+        document.addEventListener('DOMContentLoaded', detectBranch);
+    </script>
+</body>
+
+    <!-- Modal de Arrepentimiento (Added to index.html) -->
+    <div id="arrepentimiento-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Derecho de Arrepentimiento</h3>
+                <button onclick="closeArrepentimientoModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <p class="text-[#a55641] mb-4 text-justify">
+                Por la naturaleza perecedera y artesanal de los productos de Ugly Cookies, el derecho de arrepentimiento podrá verse limitado una vez iniciado el proceso de preparación del pedido. Le recomendamos revisar su selección cuidadosamente antes de confirmar.
+            </p>
+
+            <div class="flex items-center mb-6">
+                <input type="checkbox" id="accept-arrepentimiento" class="h-4 w-4 text-[#512874] focus:ring-[#512874] border-gray-300 rounded">
+                <label for="accept-arrepentimiento" class="ml-2 block text-sm text-[#a55641]">
+                    Entiendo y acepto las condiciones.
+                </label>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeArrepentimientoModal()" class="flex-1 py-3 px-4 rounded-xl border-2 border-[#a55641] text-[#a55641] font-bold hover:bg-gray-50 transition">Cancelar</button>
+                <button id="confirm-arrepentimiento-btn" disabled class="flex-[2] py-3 px-4 rounded-xl bg-[#512874] text-white font-chewy text-xl opacity-50 cursor-not-allowed transition transform">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para el Modal de Arrepentimiento (Added to index.html)
+        function showArrepentimientoModal() {
+            const modal = document.getElementById('arrepentimiento-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('accept-arrepentimiento').checked = false;
+            document.getElementById('confirm-arrepentimiento-btn').disabled = true;
+            document.getElementById('confirm-arrepentimiento-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function closeArrepentimientoModal() {
+            const modal = document.getElementById('arrepentimiento-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('accept-arrepentimiento').addEventListener('change', function() {
+            const confirmBtn = document.getElementById('confirm-arrepentimiento-btn');
+            if (this.checked) {
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        document.getElementById('confirm-arrepentimiento-btn').addEventListener('click', function() {
+            // Aquí puedes añadir la lógica que quieras que suceda al confirmar
+            alert('Condiciones de arrepentimiento aceptadas.');
+            closeArrepentimientoModal();
+        });
+    </script>
+</html>
