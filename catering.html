@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -311,4 +312,319 @@
         });
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering - Ugly Cookies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        h1, h2, h3, h4, h5 { font-family: 'Chewy', system-ui; font-weight: normal; }
+        body { font-family: 'Lato', sans-serif; }
+        .font-chewy { font-family: 'Chewy', system-ui; }
+        .font-lato-desc { font-family: 'Lato', sans-serif; text-transform: lowercase; letter-spacing: 0.01em; font-weight: 400; font-size: 1.25rem; }
+        
+        /* Esconde la barra de scroll para que el slider se vea limpio */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- MEDIA QUERIES (ESTRATEGIA MOBILE FIRST) --- */
+
+        /* 1. Estilos base para MÓVIL */
+        /* Estos estilos se aplican por defecto a pantallas pequeñas (celulares) */
+        .responsive-logo { width: 150px; height: auto; transition: all 0.3s ease; }
+        .responsive-hero { width: 220px; height: 220px; transition: all 0.3s ease; }
+
+        /* 2. Estilos para DESKTOP / TABLET (Mínimo 768px de ancho) */
+        @media (min-width: 768px) {
+            /* Ajustamos las medidas para que en PC se vea más grande y con aire */
+            .responsive-logo { width: 250px; height: 60px; }
+            .responsive-hero { width: 400px; height: 400px; }
+            
+            /* Ejemplo de espaciado extra que solo se activa en pantallas grandes */
+            .desktop-spacing { padding: 4rem 0; }
+        }
+    </style>
+</head>
+<body class="bg-[#efe6da] min-h-screen">
+
+    <!-- Header (Copied from index.html) -->
+    <header class="bg-[#512874] p-2 sticky top-0 z-50 shadow-md h-[65px] flex items-center">
+        <div class="max-w-6xl mx-auto w-full flex items-center relative">
+            <!-- Izquierda: Botón Hamburguesa (Placeholder, no functional here) -->
+            <div class="z-[60] relative">
+                <button onclick="window.location.href='index.html'" class="text-5xl text-white p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer" style="line-height: 1;">←</button>
+            </div>
+
+            <!-- Centro: Logo header.png -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <img src="./assets/header.png" alt="Logo" class="object-contain responsive-logo">
+            </div>
+
+            <!-- Derecha: Placeholder para mantener el layout -->
+            <div class="z-[60] relative ml-auto pr-2 text-right w-12">
+                <!-- Empty for alignment -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner de Catering -->
+    <section class="relative w-full h-64 md:h-96 bg-cover bg-center" style="background-image: url('https://via.placeholder.com/1920x500/a55641/ffffff?text=Banner+Catering+Ugly+Cookies');">
+        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <h1 class="text-5xl md:text-7xl text-white font-chewy text-center drop-shadow-lg">Eventos Inolvidables</h1>
+        </div>
+    </section>
+
+    <!-- Botón "Ordena Aquí" -->
+    <section class="py-8 px-4 text-center bg-[#efe6da]">
+        <a href="#contact-form-section" class="inline-block bg-[#512874] text-white font-chewy py-4 px-12 rounded-xl text-2xl shadow-lg hover:scale-105 transition transform">
+            ¡Ordena Aquí!
+        </a>
+    </section>
+
+    <!-- Secciones "Para Quién Es" -->
+    <section class="py-16 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto text-center mb-12">
+            <h2 class="text-4xl md:text-5xl text-[#512874] font-chewy mb-4">¿Para Quién Es?</h2>
+            <p class="text-xl text-[#a55641] font-lato-desc max-w-2xl mx-auto">Nuestras cookies son perfectas para cualquier ocasión especial.</p>
+        </div>
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Casamientos -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-5xl mb-4">💍</div>
+                <h3 class="text-3xl text-[#512874] font-chewy mb-2">Casamientos</h3>
+                <p class="text-[#a55641]">Endulzá tu día especial con una mesa dulce que todos recordarán.</p>
+            </div>
+            <!-- Empresas -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-5xl mb-4">🏢</div>
+                <h3 class="text-3xl text-[#512874] font-chewy mb-2">Empresas</h3>
+                <p class="text-[#a55641]">Sorprendé a tus clientes y empleados con un detalle delicioso y original.</p>
+            </div>
+            <!-- Cumpleaños -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <div class="text-5xl mb-4">🎂</div>
+                <h3 class="text-3xl text-[#512874] font-chewy mb-2">Cumpleaños</h3>
+                <p class="text-[#a55641]">La mejor forma de celebrar, con los sabores más irresistibles.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Cookies Específicas (Carrusel) -->
+    <section class="py-16 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto text-center mb-12">
+            <h2 class="text-4xl md:text-5xl text-[#512874] font-chewy mb-4">Nuestras Estrellas de Catering</h2>
+            <p class="text-xl text-[#a55641] font-lato-desc max-w-2xl mx-auto">Una selección especial para tus eventos.</p>
+        </div>
+        <div class="max-w-7xl mx-auto flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
+            <!-- Cookie Card 1 -->
+            <div class="snap-center shrink-0 w-[280px] md:w-[320px] bg-white p-6 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <img src="https://via.placeholder.com/200x200/f0e68c/512874?text=Cookie+1" alt="Cookie de Catering 1" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow-md">
+                <h3 class="text-2xl text-[#512874] font-chewy mb-2">Red Velvet</h3>
+                <p class="text-[#a55641]">Suave y aterciopelada, con un toque de chocolate blanco.</p>
+            </div>
+            <!-- Cookie Card 2 -->
+            <div class="snap-center shrink-0 w-[280px] md:w-[320px] bg-white p-6 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <img src="https://via.placeholder.com/200x200/d2b48c/512874?text=Cookie+2" alt="Cookie de Catering 2" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow-md">
+                <h3 class="text-2xl text-[#512874] font-chewy mb-2">Lemon Pie</h3>
+                <p class="text-[#a55641]">El equilibrio perfecto entre lo dulce y lo ácido, con merengue.</p>
+            </div>
+            <!-- Cookie Card 3 -->
+            <div class="snap-center shrink-0 w-[280px] md:w-[320px] bg-white p-6 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <img src="https://via.placeholder.com/200x200/f4a460/512874?text=Cookie+3" alt="Cookie de Catering 3" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow-md">
+                <h3 class="text-2xl text-[#512874] font-chewy mb-2">Dulce de Leche</h3>
+                <p class="text-[#a55641]">Un clásico argentino, rellena con el mejor dulce de leche.</p>
+            </div>
+            <!-- Cookie Card 4 -->
+            <div class="snap-center shrink-0 w-[280px] md:w-[320px] bg-white p-6 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <img src="https://via.placeholder.com/200x200/b0e0e6/512874?text=Cookie+4" alt="Cookie de Catering 4" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow-md">
+                <h3 class="text-2xl text-[#512874] font-chewy mb-2">Choco Menta</h3>
+                <p class="text-[#a55641]">Refrescante menta con trozos de chocolate amargo.</p>
+            </div>
+            <!-- Cookie Card 5 -->
+            <div class="snap-center shrink-0 w-[280px] md:w-[320px] bg-white p-6 rounded-3xl shadow-xl text-center transform transition hover:scale-105">
+                <img src="https://via.placeholder.com/200x200/dda0dd/512874?text=Cookie+5" alt="Cookie de Catering 5" class="w-40 h-40 object-cover rounded-full mx-auto mb-4 shadow-md">
+                <h3 class="text-2xl text-[#512874] font-chewy mb-2">Pistacho</h3>
+                <p class="text-[#a55641]">Exótica y sofisticada, con el sabor único del pistacho.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Secciones "Preguntas" y "Paquetes" -->
+    <section class="py-16 px-4 bg-[#efe6da]">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- Preguntas Frecuentes -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl">
+                <h3 class="text-3xl text-[#512874] font-chewy mb-4">Preguntas Frecuentes</h3>
+                <p class="text-[#a55641]">¿Tenés dudas sobre nuestros servicios de catering? Aquí respondemos las más comunes.</p>
+                <a href="#" class="mt-4 inline-block text-[#512874] font-bold hover:underline">Ver todas las preguntas →</a>
+            </div>
+            <!-- Paquetes Personalizados -->
+            <div class="bg-white p-8 rounded-3xl shadow-xl">
+                <h3 class="text-3xl text-[#512874] font-chewy mb-4">Paquetes Personalizados</h3>
+                <p class="text-[#a55641]">Armamos la propuesta perfecta para tu evento, adaptada a tus necesidades.</p>
+                <a href="#" class="mt-4 inline-block text-[#512874] font-bold hover:underline">Conocé más →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulario de Contacto -->
+    <section id="contact-form-section" class="py-16 px-4 bg-[#efe6da]">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl">
+            <h2 class="text-4xl md:text-5xl text-[#512874] font-chewy mb-8 text-center">Contáctanos para tu Evento</h2>
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="nombre" class="block text-sm font-bold text-[#a55641] mb-1">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="apellido" class="block text-sm font-bold text-[#a55641] mb-1">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="telefono" class="block text-sm font-bold text-[#a55641] mb-1">Teléfono Principal</label>
+                        <input type="tel" id="telefono" name="telefono" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="telefono-secundario" class="block text-sm font-bold text-[#a55641] mb-1">Teléfono Secundario (Opcional)</label>
+                        <input type="tel" id="telefono-secundario" name="telefono-secundario" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-bold text-[#a55641] mb-1">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label for="mensaje" class="block text-sm font-bold text-[#a55641] mb-1">Contanos sobre tu evento</label>
+                    <textarea id="mensaje" name="mensaje" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="Fecha, cantidad de invitados, tipo de evento, etc."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-[#512874] text-white font-chewy py-4 rounded-xl text-2xl shadow-lg hover:scale-105 transition transform">
+                    Enviar Consulta
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Botones Flotantes -->
+    <div class="fixed bottom-6 right-6 z-[200] flex flex-col gap-4">
+        <!-- Botón Ayuda General (Arriba) -->
+        <a id="help-float-btn" href="https://wa.me/5491170983414?text=Hola!%20Necesito%20ayuda%20con%20Ugly%20Cookies" target="_blank" class="bg-[#512874] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+            <span class="absolute right-full mr-3 bg-[#512874] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">¿Necesitás Ayuda?</span>
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </a>
+        
+        <!-- Botón WhatsApp Sucursal (Abajo) -->
+        <a id="wa-float-btn" href="#" target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+            <span class="absolute right-full mr-3 bg-[#25D366] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">WhatsApp Local</span>
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+    </div>
+
+    <!-- Footer (Copied from index.html) -->
+    <footer class="bg-[#512874] text-white pt-[5px] pb-[20px] px-4">
+        <div class="max-w-6xl mx-auto flex flex-col items-center">
+            <!-- Placeholder para Ubicación y Mapa (No relevante para catering) -->
+            <div class="text-center mb-5 w-full max-w-2xl">
+                <p class="text-amber-200 font-bold uppercase tracking-widest text-xs mb-3 mt-0">Ubicación Principal</p>
+                <p class="text-2xl font-chewy mb-6">Rua Caamaño 850, Pilar</p>
+                <div class="w-full h-64 md:h-80 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/5 relative bg-purple-900/20 group">
+                    <iframe width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua%20Caamaño%20850,%20Pilar&output=embed"></iframe>
+                </div>
+            </div>
+
+            <!-- Redes Sociales (Placeholder, no dinámico aquí) -->
+            <div class="flex gap-8 mb-5">
+                <a href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Instagram">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="TikTok">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                </a>
+                <a href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Threads">
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M15.42 13.56c-.53 0-.96-.44-.96-.98V9.17c0-1.63-1.09-2.25-2.43-2.25-.87 0-1.7.3-2.35.81l-.64-1.57c1-.76 2.16-1.16 3.42-1.16 2.76 0 4.38 1.57 4.38 4.2v5.82c0 .7.21.95.53.95.17 0 .33-.05.47-.15l.59 1.46c-.38.28-.9.44-1.45.44-1.1 0-1.66-.7-1.66-1.78v-.5c-.65.51-1.54.78-2.48.78-.01 0-.01 0-.02 0-3.7 0-5.74-1.9-5.74-4.04 0-2.12 1.84-3.73 4.67-3.73.51 0 1 .04 1.46.11v1.83c-.47-.07-.94-.1-1.42-.1-1.7 0-2.62.77-2.62 1.93 0 1.15 1.1 1.75 2.21 1.75.99 0 1.83-.4 2.25-1.02v.01zm-3.42-13.56C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 22c-5.52 0-10-4.48-10-10S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/></svg>
+                </a>
+            </div>
+
+            <img src="./assets/header.png" alt="Logo" class="w-48 mb-5 opacity-80">
+
+            <div class="flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs text-amber-300 opacity-60 uppercase font-bold tracking-widest">
+                <a href="terminos.html" class="hover:text-white">Términos y Condiciones</a>
+                <a href="privacidad.html" class="hover:text-white">Privacidad</a>
+                <button onclick="showArrepentimientoModal()" class="hover:text-white cursor-pointer">Botón de Arrepentimiento</button>
+                <p>© 2024 Ugly Cookies</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Arrepentimiento -->
+    <div id="arrepentimiento-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[200] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-[#512874]">Derecho de Arrepentimiento</h3>
+                <button onclick="closeArrepentimientoModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            
+            <p class="text-[#a55641] mb-4 text-justify">
+                Por la naturaleza perecedera y artesanal de los productos de Ugly Cookies, el derecho de arrepentimiento podrá verse limitado una vez iniciado el proceso de preparación del pedido. Le recomendamos revisar su selección cuidadosamente antes de confirmar.
+            </p>
+
+            <div class="flex items-center mb-6">
+                <input type="checkbox" id="accept-arrepentimiento" class="h-4 w-4 text-[#512874] focus:ring-[#512874] border-gray-300 rounded">
+                <label for="accept-arrepentimiento" class="ml-2 block text-sm text-[#a55641]">
+                    Entiendo y acepto las condiciones.
+                </label>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeArrepentimientoModal()" class="flex-1 py-3 px-4 rounded-xl border-2 border-[#a55641] text-[#a55641] font-bold hover:bg-gray-50 transition">Cancelar</button>
+                <button id="confirm-arrepentimiento-btn" disabled class="flex-[2] py-3 px-4 rounded-xl bg-[#512874] text-white font-chewy text-xl opacity-50 cursor-not-allowed transition transform">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para el Modal de Arrepentimiento
+        function showArrepentimientoModal() {
+            const modal = document.getElementById('arrepentimiento-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('accept-arrepentimiento').checked = false;
+            document.getElementById('confirm-arrepentimiento-btn').disabled = true;
+            document.getElementById('confirm-arrepentimiento-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function closeArrepentimientoModal() {
+            const modal = document.getElementById('arrepentimiento-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('accept-arrepentimiento').addEventListener('change', function() {
+            const confirmBtn = document.getElementById('confirm-arrepentimiento-btn');
+            if (this.checked) {
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        document.getElementById('confirm-arrepentimiento-btn').addEventListener('click', function() {
+            // Aquí puedes añadir la lógica que quieras que suceda al confirmar
+            alert('Condiciones de arrepentimiento aceptadas.');
+            closeArrepentimientoModal();
+        });
+    </script>
+</body>
+>>>>>>> 89e5c4be6485a3f646d8684bd11f6e8eb5d0b8d1
 </html>
