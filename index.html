@@ -986,7 +986,7 @@ async function logout() {
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 const userData = userDoc.exists ? userDoc.data() : {};
                 
-                if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
+                if (user.email === 'cookiespilar@gmail.com' || user.email === 'agustinalonso2303@gmail.com' || userData.role === 'admin_pilar') {
                     enableEditMode();
                 }
             } else {
