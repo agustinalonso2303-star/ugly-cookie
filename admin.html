@@ -89,9 +89,18 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN -->
-    <div id="login-view" class="login-box">
-        <h2 class="font-chewy">Ugly Admin</h2>
+<body>
+
+    <!-- PANTALLA DE LOGIN (Oculta nativamente de entrada) -->
+    <div id="login-view" class="login-box" style="display: none !important;">
+        <p id="login-error" class="error-msg" style="color: #e11d48; font-weight: bold;">Acceso denegado. No eres administrador.</p>
+    </div>
+
+    <!-- PANEL PRINCIPAL AUTENTICADO -->
+    <div id="admin-panel" class="max-container hidden">
+        <!-- El resto de las columnas y el formulario de agregar cookie van acá abajo -->
+
+<h2 class="font-chewy">Ugly Admin</h2>
         <p>Gestión de Carta General</p>
         <button id="btn-login" class="btn-primary font-chewy">
             Iniciar Sesión con Google
@@ -153,72 +162,71 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU FIREBASE (Reemplaza con tus datos reales)
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_AUTH_DOMAIN",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_STORAGE_BUCKET",
-            messagingSenderId: "TU_MESSAGING_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
-        
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        const loginView = document.getElementById('login-view');
-        const adminPanel = document.getElementById('admin-panel');
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const loginError = document.getElementById('login-error');
-        const adminEmailDisplay = document.getElementById('admin-email-display');
-        const productsContainer = document.getElementById('products-container');
+            // CONFIGURACIÓN DE TU FIREBASE (Asegúrate de colocar tus credenciales reales aquí)
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_AUTH_DOMAIN",
+        projectId: "TU_PROJECT_ID",
+        storageBucket: "TU_STORAGE_BUCKET",
+        messagingSenderId: "TU_MESSAGING_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+    
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const provider = new firebase.auth.GoogleAuthProvider();
 
-                // Escucha el estado de autenticación (Optimizado para saltear el Login previo)
-        auth.onAuthStateChanged(async (user) => {
-            if (user) { 
-                // Si ya estás logueado y el email es el correcto
-                if (user.email === 'agustinalonso2303@gmail.com' || user.email === 'cookiespilar@gmail.com') {
-                    // Ocultamos la tarjeta de login al instante y abrimos el panel
-                    loginView.classList.add('hidden');
-                    adminPanel.classList.remove('hidden');
-                    loginError.classList.add('hidden');
-                    adminEmailDisplay.textContent = user.email;
-                    loadProductsRealtime();
-                } else {
-                    // Si el email guardado no pertenece al admin, se lo rebota
-                    await auth.signOut();
-                    loginView.classList.remove('hidden');
-                    adminPanel.classList.add('hidden');
-                    loginError.classList.remove('hidden');
-                }
+    // Elementos del DOM persistentes
+    const loginView = document.getElementById('login-view');
+    const adminPanel = document.getElementById('admin-panel');
+    const btnLogout = document.getElementById('btn-logout');
+    const loginError = document.getElementById('login-error');
+    const adminEmailDisplay = document.getElementById('admin-email-display');
+    const productsContainer = document.getElementById('products-container');
+
+    // Escucha el estado de autenticación (Salto directo y transparente)
+    auth.onAuthStateChanged(async (user) => {
+        if (user) { 
+            // Validamos si tu sesión guardada coincide con los emails admin
+            if (user.email === 'agustinalonso2303@gmail.com' || user.email === 'cookiespilar@gmail.com') {
+                if (loginView) loginView.style.setProperty('display', 'none', 'important');
+                if (adminPanel) adminPanel.classList.remove('hidden');
+                if (adminEmailDisplay) adminEmailDisplay.textContent = user.email;
+                loadProductsRealtime();
             } else {
-                // Si realmente no hay ninguna sesión activa en el navegador, se muestra el login
-                loginView.classList.remove('hidden');
-                adminPanel.classList.add('hidden');
+                // Si la sesión no es admin, te desloguea y te rebota al index principal
+                await auth.signOut();
+                window.location.href = 'index.html'; 
+            }
+        } else {
+            // Si alguien intenta entrar a admin.html sin estar logueado en el index, lo manda a loguearse al index
+            window.location.href = 'index.html';
+        }
+    });
+
+    // --- 1. EVENTOS DE CLIC DE LOS BOTONES ---
+
+    // Cerrar Sesión Activa y volver a la tienda principal
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (e) {
+                console.error("Error Logout:", e);
             }
         });
+    }
 
-
-        // --- 1. EVENTOS DE CLIC DE LOS BOTONES ---
-       
-        // Iniciar Sesión con Google Popup
-        btnLogin.addEventListener('click', () => {
-            auth.signInWithPopup(provider).catch(e => console.error("Error Login:", e));
-        });
-
-        // Cerrar Sesión Activa
-        btnLogout.addEventListener('click', () => {
-            auth.signOut().catch(e => console.error("Error Logout:", e));
-        });
-
-        // Guardar Nueva Cookie en Firestore
-        document.getElementById('btn-add').addEventListener('click', async () => {
+    // Guardar Nueva Cookie en Firestore
+    const btnAdd = document.getElementById('btn-add');
+    if (btnAdd) {
+        btnAdd.addEventListener('click', async () => {
             const nameInput = document.getElementById('new-name');
             const descInput = document.getElementById('new-desc');
 
-            if (!nameInput.value.trim()) {
+            if (!nameInput || !nameInput.value.trim()) {
                 alert('Falta colocar el nombre de la cookie');
                 return;
             }
@@ -227,20 +235,19 @@
                 // Almacena en la colección 'products' con visibilidad oculta por defecto
                 await db.collection('products').add({
                     name: nameInput.value.trim(),
-                    description: descInput.value.trim(),
+                    description: descInput ? descInput.value.trim() : "",
                     isVisible: false
                 });
                 
                 // Limpia los campos del formulario tras un registro exitoso
-                nameInput.value = '';
-                descInput.value = '';
+                if (nameInput) nameInput.value = '';
+                if (descInput) descInput.value = '';
             } catch (error) {
                 console.error("Error al crear producto:", error);
                 alert('Error al guardar el producto en la base de datos');
             }
         });
-
-
+    }
         // --- 2. LÓGICA Y RENDERIZADO EN TIEMPO REAL ---
 
         // Cargar y escuchar la colección 'products' continuamente
