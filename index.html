@@ -732,16 +732,14 @@
             }
         };
 
-        function handleSmartRedirect(email) {
-            if (email === 'stefy@gmail.com') {
-                window.location.href = 'admin.html';
-            } else if (email === 'cookiespilar@gmail.com' || email === 'cookiesanisidro@gmail.com') {
-                const branch = email.includes('pilar') ? 'pilar' : 'san_isidro';
-                localStorage.setItem('currentBranch', branch);
-                window.location.href = branch === 'pilar' ? 'index.html' : 'mostrador.html';
-            }
-        }
-
+        function handleAuthClickFromMenu() {
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            console.log("Logueado con éxito:", result.user.email);
+        
+        })
+        .catch(e => console.error(e));
+}
 // Logout
 async function logout() {
     try {
@@ -1008,34 +1006,44 @@ async function logout() {
             }
         };
 
-               // ============================================
-        // OBSERVADOR DE ESTADO DE AUTENTICACIÓN
-        // ============================================
-        auth.onAuthStateChanged(async (user) => {
-            currentUser = user;
-            const authButton = document.getElementById('auth-button-menu');
+// ============================================
+// OBSERVADOR DE ESTADO DE AUTENTICACIÓN (INDEX)
+// ============================================
+auth.onAuthStateChanged(async (user) => {
+    currentUser = user;
+    const authButton = document.getElementById('auth-button-menu');
 
-            if (user) {
-                authButton.textContent = '👤 Mi Perfil';
-                
-                // Redirección inmediata si eres el superadministrador principal
-                if (user.email === 'agustinalonso2303@gmail.com') {
-                    console.log('Admin detectado, redirigiendo al panel...');
-                    window.location.href = 'admin.html'; // Cambia 'admin.html' por el nombre exacto de tu archivo de administración
-                    return; // Corta la ejecución para que no cargue el resto de la lógica en esta página
-                }
+    if (user) {
+        // Si ya estás logueado con tu correo administrador
+        if (user.email === 'agustinalonso2303@gmail.com') {
+            authButton.textContent = '👤 Ir a Panel Admin';
+            // SOLO va al admin si el usuario hace clic físicamente en el botón
+            authButton.onclick = (e) => {
+                e.preventDefault();
+                window.location.href = 'admin.html';
+            };
+        } else {
+            // Comportamiento para clientes comunes u otros correos
+            authButton.textContent = '👤 Mi Perfil';
+            authButton.onclick = () => { alert('Sesión activa como cliente.'); };
+        }
+        
+        // Lógica de rangos secundarios que ya tenías
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userData = userDoc.exists ? userDoc.data() : {};
+        if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
+            if (typeof enableEditMode === 'function') enableEditMode();
+        }
+    } else {
+        // Si no hay nadie logueado
+        authButton.textContent = 'Iniciar Sesión';
+        authButton.onclick = (e) => {
+            e.preventDefault();
+            auth.signInWithPopup(provider).catch(e => console.error("Error al loguear:", e));
+        };
+    }
+});
 
-                // Lógica de Rango/Email para otros administradores locales o roles de sucursal
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                const userData = userDoc.exists ? userDoc.data() : {};
-                
-                if (user.email === 'steamjueguitos932@gmail.com' || userData.role === 'admin_pilar') {
-                    enableEditMode();
-                }
-            } else {
-                authButton.textContent = 'Iniciar Sesión';
-            }
-        });
     </script>
 
 
