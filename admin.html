@@ -3,310 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Ugly Cookies</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ugly Cookies - Panel Admin</title>
+    <link href="https://googleapis.com" rel="stylesheet">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Firebase SDK (Compat v9 para asegurar estabilidad con tu código anterior) -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
     <style>
-        html { scroll-behavior: smooth; }
-        h1, h2, h3 { font-family: 'Chewy', system-ui; font-weight: normal; }
-        body { font-family: 'Lato', sans-serif; }
-        
+        /* --- ESTILOS NATIVOS DE INTERFAZ PROFESIONAL --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lato', sans-serif; background-color: #f4edd4; padding: 20px; color: #333; }
         .font-chewy { font-family: 'Chewy', system-ui; }
+        .hidden { display: none !important; }
+
+        .max-container { max-width: 1300px; margin: 0 auto; width: 100%; }
         
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
+        /* Pantalla de Login de respaldo (Oculta nativamente) */
+        .login-box { max-width: 400px; margin: 100px auto 0; background: white; padding: 40px 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eee; }
+        .error-msg { color: #e11d48; font-weight: bold; margin-top: 15px; font-size: 0.9rem; }
+
+        /* Botones */
+        .btn-primary { width: 100%; background-color: #512874; color: white; border: none; padding: 14px; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; }
+        .btn-logout { background: white; color: #a55641; border: 1px solid rgba(165, 86, 65, 0.3); font-weight: bold; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; }
+        .btn-logout:hover { background: #fff1f2; color: #e11d48; border-color: #fecdd3; }
+
+        /* Header */
+        .header-panel { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; margin-bottom: 25px; }
+        .header-panel h1 { font-size: 2.2rem; color: #512874; }
+        .header-panel p { font-size: 0.8rem; color: #a55641; font-weight: bold; margin-top: 2px; }
+
+        /* Estructura de Dos Columnas (Estilo Refe) */
+        .admin-layout { display: grid; grid-template-columns: 1fr; gap: 25px; align-items: start; }
+        @media (min-width: 992px) {
+            .admin-layout { grid-template-columns: 5fr 7fr; }
+        }
+
+        /* Columna Izquierda: Lista de Cookies */
+        .products-list { display: flex; flex-direction: column; gap: 15px; max-height: calc(100vh - 160px); overflow-y: auto; padding-right: 5px; }
+        .products-list::-webkit-scrollbar { width: 6px; }
+        .products-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Tarjeta de Cookie Individual */
+        .cookie-card { background: white; padding: 18px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; }
+        .card-sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+        .bg-visible { background-color: #10b981; }
+        .bg-hidden { background-color: #f59e0b; }
+        
+        .card-top { display: flex; justify-content: space-between; align-items: center; padding-left: 8px; }
+        .card-title-id { font-size: 0.9rem; font-weight: bold; color: #512874; }
+        .card-title-id span { font-weight: normal; color: #888; font-size: 0.75rem; text-transform: capitalize; }
+        
+        /* Status Badge */
+        .status-badge { font-size: 0.75rem; font-weight: bold; padding: 5px 10px; border-radius: 8px; cursor: pointer; border: 1px solid; }
+        .status-active { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        .status-inactive { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+
+        /* Inputs de Tarjetas */
+        .card-inputs { padding-left: 8px; display: flex; flex-direction: column; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-group label { font-size: 0.65rem; font-weight: bold; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .form-control { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.85rem; background: #fafafa; font-family: inherit; }
+        .form-control:focus { outline: none; border-color: #512874; background: #fff; }
+        .form-control.bold-title { font-weight: bold; font-size: 0.95rem; color: #222; text-transform: capitalize; }
+
+        /* Columna Derecha: Panel de Carga Fijo */
+        .sticky-column { position: relative; }
+        @media (min-width: 992px) {
+            .sticky-column { position: sticky; top: 20px; }
         }
         
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Caja de Línea de Puntos */
+        .dashed-box { background-color: #faf6e8; border-radius: 40px; border: 4px dashed #512874; padding: 30px 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }
+        .dashed-box-header { display: inline-flex; align-items: center; gap: 10px; background: white; padding: 8px 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #eee; }
+        .dashed-box-header h2 { font-size: 1.5rem; color: #512874; }
         
-        .modal-content {
-            background-color: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .products-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .products-table th,
-        .products-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .products-table th {
-            background-color: #512874;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .products-table tr:hover {
-            background-color: #f3f4f6;
-        }
-        
-        .action-btn {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-        
-        .edit-btn {
-            background-color: #512874;
-            color: white;
-        }
-        
-        .edit-btn:hover {
-            background-color: #6b3d8a;
-        }
-        
-        .delete-btn {
-            background-color: #a55641;
-            color: white;
-        }
-        
-        .delete-btn:hover {
-            background-color: #c46a52;
-        }
+        .form-container-main { background: white; padding: 20px; border-radius: 20px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 15px; }
+        .btn-secondary { width: 100%; background-color: #a55641; color: white; border: none; padding: 12px; border-radius: 12px; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; }
+        .btn-secondary:hover { background-color: #bd634b; }
     </style>
 </head>
-<body class="bg-[#efe6da] min-h-screen">
-    <!-- Header -->
-    <header class="bg-[#512874] p-4 shadow-md">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <h1 class="text-3xl text-white font-chewy">🍪 Admin Dashboard</h1>
-            <div class="flex items-center gap-4">
-                <span id="admin-email" class="text-white text-sm"></span>
-                <button onclick="handleLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                    Cerrar Sesión
-                </button>
-            </div>
-        </div>
-    </header>
+<body>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto p-6">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl p-6 shadow-md">
-                <div class="text-3xl font-bold text-[#512874]" id="total-products">0</div>
-                <div class="text-gray-600">Total Productos</div>
-            </div>
-            <div class="bg-white rounded-xl p-6 shadow-md">
-                <div class="text-3xl font-bold text-green-600" id="active-products">0</div>
-                <div class="text-gray-600">Productos Activos</div>
-            </div>
-            <div class="bg-white rounded-xl p-6 shadow-md">
-                <div class="text-3xl font-bold text-orange-500" id="inactive-products">0</div>
-                <div class="text-gray-600">Productos Inactivos</div>
-            </div>
-            <div class="bg-white rounded-xl p-6 shadow-md">
-                <div class="text-3xl font-bold text-[#a55641]" id="categories-count">0</div>
-                <div class="text-gray-600">Categorías</div>
-            </div>
-        </div>
-
-        <!-- Actions Bar -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <h2 class="text-2xl font-chewy text-[#512874]">Gestión de Productos</h2>
-            <div class="flex gap-4">
-                <input 
-                    type="text" 
-                    id="search-input" 
-                    placeholder="Buscar producto..." 
-                    class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                    onkeyup="filterProducts()"
-                >
-                <button 
-                    onclick="openModal('create')" 
-                    class="bg-[#512874] text-white px-6 py-2 rounded-lg hover:bg-[#6b3d8a] transition font-bold"
-                >
-                    + Nuevo Producto
-                </button>
-            </div>
-        </div>
-
-        <!-- Products Table -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="products-table-body">
-                        <tr>
-                            <td colspan="6" class="text-center py-8">Cargando productos...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- Product Modal -->
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="modal-title" class="text-2xl font-chewy text-[#512874]">Nuevo Producto</h3>
-                <button onclick="closeModal()" class="text-3xl text-gray-500 hover:text-gray-700">&times;</button>
-            </div>
-            
-            <form id="product-form" onsubmit="handleProductSubmit(event)">
-                <input type="hidden" id="product-id">
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Nombre del Producto *</label>
-                    <input 
-                        type="text" 
-                        id="product-name" 
-                        required
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                    >
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Descripción *</label>
-                    <textarea 
-                        id="product-description" 
-                        required
-                        rows="3"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                    ></textarea>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 mb-2">Precio *</label>
-                        <input 
-                            type="number" 
-                            id="product-price" 
-                            required
-                            step="0.01"
-                            min="0"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                        >
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2">Categoría *</label>
-                        <select 
-                            id="product-category" 
-                            required
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                        >
-                            <option value="producto">Producto</option>
-                            <option value="combo">Combo</option>
-                            <option value="bebida">Bebida</option>
-                            <option value="postre">Postre</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">URL de Imagen</label>
-                    <input 
-                        type="url" 
-                        id="product-image"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                    >
-                </div>
-                
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Stock por Sucursal (formato JSON)</label>
-                    <textarea 
-                        id="product-stock"
-                        rows="2"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#512874]"
-                        placeholder='{"sucursal1": 10, "sucursal2": 15}'
-                    ></textarea>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="product-visible" checked class="mr-2">
-                        <span>Producto visible</span>
-                    </label>
-                </div>
-                
-                <div class="flex gap-4">
-                    <button 
-                        type="button"
-                        onclick="closeModal()" 
-                        class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
-                    >
-                        Cancelar
-                    </button>
-                    <button 
-                        type="submit" 
-                        class="flex-1 bg-[#512874] text-white py-2 rounded-lg hover:bg-[#6b3d8a] transition font-bold"
-                    >
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
+    <!-- PANTALLA DE LOGIN (Oculta nativamente para evitar parpadeos) -->
+    <div id="login-view" class="login-box" style="display: none !important;">
+        <p id="login-error" class="error-msg">Acceso denegado. No eres administrador.</p>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="modal">
-        <div class="modal-content">
-            <h3 class="text-2xl font-chewy text-[#a55641] mb-4">¿Eliminar Producto?</h3>
-            <p class="mb-6">¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.</p>
-            <div class="flex gap-4">
-                <button 
-                    onclick="closeDeleteModal()" 
-                    class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
-                >
-                    Cancelar
-                </button>
-                <button 
-                    onclick="confirmDelete()" 
-                    class="flex-1 bg-[#a55641] text-white py-2 rounded-lg hover:bg-red-600 transition font-bold"
-                >
-                    Eliminar
-                </button>
+    <!-- PANEL PRINCIPAL AUTENTICADO -->
+    <div id="admin-panel" class="max-container hidden">
+        
+        <!-- Encabezado Superior -->
+        <div class="header-panel">
+            <div>
+                <h1 class="font-chewy">Carta General</h1>
+                <p id="admin-email-display"></p>
             </div>
+            <button id="btn-logout" class="btn-logout">
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <!-- Estructura de Dos Columnas -->
+        <div class="admin-layout">
+            
+            <!-- COLUMNA IZQUIERDA: Lista de cookies individuales -->
+            <div class="products-list" id="products-container">
+                <!-- Se inyecta dinámicamente -->
+            </div>
+
+            <!-- COLUMNA DERECHA: Formulario Mostrador Estilo Crumbl -->
+            <div class="sticky-column">
+                <div class="dashed-box">
+                    
+                    <div class="dashed-box-header">
+                        <span>✨</span>
+                        <h2 class="font-chewy">Agregar Nueva Cookie</h2>
+                    </div>
+
+                    <div class="form-container-main">
+                        <div class="input-group">
+                            <label for="new-name">Nombre Identificador</label>
+                            <input type="text" id="new-name" placeholder="Ej: Nutela Boom o Cucu" class="form-control">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="new-desc">Descripción de la Receta</label>
+                            <textarea id="new-desc" rows="3" placeholder="Detalla los ingredientes que verá el público..." class="form-control" style="resize:none;"></textarea>
+                        </div>
+
+                        <button id="btn-add" class="btn-secondary font-chewy">
+                            Crear e Insertar en Lista
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // Firebase Configuration (debes reemplazar con tu configuración real)
+        // CONFIGURACIÓN DE TU FIREBASE (Reemplaza con tus datos de conexión reales de Firebase)
         const firebaseConfig = {
             apiKey: "TU_API_KEY",
             authDomain: "TU_AUTH_DOMAIN",
@@ -315,209 +155,116 @@
             messagingSenderId: "TU_MESSAGING_SENDER_ID",
             appId: "TU_APP_ID"
         };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        
+        // Inicializar Firebase
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        let products = [];
-        let productToDelete = null;
+        // Elementos de la interfaz
+        const loginView = document.getElementById('login-view');
+        const adminPanel = document.getElementById('admin-panel');
+        const btnLogout = document.getElementById('btn-logout');
+        const loginError = document.getElementById('login-error');
+        const adminEmailDisplay = document.getElementById('admin-email-display');
+        const productsContainer = document.getElementById('products-container');
 
-        // Auth State Observer
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('admin-email').textContent = user.email;
-                loadProducts();
-            } else {
-                // Redirección eliminada para evitar ciclos
+        // Escucha el estado de autenticación (SALTO DIRECTO DESDE EL INDEX)
+        auth.onAuthStateChanged(async (user) => {
+            if (user) { 
+                // Validamos si tu cuenta guardada localmente es la autorizada
+                if (user.email === 'agustinalonso2303@gmail.com' || user.email === 'cookiespilar@gmail.com') {
+                    if (loginView) loginView.style.setProperty('display', 'none', 'important');
+                    if (adminPanel) adminPanel.classList.remove('hidden');
+                    if (adminEmailDisplay) adminEmailDisplay.textContent = user.email;
+                    loadProductsRealtime();
+} else {
+    // Si entró con otra cuenta, lo desloguea y lo echa al index
+     await auth.signOut();
+     window.location.href = 'index.html';
+     }
+    } else {
+        // Si intenta forzar la URL sin estar logueado en el index, lo manda al index
+         window.location.href = 'index.html';
+        }
+    });
+
+    // --- EVENTOS DE BOTONES ---
+
+    // Cerrar sesión y volver de inmediato a la web principal
+     if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                window.location.href = 'index.html';
+            } catch (e) {
+                console.error("Error Logout:", e);
             }
         });
-
-        // Load Products
-        async function loadProducts() {
-            try {
-                const snapshot = await db.collection('products').get();
-                products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProducts();
-                updateStats();
-            } catch (error) {
-                console.error('Error al cargar productos:', error);
-                document.getElementById('products-table-body').innerHTML = 
-                    '<tr><td colspan="6" class="text-center py-8 text-red-500">Error al cargar productos</td></tr>';
-            }
-        }
-
-        // Render Products Table
-        function renderProducts(filteredProducts = null) {
-            const productsToRender = filteredProducts || products;
-            const tbody = document.getElementById('products-table-body');
-            
-            if (productsToRender.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No hay productos</td></tr>';
+    }
+    // Guardar Nueva Cookie en Firestore
+    const btnAdd = document.getElementById('btn-add');
+    if (btnAdd) {
+        btnAdd.addEventListener('click', async () => {
+            const nameInput = document.getElementById('new-name');
+            const descInput = document.getElementById('new-desc');
+            if (!nameInput || !nameInput.value.trim()) {
+                alert('Falta colocar el nombre de la cookie');
                 return;
             }
-            
-            tbody.innerHTML = productsToRender.map(product => `
-                <tr>
-                    <td>
-                        <div class="font-bold">${product.name || 'Sin nombre'}</div>
-                        <div class="text-sm text-gray-500 truncate max-w-xs">${product.description || 'Sin descripción'}</div>
-                    </td>
-                    <td>${product.category || 'producto'}</td>
-                    <td>$${(product.price || 0).toFixed(2)}</td>
-                    <td>${getTotalStock(product.stock || {})}</td>
-                    <td>
-                        <span class="px-2 py-1 rounded-full text-xs ${product.visible !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                            ${product.visible !== false ? 'Activo' : 'Inactivo'}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="editProduct('${product.id}')" class="action-btn edit-btn mr-2">Editar</button>
-                        <button onclick="deleteProduct('${product.id}')" class="action-btn delete-btn">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Get Total Stock
-        function getTotalStock(stock) {
-            if (!stock || typeof stock !== 'object') return 0;
-            return Object.values(stock).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-        }
-
-        // Update Statistics
-        function updateStats() {
-            document.getElementById('total-products').textContent = products.length;
-            document.getElementById('active-products').textContent = products.filter(p => p.visible !== false).length;
-            document.getElementById('inactive-products').textContent = products.filter(p => p.visible === false).length;
-            
-            const categories = [...new Set(products.map(p => p.category || 'producto'))];
-            document.getElementById('categories-count').textContent = categories.length;
-        }
-
-        // Filter Products
-        function filterProducts() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filtered = products.filter(product => 
-                (product.name || '').toLowerCase().includes(searchTerm) ||
-                (product.description || '').toLowerCase().includes(searchTerm) ||
-                (product.category || '').toLowerCase().includes(searchTerm)
-            );
-            renderProducts(filtered);
-        }
-
-        // Modal Functions
-        function openModal(mode, productId = null) {
-            const modal = document.getElementById('product-modal');
-            const title = document.getElementById('modal-title');
-            const form = document.getElementById('product-form');
-            
-            form.reset();
-            document.getElementById('product-id').value = '';
-            
-            if (mode === 'edit' && productId) {
-                title.textContent = 'Editar Producto';
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    document.getElementById('product-id').value = product.id;
-                    document.getElementById('product-name').value = product.name || '';
-                    document.getElementById('product-description').value = product.description || '';
-                    document.getElementById('product-price').value = product.price || '';
-                    document.getElementById('product-category').value = product.category || 'producto';
-                    document.getElementById('product-image').value = product.image || '';
-                    document.getElementById('product-stock').value = product.stock ? JSON.stringify(product.stock) : '';
-                    document.getElementById('product-visible').checked = product.visible !== false;
-                }
-            } else {
-                title.textContent = 'Nuevo Producto';
-                document.getElementById('product-visible').checked = true;
-            }
-            
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('product-modal').classList.remove('active');
-        }
-
-        // Edit Product
-        function editProduct(productId) {
-            openModal('edit', productId);
-        }
-
-        // Handle Form Submit
-        async function handleProductSubmit(event) {
-            event.preventDefault();
-            
-            const productId = document.getElementById('product-id').value;
-            const productData = {
-                name: document.getElementById('product-name').value,
-                description: document.getElementById('product-description').value,
-                price: parseFloat(document.getElementById('product-price').value),
-                category: document.getElementById('product-category').value,
-                image: document.getElementById('product-image').value,
-                visible: document.getElementById('product-visible').checked
-            };
-            
-            // Parse stock JSON
-            const stockText = document.getElementById('product-stock').value;
-            if (stockText) {
-                try {
-                    productData.stock = JSON.parse(stockText);
-                } catch (e) {
-                    alert('Error en el formato del stock. Debe ser JSON válido.');
-                    return;
-                }
-            }
-            
             try {
-                if (productId) {
-                    await db.collection('products').doc(productId).update(productData);
-                } else {
-                    await db.collection('products').add(productData);
-                }
-                
-                closeModal();
-                await loadProducts();
-                alert('Producto guardado exitosamente');
+                await db.collection('products').add({
+                    name: nameInput.value.trim(),
+                    description: descInput ? descInput.value.trim() : "",
+                    isVisible: false // Se guarda oculta por defecto para revisión
+                });
+                nameInput.value = '';
+                if (descInput) descInput.value = '';
+                alert('Cookie creada exitosamente.');
             } catch (error) {
-                console.error('Error al guardar producto:', error);
-                alert('Error al guardar el producto');
+                console.error("Error al crear producto:", error);
+                alert('Error al guardar en Firestore');
             }
+        });
+    }
+// --- PROCESOS DE DATOS EN TIEMPO REAL ---
+ function loadProductsRealtime() {
+    db.collection('products').onSnapshot((snapshot) => {
+        productsContainer.innerHTML = '';
+        if(snapshot.empty) {
+            productsContainer.innerHTML = 'No hay cookies cargadas en el sistema.';
+            return;
         }
-
-        // Delete Product
-        function deleteProduct(productId) {
-            productToDelete = productId;
-            document.getElementById('delete-modal').classList.add('active');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.remove('active');
-            productToDelete = null;
-        }
-
-        async function confirmDelete() {
-            if (productToDelete) {
-                try {
-                    await db.collection('products').doc(productToDelete).delete();
-                    await loadProducts();
-                    closeDeleteModal();
-                    alert('Producto eliminado exitosamente');
-                } catch (error) {
-                    console.error('Error al eliminar producto:', error);
-                    alert('Error al eliminar el producto');
-                }
-            }
-        }
-
-        // Logout
-        function handleLogout() {
-            auth.signOut().then(() => {
-                // Redirección eliminada para evitar ciclos
-            });
-        }
-    </script>
-</body>
-</html>
+        snapshot.forEach((doc) => {
+            const product = doc.data();
+            const id = doc.id;
+            const card = document.createElement('div');
+            card.className = "cookie-card";
+            card.innerHTML = `🍪 ID: ${id.substring(0,6)}...${product.isVisible ? '🟢 Activo' : '🟠 Oculto'}Nombre ComercialDescripción de Carta${product.description || ''}`;
+            productsContainer.appendChild(card);
+        });
+    });
+}
+// Funciones de actualización instantánea (onchange) al salir del input
+window.toggleProductVisibility = async function(id, currentVisible) {
+    try {
+        await db.collection('products').doc(id).update({ isVisible: !currentVisible });
+    } catch (e) {
+        console.error(e);
+    }
+};
+window.updateProductName = async function(id, newName) {
+    if (!newName.trim()) return;
+    try {
+        await db.collection('products').doc(id).update({ name: newName.trim() });
+    } catch (e) {
+        console.error(e);
+    }
+};
+window.updateProductDescription = async function(id, newDescription) {
+    try {
+        await db.collection('products').doc(id).update({ description: newDescription.trim() });
+    } catch (e) {
+        console.error(e);
+    }
+};                   
