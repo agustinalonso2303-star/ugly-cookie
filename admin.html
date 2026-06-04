@@ -169,25 +169,47 @@
         const adminEmailDisplay = document.getElementById('admin-email-display');
         const productsContainer = document.getElementById('products-container');
 
-        // Escucha el estado de autenticación (SALTO DIRECTO DESDE EL INDEX)
-        auth.onAuthStateChanged(async (user) => {
-            if (user) { 
-                // Validamos si tu cuenta guardada localmente es la autorizada
-                if (user.email === 'agustinalonso2303@gmail.com' || user.email === 'cookiespilar@gmail.com') {
-                    if (loginView) loginView.style.setProperty('display', 'none', 'important');
-                    if (adminPanel) adminPanel.classList.remove('hidden');
-                    if (adminEmailDisplay) adminEmailDisplay.textContent = user.email;
-                    loadProductsRealtime();
-} else {
-    // Si entró con otra cuenta, lo desloguea y lo echa al index
-     await auth.signOut();
-     window.location.href = 'index.html';
-     }
-    } else {
-        // Si intenta forzar la URL sin estar logueado en el index, lo manda al index
-         window.location.href = 'index.html';
+       // ============================================
+// OBSERVADOR DE ESTADO DE AUTENTICACIÓN (INDEX)
+// ============================================
+auth.onAuthStateChanged(async (user) => {
+    currentUser = user;
+    const authButton = document.getElementById('auth-button-menu');
+
+    if (user) {
+        // Si el usuario ya está logueado, cambiamos el texto del botón del menú
+        authButton.textContent = '👤 Ir a Panel Admin';
+        
+        // Configuramos el botón para que, si es tu correo, te mande al admin al hacer CLIC
+        authButton.onclick = () => {
+            if (user.email === 'agustinalonso2303@gmail.com') {
+                window.location.href = 'admin.html';
+            } else {
+                // Aquí puedes poner la lógica normal de perfil para clientes si la tienes
+                alert('Sesión activa como cliente.');
+            }
+        };
+
+        // Lógica secundaria de rangos locales que ya tenías
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userData = userDoc.exists ? userDoc.data() : {};
+        if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
+            if (typeof enableEditMode === 'function') enableEditMode();
         }
-    });
+    } else {
+        // Si no está logueado, el botón funciona para abrir el flujo de Google clásico
+        authButton.textContent = 'Iniciar Sesión';
+        authButton.onclick = () => {
+            // Reemplaza esto con el nombre exacto de tu función de Login si es diferente
+            if (typeof handleAuthClickFromMenu === 'function') {
+                handleAuthClickFromMenu();
+            } else {
+                // Alternativa directa si usas provider popup en línea
+                auth.signInWithPopup(provider).catch(e => console.error(e));
+            }
+        };
+    }
+});
 
     // --- EVENTOS DE BOTONES ---
 
