@@ -330,7 +330,7 @@
                 document.getElementById('admin-email').textContent = user.email;
                 loadProducts();
             } else {
-                window.location.href = 'index.html';
+                // Redirección eliminada para evitar ciclos
             }
         });
 
@@ -515,7 +515,7 @@
         // Logout
         function handleLogout() {
             auth.signOut().then(() => {
-                window.location.href = 'index.html';
+                // Redirección eliminada para evitar ciclos
             });
         }
     </script>
