@@ -175,27 +175,31 @@
         const adminEmailDisplay = document.getElementById('admin-email-display');
         const productsContainer = document.getElementById('products-container');
 
-        // Escucha el estado de autenticación (CORREGIDO)
+                // Escucha el estado de autenticación (Optimizado para saltear el Login previo)
         auth.onAuthStateChanged(async (user) => {
             if (user) { 
-                // Primero validamos que el usuario exista, luego chequeamos su email
+                // Si ya estás logueado y el email es el correcto
                 if (user.email === 'agustinalonso2303@gmail.com' || user.email === 'cookiespilar@gmail.com') {
+                    // Ocultamos la tarjeta de login al instante y abrimos el panel
                     loginView.classList.add('hidden');
                     adminPanel.classList.remove('hidden');
                     loginError.classList.add('hidden');
                     adminEmailDisplay.textContent = user.email;
                     loadProductsRealtime();
                 } else {
-                    // Si el email no está autorizado, cerramos sesión de inmediato
+                    // Si el email guardado no pertenece al admin, se lo rebota
                     await auth.signOut();
+                    loginView.classList.remove('hidden');
+                    adminPanel.classList.add('hidden');
                     loginError.classList.remove('hidden');
                 }
             } else {
-                // Si no hay ningún usuario logueado, mostramos la pantalla de login
+                // Si realmente no hay ninguna sesión activa en el navegador, se muestra el login
                 loginView.classList.remove('hidden');
                 adminPanel.classList.add('hidden');
             }
         });
+
 
         // --- 1. EVENTOS DE CLIC DE LOS BOTONES ---
        
