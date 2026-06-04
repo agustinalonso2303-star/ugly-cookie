@@ -18,63 +18,81 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
-    <style>
-        html { scroll-behavior: smooth; }
-        h1, h2, h3, h4, h5 { font-family: 'Chewy', system-ui; font-weight: normal; }
-        body { font-family: 'Lato', sans-serif; }
-        .font-chewy { font-family: 'Chewy', system-ui; }
-        .font-lato-desc { font-family: 'Lato', sans-serif; text-transform: lowercase; letter-spacing: 0.01em; font-weight: 400; font-size: 1.25rem; }
-        
-        /* Esconde la barra de scroll para que el slider se vea limpio */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+<style>
+    html { scroll-behavior: smooth; }
+    h1, h2, h3, h4, h5 { font-family: 'Chewy', system-ui; font-weight: normal; }
+    body { font-family: 'Lato', sans-serif; }
+    
+    /* --- Correcciones y Estilos de Tipografía --- */
+    .font-chewy { 
+        font-family: 'Chewy', system-ui; 
+        text-transform: capitalize; /* Convierte "classic choco" a "Classic Choco" */
+    }
+    
+    .font-lato-desc { 
+        font-family: 'Lato', sans-serif; 
+        letter-spacing: 0.01em; 
+        font-weight: 400; 
+        font-size: 1.25rem; 
+    }
 
-        /* --- MEDIA QUERIES (ESTRATEGIA MOBILE FIRST) --- */
+    /* Fuerza a que el texto de "learn more >" tenga las iniciales en mayúscula */
+    a.font-lato-desc {
+        text-transform: capitalize !important;
+    }
 
-        /* 1. Estilos base para MÓVIL */
-        /* Estos estilos se aplican por defecto a pantallas pequeñas (celulares) */
-        .responsive-logo { width: 150px; height: auto; transition: all 0.3s ease; }
-        .responsive-hero { width: 220px; height: 220px; transition: all 0.3s ease; }
+    /* Regla ortográfica: La primera letra de las descripciones siempre arranca en mayúscula */
+    p.font-lato-desc::first-letter {
+        text-transform: uppercase !important;
+    }
+    
+    /* Esconde la barra de scroll para que el slider se vea limpio */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* 2. Estilos para DESKTOP / TABLET (Mínimo 768px de ancho) */
-        @media (min-width: 768px) {
-            /* Ajustamos las medidas para que en PC se vea más grande y con aire */
-            .responsive-logo { width: 250px; height: 60px; }
-            .responsive-hero { width: 400px; height: 400px; }
-            
-            /* Ejemplo de espaciado extra que solo se activa en pantallas grandes */
-            .desktop-spacing { padding: 4rem 0; }
+    /* --- MEDIA QUERIES (ESTRATEGIA MOBILE FIRST) --- */
+
+    /* 1. Estilos base para MÓVIL */
+    .responsive-logo { width: 150px; height: auto; transition: all 0.3s ease; }
+    .responsive-hero { width: 220px; height: 220px; transition: all 0.3s ease; }
+
+    /* 2. Estilos para DESKTOP / TABLET (Mínimo 768px de ancho) */
+    @media (min-width: 768px) {
+        .responsive-logo { width: 250px; height: 60px; }
+        .responsive-hero { width: 400px; height: 400px; }
+        .desktop-spacing { padding: 4rem 0; }
+    }
+
+    /* --- ANIMACIONES DE REVELADO (SCROLL) --- */
+    .reveal {
+        opacity: 0;
+        filter: blur(5px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, opacity;
+    }
+    .reveal-left { transform: translateX(-80px); }
+    .reveal-right { transform: translateX(80px); }
+    .reveal.active {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(0);
+    }
+
+    /* Estilos del Ticket Térmico para Impresión */
+    @media print {
+        body * { visibility: hidden; }
+        #ticket-print-area, #ticket-print-area * { visibility: visible; }
+        #ticket-print-area {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            width: 100%;
         }
+        .no-print { display: none !important; }
+    }
+</style>
 
-        /* --- ANIMACIONES DE REVELADO (SCROLL) --- */
-        .reveal {
-            opacity: 0;
-            filter: blur(5px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity;
-        }
-        .reveal-left { transform: translateX(-80px); }
-        .reveal-right { transform: translateX(80px); }
-        .reveal.active {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateX(0);
-        }
-
-        /* Estilos del Ticket Térmico para Impresión */
-        @media print {
-            body * { visibility: hidden; }
-            #ticket-print-area, #ticket-print-area * { visibility: visible; }
-            #ticket-print-area {
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 0;
-                width: 100%;
-            }
-            .no-print { display: none !important; }
-        }
-    </style>
 
 </head>
     <body class="bg-[#efe6da] min-h-screen">
@@ -112,10 +130,6 @@
                 <button onclick="toggleSideMenu()" class="text-5xl text-white p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer" style="line-height: 1;">☰</button>
             </div>
 
-            <!-- Centro: Logo header.png -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                <img src="./assets/header.png" alt="Logo" class="object-contain responsive-logo">
-            </div>
 
             <!-- Derecha: Sucursal Seleccionada -->
             <div class="z-[60] relative ml-auto pr-2 text-right">
@@ -151,109 +165,131 @@
         </div>
     </div>
 
-    <!-- Hero Section -->
-    <section class="bg-[#512874] py-16 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <!-- Imagen Principal desde carpeta assets -->
-            <img src="./assets/hero-image.png" alt="Ugly Cookies Hero" class="mx-auto mb-8 object-contain responsive-hero">
-            
-            <a href="#menu-section" class="inline-block bg-[#ecd3ff] text-[#512874] border border-[#512874] hover:bg-white font-bold py-3 px-8 rounded-xl transition transform hover:scale-105">
-                Ver Menú
-            </a>
-        </div>
+<!-- Hero Section -->
+<section class="bg-[#512874] pt-2 pb-6 px-4 relative z-10 overflow-visible">
+    <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center">
+        <!-- Imagen masiva: usa márgenes negativos para crecer hacia arriba/abajo sin estirar el contenedor -->
+        <img 
+            src="./assets/hero-image.png" 
+            alt="Ugly Cookies Hero" 
+            class="mx-auto -my-6 object-contain w-[95%] sm:w-[85%] md:w-[65%] max-w-[360px] sm:max-w-[480px] md:max-w-[600px] transform transition duration-500 hover:scale-105"
+        >
+        
+        <!-- Botón Ver Menú -->
+        <a href="#menu-section" class="inline-block bg-[#ecd3ff] text-[#512874] border border-[#512874] hover:bg-white font-bold py-3 px-10 rounded-2xl transition transform hover:scale-105 z-10 text-base shadow-md mt-2">
+            Ver Menú
+        </a>
+    </div>
+</section>
+    <!-- Imagen Intermedia (Abajo de Header) -->
+     <section class="w-full bg-[#512874] overflow-hidden block relative z-0">
+        <img 
+            src="./assets/abajo-de-header.jpeg" 
+            alt="Detalle Separador Chorreado" 
+            class="w-full h-auto object-contain block"
+        >
     </section>
+
 
     <!-- Banner Cookie del Mes -->
-    <section id="cookie-month-banner" class="w-full hidden bg-[#efe6da]">
-        <div class="max-w-7xl mx-auto py-8 px-4">
-            <p class="text-center font-bold text-[#512874] mb-4 uppercase text-sm tracking-widest">Cookie del Mes</p>
-            <img id="cookie-month-img" src="" alt="Cookie del Mes" class="w-full h-auto object-cover max-h-[500px] rounded-3xl shadow-2xl block mx-auto transition-opacity duration-500">
-        </div>
-    </section>
+    <section class="relative -mt-28 sm:-mt-44 md:-mt-60 pt-0 pb-16 md:py-28 bg-[#efe6da] overflow-hidden w-full z-10">
+    <div class="max-w-6xl mx-auto flex flex-col gap-16 md:gap-24 relative">
 
-    <!-- Cookie Highlights (Zig-Zag) -->
-    <section class="py-16 md:py-32 px-4 bg-[#efe6da] overflow-hidden">
-        <div class="max-w-7xl mx-auto space-y-24 md:space-y-48">
-            <!-- Cookie 1: Foto Izquierda -->
-            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 reveal reveal-left">
-                <div class="w-full md:w-1/2 relative flex justify-center md:justify-end z-10">
-                    <img src="./assets/cookie-1.png" alt="Classic Choco" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:rotate-3">
-                    <!-- Texto superpuesto en la base de la imagen -->
-                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
-                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 5.0</p>
-                        <div class="flex items-center justify-center gap-1">
-                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 text-center md:text-left px-4">
-                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">Classic Choco</h3>
-                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl">nuestra receta original con chips de chocolate belga que se derriten en cada mordisco.</p>
-                </div>
+        <!-- COOKIE 1 -->
+        <div class="relative w-full min-h-[180px] sm:min-h-[240px] md:min-h-[300px] flex items-center justify-end md:justify-start reveal reveal-left">
+            <div class="absolute -left-[45%] sm:-left-[50%] md:-left-[55%] top-1/2 -translate-y-1/2 w-[120%] sm:w-[100%] md:w-[85%] flex justify-start z-0 pointer-events-none">
+                <img src="./assets/cookie-1.png" alt="Classic Choco" class="w-full max-w-[650px] sm:max-w-[900px] md:max-w-[1400px] object-contain opacity-95 filter drop-shadow-xl">
             </div>
-
-            <!-- Cookie 2: Foto Derecha -->
-            <div class="flex flex-col-reverse md:flex-row-reverse items-center justify-center gap-8 md:gap-16 reveal reveal-right">
-                <div class="w-full md:w-1/2 relative flex justify-center md:justify-start z-10">
-                    <img src="./assets/cookie-2.png" alt="S'mores Marshmallow" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:-rotate-3">
-                    <!-- Texto superpuesto en la base de la imagen -->
-                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
-                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 4.2</p>
-                        <div class="flex items-center justify-center gap-1">
-                            <span class="text-[#512874] text-xl md:text-2xl">★★★★☆</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 text-center md:text-right px-4">
-                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">S'mores Marshmallow</h3>
-                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl ml-auto">la combinación perfecta de chocolate derretido y malvaviscos tostados al fuego.</p>
-                </div>
-            </div>
-
-            <!-- Cookie 3: Foto Izquierda -->
-            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 reveal reveal-left">
-                <div class="w-full md:w-1/2 relative flex justify-center md:justify-end z-10">
-                    <img src="./assets/cookie-3.png" alt="Peanut Butter Cup" class="w-[220px] h-[220px] md:w-[350px] md:h-[350px] lg:w-[450px] lg:h-[450px] object-contain transform transition duration-500 hover:scale-110 hover:rotate-3">
-                    <!-- Texto superpuesto en la base de la imagen -->
-                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center pointer-events-none w-full">
-                        <p class="text-[#a55641] font-bold text-base md:text-xl font-lato-desc">calificación: 4.8</p>
-                        <div class="flex items-center justify-center gap-1">
-                            <span class="text-[#512874] text-xl md:text-2xl">★★★★★</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 text-center md:text-left px-4">
-                    <h3 class="text-4xl md:text-6xl lg:text-8xl text-[#512874] mb-4 font-chewy">Peanut Butter Cup</h3>
-                    <p class="text-[#a55641] text-xl md:text-2xl lg:text-4xl font-lato-desc leading-relaxed max-w-xl">una explosión de sabor con mantequilla de maní real, reese's y m&ms.</p>
-                </div>
+            <!-- Bloque de Texto -->
+            <div class="w-full pl-[55%] md:pl-0 md:max-w-md md:ml-auto flex flex-col items-start text-left z-10 pr-4">
+                <span class="inline-block bg-[#fbcfe8] text-[#9d174d] text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full mb-2 tracking-wide whitespace-nowrap">
+                    This Week Only
+                </span>
+                <h3 class="text-3xl sm:text-5xl md:text-6xl text-[#512874] font-chewy leading-none mb-3 tracking-tight">
+                    Classic Choco
+                </h3>
+                <a href="#" class="text-[#a55641] font-lato-desc font-bold text-xs sm:text-sm md:text-base inline-flex items-center gap-1 hover:underline group">
+                    Learn More 
+                    <span class="transform transition-transform group-hover:translate-x-1">&gt;</span>
+                </a>
             </div>
         </div>
-    </section>
 
-    <!-- Features -->
-    <section class="py-8 px-4 bg-[#efe6da]">
-        <p class="max-w-6xl mx-auto text-center font-bold text-[#512874] mb-6 uppercase text-sm tracking-widest">Nuestros Secretos</p>
-        <div class="max-w-6xl mx-auto flex md:grid md:grid-cols-3 overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
-            <!-- Catering -->
-            <a href="catering.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
-                <div class="text-4xl mb-3">🥂</div>
-                <h3 class="text-2xl text-[#512874] mb-2">Catering</h3>
-                <p class="text-[#a55641]">Llevamos la experiencia Ugly a tus eventos especiales</p>
-            </a>
-            <!-- Tarjetas de Regalo -->
-            <a href="giftcards.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
-                <div class="text-4xl mb-3">🎁</div>
-                <h3 class="text-2xl text-[#512874] mb-2">Tarjetas de regalo</h3>
-                <p class="text-[#a55641]">Regalá momentos dulces y originales a quienes quieras</p>
-            </a>
-            <!-- Sabores -->
-            <a href="sabores.html" class="snap-center shrink-0 w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
-                <div class="text-4xl mb-3">✨</div>
-                <h3 class="text-2xl text-[#512874] mb-2">Sabores</h3>
-                <p class="text-[#a55641]">Conocé toda nuestra variedad y combinaciones únicas</p>
-            </a>
+        <!-- COOKIE 2 -->
+        <div class="relative w-full min-h-[180px] sm:min-h-[240px] md:min-h-[300px] flex items-center justify-start md:justify-end reveal reveal-right">
+            <!-- Bloque de Texto -->
+            <div class="w-full pr-[55%] md:pr-0 md:max-w-md md:mr-auto flex flex-col items-start text-left z-10 pl-4">
+                <span class="inline-block bg-[#fbcfe8] text-[#9d174d] text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full mb-2 tracking-wide whitespace-nowrap">
+                    This Week Only
+                </span>
+                <h3 class="text-3xl sm:text-5xl md:text-6xl text-[#512874] font-chewy leading-none mb-3 tracking-tight">
+                    S'mores Marshmallow
+                </h3>
+                <a href="#" class="text-[#a55641] font-lato-desc font-bold text-xs sm:text-sm md:text-base inline-flex items-center gap-1 hover:underline group">
+                    Learn More 
+                    <span class="transform transition-transform group-hover:translate-x-1">&gt;</span>
+                </a>
+            </div>
+            <div class="absolute -right-[45%] sm:-right-[50%] md:-right-[55%] top-1/2 -translate-y-1/2 w-[120%] sm:w-[100%] md:w-[85%] flex justify-end z-0 pointer-events-none">
+                <img src="./assets/cookie-2.png" alt="S'mores Marshmallow" class="w-full max-w-[650px] sm:max-w-[900px] md:max-w-[1400px] object-contain opacity-95 filter drop-shadow-xl">
+            </div>
         </div>
-    </section>
+
+        <!-- COOKIE 3 -->
+        <div class="relative w-full min-h-[180px] sm:min-h-[240px] md:min-h-[300px] flex items-center justify-end md:justify-start reveal reveal-left">
+            <div class="absolute -left-[45%] sm:-left-[50%] md:-left-[55%] top-1/2 -translate-y-1/2 w-[120%] sm:w-[100%] md:w-[85%] flex justify-start z-0 pointer-events-none">
+                <img src="./assets/cookie-3.png" alt="Peanut Butter Cup" class="w-full max-w-[650px] sm:max-w-[900px] md:max-w-[1400px] object-contain opacity-95 filter drop-shadow-xl">
+            </div>
+            <!-- Bloque de Texto -->
+            <div class="w-full pl-[55%] md:pl-0 md:max-w-md md:ml-auto flex flex-col items-start text-left z-10 pr-4">
+                <span class="inline-block bg-[#fbcfe8] text-[#9d174d] text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full mb-2 tracking-wide whitespace-nowrap">
+                    This Week Only
+                </span>
+                <h3 class="text-3xl sm:text-5xl md:text-6xl text-[#512874] font-chewy leading-none mb-3 tracking-tight">
+                    Peanut Butter Cup
+                </h3>
+                <a href="#" class="text-[#a55641] font-lato-desc font-bold text-xs sm:text-sm md:text-base inline-flex items-center gap-1 hover:underline group">
+                    Learn More 
+                    <span class="transform transition-transform group-hover:translate-x-1">&gt;</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Features -->
+<section class="py-8 px-4 bg-[#efe6da] overflow-hidden">
+    <p class="max-w-6xl mx-auto text-center font-bold text-[#512874] mb-6 uppercase text-sm tracking-widest">Nuestros Secretos</p>
+    
+    <!-- Contenedor optimizado: Carrusel en móvil, Grid en escritorio -->
+    <div class="max-w-6xl mx-auto flex md:grid md:grid-cols-3 overflow-x-auto snap-x snap-mandatory gap-6 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        
+        <!-- Catering -->
+        <a href="catering.html" class="snap-center shrink-0 w-[85%] sm:w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+            <div class="text-4xl mb-3">🥂</div>
+            <h3 class="text-2xl text-[#512874] mb-2">CATERING</h3>
+            <p class="text-[#a55641]">Llevamos la experiencia Ugly a tus eventos especiales</p>
+        </a>
+        
+        <!-- Tarjetas de Regalo -->
+        <a href="giftcards.html" class="snap-center shrink-0 w-[85%] sm:w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+            <div class="text-4xl mb-3">🎁</div>
+            <h3 class="text-2xl text-[#512874] mb-2">TARJETAS DE REGALO</h3>
+            <p class="text-[#a55641]">Regalá momentos dulces y originales a quienes quieras</p>
+        </a>
+        
+        <!-- Sabores -->
+        <a href="sabores.html" class="snap-center shrink-0 w-[85%] sm:w-[280px] md:w-full bg-white p-8 rounded-3xl shadow-xl text-center transform transition hover:scale-105 block">
+            <div class="text-4xl mb-3">✨</div>
+            <h3 class="text-2xl text-[#512874] mb-2">SABORES</h3>
+            <p class="text-[#a55641]">Conocé toda nuestra variedad y combinaciones únicas</p>
+        </a>
+        
+    </div>
+</section>
+
+
 
     <!-- Menu Preview -->
     <section id="menu-section" class="py-12 px-4 bg-[#efe6da]">
@@ -1197,57 +1233,60 @@ async function logout() {
             container.appendChild(productElement);
         }
 
-        // Función para eliminar producto de la base de datos (Admin)
-        window.deleteProduct = async function(productId) {
-            if (confirm('¿Estás seguro de que quieres borrar este producto de la carta?')) {
-                try {
-                    await db.collection('products').doc(productId).delete();
-                    console.log('Producto eliminado:', productId);
-                } catch (error) {
-                    console.error('Error al borrar producto:', error);
-                    alert('Error al eliminar el producto');
-                }
-            }
-        };
+       // Función para activar/desactivar visibilidad (Admin)
+window.toggleProductVisibility = async function(productId, currentVisible) {
+    try {
+        await db.collection('products').doc(productId).update({
+            isVisible: !currentVisible
+        });
+        console.log(`Producto ${productId} ahora es ${!currentVisible ? 'Visible' : 'Oculto'}`);
+    } catch (error) {
+        console.error('Error al cambiar visibilidad:', error);
+        alert('Error al actualizar la visibilidad');
+    }
+};
 
-        // Función para activar/desactivar visibilidad (Admin)
-        window.toggleProductVisibility = async function(productId, currentVisible) {
-            try {
-                await db.collection('products').doc(productId).update({
-                    isVisible: !currentVisible
-                });
-                console.log(`Producto ${productId} ahora es ${!currentVisible ? 'Visible' : 'Oculto'}`);
-            } catch (error) {
-                console.error('Error al cambiar visibilidad:', error);
-                alert('Error al actualizar la visibilidad');
-            }
-        };
+// Función para actualizar Nombre (Admin)
+window.updateProductName = async function(id, newName) {
+    if (!newName.trim()) return;
+    try {
+        await db.collection('products').doc(id).update({ name: newName });
+        console.log('Nombre actualizado:', id, newName);
+    } catch (error) { 
+        console.error("Error al actualizar nombre:", error); 
+    }
+};
 
-        // Funciones para actualizar precio, stock y reserva (Admin)
-        window.updateProductPrice = async function(id, newPrice) {
-            try {
-                await db.collection('products').doc(id).update({ price: parseFloat(newPrice) });
-                console.log('Precio actualizado:', id, newPrice);
-            } catch (error) { console.error("Error al actualizar precio:", error); }
-        };
+// Función para actualizar Descripción (Admin)
+window.updateProductDescription = async function(id, newDescription) {
+    try {
+        await db.collection('products').doc(id).update({ description: newDescription });
+        console.log('Descripción actualizada:', id, newDescription);
+    } catch (error) { 
+        console.error("Error al actualizar descripción:", error); 
+    }
+};
 
-        window.updateProductStock = async function(id, newStock) {
-            try {
-                await db.collection('products').doc(id).update({
-                    [`stock.${currentBranch}`]: parseInt(newStock)
-                });
-                console.log('Stock actualizado:', id, newStock);
-            } catch (error) { console.error("Error al actualizar stock:", error); }
-        };
+// Función para agregar un nuevo producto básico desde el panel
+window.addNewProduct = async function(name, description) {
+    if (!name.trim()) {
+        alert('El nombre es obligatorio');
+        return;
+    }
+    try {
+        const newDoc = await db.collection('products').add({
+            name: name,
+            description: description,
+            isVisible: false // Se agrega oculto por defecto para configurarlo
+        });
+        console.log('Producto agregado con ID:', newDoc.id);
+        alert('Producto creado con éxito');
+    } catch (error) {
+        console.error("Error al agregar producto:", error);
+        alert('Error al crear el producto');
+    }
+};
 
-        window.updateProductBuffer = async function(id, newBuffer) {
-            try {
-                await db.collection('products').doc(id).update({
-                    [`stockBuffer.${currentBranch}`]: parseInt(newBuffer)
-                });
-                console.log('Reserva mostrador actualizada:', id, newBuffer);
-            } catch (error) { console.error("Error al actualizar reserva:", error); }
-        };
 
         // ============================================
         // LÓGICA DE SELECCIÓN DE SABORES
@@ -1933,11 +1972,11 @@ async function logout() {
         // ============================================
         const branchDetails = {
             pilar: {
-                address: "Rua Caamaño 850, Pilar",
-                maps: "https://www.google.com/maps?q=Rua%20Caamaño%20850,%20Pilar&output=embed",
-                whatsapp: "5491123456789",
-                ig: "https://instagram.com/uglycookiespilar",
-                tt: "https://tiktok.com/@uglycookiespilar",
+                address: "Rua Caamaño 844, Pilar",
+                maps: "https://www.google.com/maps?q=Rua%20Caamaño%20844,%20Pilar&output=embed",
+                whatsapp: "+5491124786507",
+                ig: "https://www.instagram.com/uglyamericancookie?igsh=MXJ0eGU5MWs1d3VuZA==",
+                tt: "https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya",
                 th: "https://threads.net/@uglycookiespilar"
             },
             san_isidro: {
