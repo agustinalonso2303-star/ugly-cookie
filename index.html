@@ -1008,7 +1008,7 @@ async function logout() {
             }
         };
 
-        // ============================================
+               // ============================================
         // OBSERVADOR DE ESTADO DE AUTENTICACIÓN
         // ============================================
         auth.onAuthStateChanged(async (user) => {
@@ -1018,11 +1018,18 @@ async function logout() {
             if (user) {
                 authButton.textContent = '👤 Mi Perfil';
                 
-                // Lógica de Rango/Email
+                // Redirección inmediata si eres el superadministrador principal
+                if (user.email === 'agustinalonso2303@gmail.com') {
+                    console.log('Admin detectado, redirigiendo al panel...');
+                    window.location.href = 'admin.html'; // Cambia 'admin.html' por el nombre exacto de tu archivo de administración
+                    return; // Corta la ejecución para que no cargue el resto de la lógica en esta página
+                }
+
+                // Lógica de Rango/Email para otros administradores locales o roles de sucursal
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 const userData = userDoc.exists ? userDoc.data() : {};
                 
-                if (user.email === 'cookiespilar@gmail.com' || user.email === 'agustinalonso2303@gmail.com' || userData.role === 'admin_pilar') {
+                if (user.email === 'steamjueguitos932@gmail.com' || userData.role === 'admin_pilar') {
                     enableEditMode();
                 }
             } else {
@@ -1030,6 +1037,7 @@ async function logout() {
             }
         });
     </script>
+
 
     <script>
         // ============================================
