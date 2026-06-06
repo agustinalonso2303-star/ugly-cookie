@@ -116,10 +116,7 @@
             }
         };
 
-        window.handleAuthClickFromMenu = function() {
-            toggleSideMenu(); 
-            if (typeof handleAuthClick === 'function') handleAuthClick(); 
-        };
+
     </script>
 
     <!-- Header -->
@@ -733,12 +730,7 @@
         };
 
         function handleAuthClickFromMenu() {
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            console.log("Logueado con éxito:", result.user.email);
-        
-        })
-        .catch(e => console.error(e));
+    loginWithGoogle();
 }
 // Logout
 async function logout() {
