@@ -698,6 +698,9 @@
         // Login con Google
         window.loginWithGoogle = async function() {
             const provider = new firebase.auth.GoogleAuthProvider();
+            // Agregar scopes necesarios
+            provider.addScope('email');
+            provider.addScope('profile');
             // Forzar selección de cuenta para evitar errores de sesión previa
             provider.setCustomParameters({ prompt: 'select_account' });
 
@@ -717,7 +720,6 @@
                 
                 console.log("Login exitoso:", email);
                 closeAuthModal();
-                handleSmartRedirect(email);
 
             } catch (error) {
                 console.error("ERROR AUTH REAL:", error.code, error.message);
@@ -729,9 +731,9 @@
             }
         };
 
-        function handleAuthClickFromMenu() {
-    loginWithGoogle();
-}
+        window.handleAuthClickFromMenu = function() {
+            loginWithGoogle();
+        }
 // Logout
 async function logout() {
     try {
