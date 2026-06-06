@@ -1033,6 +1033,7 @@ auth.onAuthStateChanged(async (user) => {
         authButton.textContent = 'Iniciar Sesión';
         authButton.onclick = (e) => {
             e.preventDefault();
+            const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).catch(e => console.error("Error al loguear:", e));
         };
     }
