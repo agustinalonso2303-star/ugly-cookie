@@ -158,6 +158,7 @@
                 <a href="#menu-section" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">menú</a>
                 <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">nosotros</a>
                 <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">contacto</a>
+                <a id="admin-link" href="admin.html" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641] hidden">ir a panel admin</a>
             </nav>
         </div>
     </div>
@@ -1008,20 +1009,18 @@ auth.onAuthStateChanged(async (user) => {
     const authButton = document.getElementById('auth-button-menu');
 
     if (user) {
-        // Si ya estás logueado con tu correo administrador
+        // Mostrar perfil en el botón
+        authButton.textContent = '👤 Mi Perfil';
+        authButton.onclick = () => { showProfileModal(); };
+
+        // Mostrar enlace "ir a panel admin" solo para el administrador
+        const adminLink = document.getElementById('admin-link');
         if (user.email === 'agustinalonso2303@gmail.com') {
-            authButton.textContent = '👤 Ir a Panel Admin';
-            // SOLO va al admin si el usuario hace clic físicamente en el botón
-            authButton.onclick = (e) => {
-                e.preventDefault();
-                window.location.href = 'admin.html';
-            };
+            adminLink.classList.remove('hidden');
         } else {
-            // Comportamiento para clientes comunes u otros correos
-            authButton.textContent = '👤 Mi Perfil';
-            authButton.onclick = () => { alert('Sesión activa como cliente.'); };
+            adminLink.classList.add('hidden');
         }
-        
+
         // Lógica de rangos secundarios que ya tenías
         const userDoc = await db.collection('users').doc(user.uid).get();
         const userData = userDoc.exists ? userDoc.data() : {};
