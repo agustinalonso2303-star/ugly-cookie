@@ -240,59 +240,91 @@
 
     </div>
 
-       <!-- MODAL DE PRODUCTO -->
+    <!-- MODAL DE PRODUCTO -->
     <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="background: rgba(0,0,0,0.5);">
         <div class="min-h-screen flex items-center justify-center p-4 py-8">
             <div class="max-w-lg w-full bg-white rounded-2xl p-8 my-4">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="font-chewy text-2xl" style="color: #512874;" id="modal-title">Nueva Cookie</h2>
-                    <button onclick="closeProductModal()" class="text-3xl text-gray-400">&times;</button>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-chewy text-2xl" style="color: #512874;" id="modal-title">Nueva Cookie</h2>
+                <button onclick="closeProductModal()" class="text-3xl text-gray-400">&times;</button>
+            </div>
+            
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="product-name" class="form-control" required>
                 </div>
                 
-                <form id="product-form">
-                    <input type="hidden" id="product-id">
-                    
-                    <!-- 1. SELECTOR DE TIPO DE REGISTRO -->
-                    <div class="form-group mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Registro</label>
-                        <select id="product-type" class="form-control w-full p-2 border rounded-lg" required>
-                            <option value="" disabled selected>Seleccioná una opción...</option>
-                            <option value="producto">Producto</option>
-                            <option value="gusto">Gusto</option>
-                            <option value="merch">Merch</option>
-                        </select>
-                    </div>
-
-                    <!-- 2. NOMBRE -->
-                    <div class="form-group mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                        <input type="text" id="product-name" class="form-control w-full p-2 border rounded-lg" required>
-                    </div>
-                    
-                    <!-- 3. DESCRIPCIÓN -->
-                    <div class="form-group mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                        <textarea id="product-description" class="form-control w-full p-2 border rounded-lg" rows="3"></textarea>
-                    </div>
-
-                    <!-- 4. PRECIO GENERAL UNIFICADO -->
-                    <div class="form-group mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Precio ($)</label>
-                        <input type="number" id="product-price" class="form-control w-full p-2 border rounded-lg" step="0.01" required>
-                    </div>
-                    
-                    <!-- BOTONES DE ACCIÓN -->
-                    <div class="flex gap-4">
-                        <button type="submit" class="btn-primary flex-1 font-chewy py-2 rounded-lg bg-purple-700 text-white">Guardar</button>
-                        <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1 py-2 rounded-lg border text-gray-700">Cancelar</button>
-                    </div>
-                </form>
-            </div>
+                <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Registro</label>
+        <select id="product-type" class="form-control w-full p-2 border rounded-lg" required>
+            <option value="" disabled selected>Seleccioná una opción...</option>
+            <option value="producto">Producto</option>
+            <option value="gusto">Gusto</option>
+            <option value="merch">Merch</option>
+        </select>
+    </div>
+<div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+        <input type="text" id="product-name" class="form-control w-full p-2 border rounded-lg" required>
+    </div>
+    
+    <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+        <textarea id="product-description" class="form-control w-full p-2 border rounded-lg" rows="3"></textarea>
+    </div>
+       <div class="form-group mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Precio ($)</label>
+        <input type="number" id="product-price" class="form-control w-full p-2 border rounded-lg" step="0.01" required>
+    </div>
+     <div class="flex gap-4">
+        <button type="submit" class="btn-primary flex-1 font-chewy py-2 rounded-lg bg-purple-700 text-white">Guardar</button>
+        <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1 py-2 rounded-lg border text-gray-700">Cancelar</button>
+    </div>
+</form>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="product-description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Precio Unidad ($)</label>
+                    <input type="number" id="product-price-unit" class="form-control" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Precio Caja ($)</label>
+                    <input type="number" id="product-price-box" class="form-control" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock Pilar</label>
+                    <input type="number" id="product-stock-pilar" class="form-control" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock San Isidro</label>
+                    <input type="number" id="product-stock-san-isidro" class="form-control" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="product-visible" class="mr-2">
+                        Visible en la web
+                    </label>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button type="submit" class="btn-primary flex-1 font-chewy">Guardar</button>
+                    <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-
         // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
@@ -491,68 +523,94 @@
             }
         }
 
-        // Formulario de producto
+                // ============================================
+        // FORMULARIO DE PRODUCTO (ADMINISTRACIÓN GENERAL)
+        // ============================================
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const productId = document.getElementById('product-id').value;
+            
+            // Estructura limpia basada en tus nuevos inputs del HTML
             const productData = {
+                tipo: document.getElementById('product-type').value, // 'producto', 'gusto' o 'merch'
                 name: document.getElementById('product-name').value,
                 description: document.getElementById('product-description').value,
-                priceUnit: parseFloat(document.getElementById('product-price-unit').value),
-                priceBox: parseFloat(document.getElementById('product-price-box').value) || 0,
-                stockPilar: parseInt(document.getElementById('product-stock-pilar').value) || 0,
-                stockSanIsidro: parseInt(document.getElementById('product-stock-san-isidro').value) || 0,
-                isVisible: document.getElementById('product-visible').checked,
+                price: parseFloat(document.getElementById('product-price').value) || 0,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             
             try {
                 if (productId) {
+                    // Actualización de producto existente
                     await db.collection('products').doc(productId).update(productData);
-                    alert('Producto actualizado');
+                    alert('Producto actualizado con éxito');
                 } else {
+                    // Creación de producto nuevo
                     productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    
+                    // Inicializamos la disponibilidad en las sucursales por defecto encendidas
+                    productData.visibilidadSucursales = {
+                        pilar: true,
+                        sanIsidro: true
+                    };
+                    
                     await db.collection('products').add(productData);
-                    alert('Producto creado');
+                    alert('Producto creado con éxito');
                 }
                 closeProductModal();
+                document.getElementById('product-form').reset();
+                document.getElementById('product-id').value = '';
             } catch (error) {
-                console.error("Error save product:", error);
-                alert("Error al guardar producto");
+                console.error("Error al guardar producto en Firestore:", error);
+                alert("Error al guardar el producto");
             }
         });
 
         // ============================================
-        // STOCK
+        // CONTROL DE MOSTRADOR / DISPONIBILIDAD (REEMPLAZA A STOCK)
         // ============================================
         function loadStock() {
             const tbody = document.getElementById('stock-table-body');
             db.collection('products').onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
                 if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8">No hay productos para mostrar stock.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8">No hay productos para mostrar en el mostrador.</td></tr>';
                     return;
                 }
                 
                 snapshot.forEach((doc) => {
                     const product = doc.data();
-                    const totalStock = (product.stockPilar || 0) + (product.stockSanIsidro || 0);
+                    
+                    // Traemos el estado de visibilidad individual de cada sucursal (si no existe, por defecto true)
+                    const visiblePilar = product.visibilidadSucursales?.pilar !== false;
+                    const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+                    
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="font-bold">${product.name}</td>
-                        <td>
-                            <input type="number" class="form-control" value="${product.stockPilar || 0}" 
-                                   onchange="updateStock('${doc.id}', 'pilar', this.value)" style="width: 100px;">
+                        <td class="font-bold">
+                            <span class="text-xs uppercase bg-purple-100 px-2 py-1 rounded mr-2 text-purple-700 font-sans">${product.tipo || 'producto'}</span>
+                            ${product.name}
                         </td>
+                        <!-- CONTROL MOSTRADOR PILAR -->
                         <td>
-                            <input type="number" class="form-control" value="${product.stockSanIsidro || 0}" 
-                                   onchange="updateStock('${doc.id}', 'san-isidro', this.value)" style="width: 100px;">
+                            <button onclick="toggleSucursalVisibilidad('${doc.id}', 'pilar', ${visiblePilar})" 
+                                    class="${visiblePilar ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
+                                ${visiblePilar ? '🟢 ENCENDIDO' : '🔴 APAGADO'}
+                            </button>
                         </td>
-                        <td class="font-bold">${totalStock}</td>
+                        <!-- CONTROL MOSTRADOR SAN ISIDRO -->
                         <td>
-                            <span class="status-badge ${totalStock > 0 ? 'active' : 'inactive'}">
-                                ${totalStock > 0 ? 'En Stock' : 'Sin Stock'}
+                            <button onclick="toggleSucursalVisibilidad('${doc.id}', 'sanIsidro', ${visibleSanIsidro})" 
+                                    class="${visibleSanIsidro ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
+                                ${visibleSanIsidro ? '🟢 ENCENDIDO' : '🔴 APAGADO'}
+                            </button>
+                        </td>
+                        <!-- PRECIO BASE INFORMATIVO -->
+                        <td class="font-bold">$${product.price || 0}</td>
+                        <td>
+                            <span class="status-badge ${(visiblePilar || visibleSanIsidro) ? 'active' : 'inactive'}">
+                                ${(visiblePilar || visibleSanIsidro) ? 'Activo' : 'Inactivo'}
                             </span>
                         </td>
                         <td>
@@ -564,14 +622,17 @@
             });
         }
 
-        function updateStock(productId, branch, value) {
-            const field = branch === 'pilar' ? 'stockPilar' : 'stockSanIsidro';
-            db.collection('products').doc(productId).update({
-                [field]: parseInt(value)
-            }).catch(error => {
-                console.error("Error update stock:", error);
-                alert("Error al actualizar stock");
-            });
+        // Cambia de manera independiente la disponibilidad por sucursal invirtiendo su valor booleano
+        async function toggleSucursalVisibilidad(productId, branch, estadoActual) {
+            try {
+                const fieldPath = `visibilidadSucursales.${branch}`;
+                await db.collection('products').doc(productId).update({
+                    [fieldPath]: !estadoActual
+                });
+            } catch (error) {
+                console.error("Error al cambiar disponibilidad de sucursal:", error);
+                alert("No se pudo actualizar el estado del mostrador");
+            }
         }
 
         function refreshStock() {
@@ -579,14 +640,14 @@
         }
 
         // ============================================
-        // PRECIOS
+        // GESTIÓN DE PRECIOS UNIFICADOS
         // ============================================
         function loadPrices() {
             const tbody = document.getElementById('prices-table-body');
             db.collection('products').onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
                 if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8">No hay productos para mostrar precios.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8">No hay productos para mostrar precios.</td></tr>';
                     return;
                 }
                 
@@ -596,19 +657,11 @@
                     row.innerHTML = `
                         <td class="font-bold">${product.name}</td>
                         <td>
-                            <input type="number" class="form-control price-input" data-id="${doc.id}" data-field="priceUnit" 
-                                   value="${product.priceUnit || 0}" step="0.01" style="width: 120px;">
+                            <input type="number" class="form-control price-input" data-id="${doc.id}" 
+                                   value="${product.price || 0}" step="0.01" style="width: 140px;">
                         </td>
                         <td>
-                            <input type="number" class="form-control price-input" data-id="${doc.id}" data-field="priceBox" 
-                                   value="${product.priceBox || 0}" step="0.01" style="width: 120px;">
-                        </td>
-                        <td>
-                            <input type="number" class="form-control price-input" data-id="${doc.id}" data-field="priceDiscount" 
-                                   value="${product.priceDiscount || 0}" step="0.01" style="width: 120px;">
-                        </td>
-                        <td>
-                            <button onclick="editProduct('${doc.id}')" class="btn-primary text-sm">Editar</button>
+                            <button onclick="editProduct('${doc.id}')" class="btn-primary text-sm">Editar Todo</button>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -616,32 +669,33 @@
             });
         }
 
-        function saveAllPrices() {
+        async function saveAllPrices() {
             const inputs = document.querySelectorAll('.price-input');
             const updates = [];
             
             inputs.forEach(input => {
                 const productId = input.dataset.id;
-                const field = input.dataset.field;
                 const value = parseFloat(input.value) || 0;
                 
                 updates.push(
                     db.collection('products').doc(productId).update({
-                        [field]: value
+                        price: value
                     })
                 );
             });
             
-            Promise.all(updates)
-                .then(() => alert('Precios actualizados correctamente'))
-                .catch(error => {
-                    console.error("Error save prices:", error);
-                    alert("Error al guardar precios");
-                });
+            try {
+                await Promise.all(updates);
+                alert('Precios generales actualizados correctamente');
+            } catch (error) {
+                console.error("Error al guardar los precios masivos:", error);
+                alert("Error al guardar los nuevos precios");
+            }
         }
 
-        // ============================================
-        // ESTADÍSTICAS
+
+               // ============================================
+        // ESTADÍSTICAS REESCRITAS (ADAPTADAS AL NUEVO SISTEMA)
         // ============================================
         function loadStats() {
             // Contar productos totales
@@ -649,26 +703,43 @@
                 document.getElementById('stat-total-products').textContent = snapshot.size;
                 
                 let activeCount = 0;
-                let totalStock = 0;
+                let totalDisponiblesMostrador = 0;
                 
                 snapshot.forEach(doc => {
                     const product = doc.data();
-                    if (product.isVisible) activeCount++;
-                    totalStock += (product.stockPilar || 0) + (product.stockSanIsidro || 0);
+                    
+                    // Obtenemos los estados individuales por sucursal
+                    const visiblePilar = product.visibilidadSucursales?.pilar !== false;
+                    const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+                    
+                    // Un producto cuenta como activo general si está visible en al menos una sucursal
+                    if (visiblePilar || visibleSanIsidro) {
+                        activeCount++;
+                    }
+                    
+                    // Sumamos cuántas "disponibilidades de mostrador" hay activas en toda la empresa
+                    if (visiblePilar) totalDisponiblesMostrador++;
+                    if (visibleSanIsidro) totalDisponiblesMostrador++;
                 });
                 
                 document.getElementById('stat-active-products').textContent = activeCount;
-                document.getElementById('stat-total-stock').textContent = totalStock;
+                
+                // Reutilizamos el cuadro de stock viejo para mostrar cuántos ítems están listos en mostrador
+                document.getElementById('stat-total-stock').textContent = totalDisponiblesMostrador;
+            }).catch(error => {
+                console.error("Error al cargar estadísticas de productos:", error);
             });
             
-            // Contar usuarios
+            // Contar usuarios de Firebase
             db.collection('users').get().then(snapshot => {
                 document.getElementById('stat-total-users').textContent = snapshot.size;
+            }).catch(error => {
+                console.error("Error al cargar estadísticas de usuarios:", error);
             });
         }
 
         // ============================================
-        // USUARIOS
+        // USUARIOS (SE MANTIENE LIMPIO Y OPTIMIZADO)
         // ============================================
         function loadUsers() {
             const tbody = document.getElementById('users-table-body');
@@ -682,19 +753,27 @@
                 snapshot.forEach((doc) => {
                     const user = doc.data();
                     const row = document.createElement('tr');
-                    const lastLogin = user.lastLogin ? new Date(user.lastLogin.seconds * 1000).toLocaleDateString() : 'N/A';
+                    
+                    // Manejo seguro por si Firebase no cargó el timestamp del último login
+                    const lastLogin = user.lastLogin && user.lastLogin.seconds 
+                        ? new Date(user.lastLogin.seconds * 1000).toLocaleDateString() 
+                        : 'N/A';
                     
                     row.innerHTML = `
                         <td class="font-bold">${user.name || 'Usuario'}</td>
                         <td>${user.email}</td>
-                        <td>${user.branch || 'N/A'}</td>
+                        <td class="capitalize">${user.branch || 'General'}</td>
                         <td>${lastLogin}</td>
                         <td>
-                            <span class="status-badge active">Cliente</span>
+                            <span class="status-badge active bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">
+                                ${user.role || 'Cliente'}
+                            </span>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
+            }, error => {
+                console.error("Error en tiempo real de usuarios:", error);
             });
         }
 
@@ -702,6 +781,6 @@
             loadUsers();
         }
     </script>
-
 </body>
 </html>
+        
