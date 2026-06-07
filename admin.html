@@ -427,8 +427,8 @@
             loadStats();
         }
 
-        // ============================================
-        // PRODUCTOS
+                // ============================================
+        // PRODUCTOS (TABLA DE ADMINISTRACIÓN GENERAL)
         // ============================================
         function loadProducts() {
             const container = document.getElementById('products-container');
@@ -441,24 +441,33 @@
                 
                 snapshot.forEach((doc) => {
                     const product = doc.data();
+                    
+                    // Evaluamos la visibilidad global basándonos en si está activo en al menos un mostrador
+                    const visiblePilar = product.visibilidadSucursales?.pilar !== false;
+                    const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+                    const estaActivoGlobal = visiblePilar || visibleSanIsidro;
+                    
                     const card = document.createElement('div');
-                    card.className = `product-card ${product.isVisible ? 'active' : 'inactive'}`;
+                    card.className = `product-card ${estaActivoGlobal ? 'active' : 'inactive'}`;
                     card.innerHTML = `
-                        <span class="status-badge ${product.isVisible ? 'active' : 'inactive'}">
-                            ${product.isVisible ? 'Activo' : 'Oculto'}
+                        <span class="status-badge ${estaActivoGlobal ? 'active' : 'inactive'}">
+                            ${estaActivoGlobal ? 'Activo en Web' : 'Oculto Global'}
+                        </span>
+                        <!-- Mostramos la etiqueta del tipo de registro -->
+                        <span class="text-xs uppercase bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded font-sans block w-fit mb-2">
+                            ${product.tipo || 'producto'}
                         </span>
                         <h3 class="font-chewy text-xl mb-2" style="color: #512874;">${product.name}</h3>
                         <p class="text-gray-600 text-sm mb-4">${product.description || 'Sin descripción'}</p>
                         <div class="flex justify-between text-sm mb-2">
-                            <span class="font-bold text-[#a55641]">Precio: $${product.priceUnit || 0}</span>
-                            <span class="text-gray-600">Stock: ${(product.stockPilar || 0) + (product.stockSanIsidro || 0)}</span>
+                            <span class="font-bold text-[#a55641]">Precio: $${product.price || 0}</span>
+                            <span class="text-gray-500 text-xs">
+                                P: ${visiblePilar ? '🟢' : '🔴'} | SI: ${visibleSanIsidro ? '🟢' : '🔴'}
+                            </span>
                         </div>
                         <div class="flex gap-2 mt-4">
                             <button onclick="editProduct('${doc.id}')" class="btn-secondary text-sm flex-1">Editar</button>
-                            <button onclick="toggleProductVisibility('${doc.id}', ${product.isVisible})" class="btn-primary text-sm flex-1">
-                                ${product.isVisible ? 'Ocultar' : 'Activar'}
-                            </button>
-                            <button onclick="deleteProduct('${doc.id}')" class="btn-danger text-sm">🗑️</button>
+                            <button onclick="deleteProduct('${doc.id}')" class="btn-danger text-sm px-3">🗑️</button>
                         </div>
                     `;
                     container.appendChild(card);
@@ -474,18 +483,22 @@
             form.reset();
             document.getElementById('product-id').value = '';
             
+            // CONGELA LA WEB DE ATRÁS: Arregla el bug de scroll de tu primer prompt
+            document.body.style.overflow = 'hidden'; 
+            
             if (productId) {
-                title.textContent = 'Editar Cookie';
+                title.textContent = 'Editar Registro';
                 db.collection('products').doc(productId).get().then((doc) => {
-                    const product = doc.data();
-                    document.getElementById('product-id').value = productId;
-                    document.getElementById('product-name').value = product.name;
-                    document.getElementById('product-description').value = product.description || '';
-                    document.getElementById('product-price-unit').value = product.priceUnit || '';
-                    document.getElementById('product-price-box').value = product.priceBox || '';
-                    document.getElementById('product-stock-pilar').value = product.stockPilar || 0;
-                    document.getElementById('product-stock-san-isidro').value = product.stockSanIsidro || 0;
-                    document.getElementById('product-visible').checked = product.isVisible || false;
+                    if (doc.exists) {
+                        const product = doc.data();
+                        document.getElementById('product-id').value = productId;
+                        document.getElementById('product-type').value = product.tipo || 'producto';
+                        document.getElementById('product-name').value = product.name || '';
+                        document.getElementById('product-description').value = product.description || '';
+                        document.getElementById('product-price').value = product.price || 0;
+                    }
+                }).catch(error => {
+                    console.error("Error al cargar datos de edición:", error);
                 });
             } else {
                 title.textContent = 'Nueva Cookie';
@@ -496,26 +509,18 @@
 
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            // DEVUELVE EL SCROLL NORMAL A LA PÁGINA
+            document.body.style.overflow = 'auto'; 
         }
 
         function editProduct(productId) {
             showProductModal(productId);
         }
 
-        function toggleProductVisibility(productId, currentVisibility) {
-            db.collection('products').doc(productId).update({
-                isVisible: !currentVisibility
-            }).catch(error => {
-                console.error("Error toggle visibility:", error);
-                alert("Error al cambiar visibilidad");
-            });
-        }
-
         function deleteProduct(productId) {
-            if (confirm('¿Estás seguro de eliminar este producto?')) {
+            if (confirm('¿Estás seguro de eliminar este producto por completo de la base general?')) {
                 db.collection('products').doc(productId).delete()
-                    .then(() => alert('Producto eliminado'))
+                    .then(() => alert('Producto eliminado correctamente'))
                     .catch(error => {
                         console.error("Error delete:", error);
                         alert("Error al eliminar producto");
@@ -523,7 +528,7 @@
             }
         }
 
-                // ============================================
+        // ============================================
         // FORMULARIO DE PRODUCTO (ADMINISTRACIÓN GENERAL)
         // ============================================
         document.getElementById('product-form').addEventListener('submit', async (e) => {
@@ -531,9 +536,8 @@
             
             const productId = document.getElementById('product-id').value;
             
-            // Estructura limpia basada en tus nuevos inputs del HTML
             const productData = {
-                tipo: document.getElementById('product-type').value, // 'producto', 'gusto' o 'merch'
+                tipo: document.getElementById('product-type').value, 
                 name: document.getElementById('product-name').value,
                 description: document.getElementById('product-description').value,
                 price: parseFloat(document.getElementById('product-price').value) || 0,
@@ -542,14 +546,12 @@
             
             try {
                 if (productId) {
-                    // Actualización de producto existente
                     await db.collection('products').doc(productId).update(productData);
                     alert('Producto actualizado con éxito');
                 } else {
-                    // Creación de producto nuevo
                     productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                     
-                    // Inicializamos la disponibilidad en las sucursales por defecto encendidas
+                    // Inicializamos los mostradores encendidos por defecto al crear
                     productData.visibilidadSucursales = {
                         pilar: true,
                         sanIsidro: true
@@ -566,6 +568,7 @@
                 alert("Error al guardar el producto");
             }
         });
+
 
         // ============================================
         // CONTROL DE MOSTRADOR / DISPONIBILIDAD (REEMPLAZA A STOCK)
