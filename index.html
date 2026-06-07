@@ -536,8 +536,8 @@
     </div>
 
     <!-- Modal: Nuevo Producto (Exclusivo Modo Edición) -->
-    <div id="new-product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[110] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+    <div id="new-product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[110] hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-[#512874]">Añadir a <span id="target-branch-display">...</span></h3>
                 <button onclick="closeNewProductModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
@@ -867,7 +867,6 @@ async function logout() {
                 nav.innerHTML = `
                     <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">inicio</a>
                     <a href="#menu-section" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">menú</a>
-                    <a href="#" onclick="showNewProductModal(); toggleSideMenu();" class="text-xl font-lato-desc text-[#a55641]">nuevo producto</a>
                     <a href="#" onclick="showCookieMonthModal(); toggleSideMenu();" class="text-xl font-lato-desc text-[#a55641]">cookie del mes</a>
                     <a href="#" onclick="toggleSideMenu()" class="text-xl font-lato-desc text-[#a55641]">modificar combo catering</a>
                     

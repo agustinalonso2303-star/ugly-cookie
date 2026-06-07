@@ -241,8 +241,9 @@
     </div>
 
     <!-- MODAL DE PRODUCTO -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden" style="background: rgba(0,0,0,0.5);">
-        <div class="max-w-lg mx-auto bg-white rounded-2xl p-8 mt-20">
+    <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="background: rgba(0,0,0,0.5);">
+        <div class="min-h-screen flex items-center justify-center p-4 py-8">
+            <div class="max-w-lg w-full bg-white rounded-2xl p-8 my-4">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="font-chewy text-2xl" style="color: #512874;" id="modal-title">Nueva Cookie</h2>
                 <button onclick="closeProductModal()" class="text-3xl text-gray-400">&times;</button>
@@ -468,6 +469,7 @@
 
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         function editProduct(productId) {
