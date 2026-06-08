@@ -207,7 +207,52 @@ function loadDashboard() {
 }
 
 window.loadDashboard = loadDashboard;
+// =========================
+// FIREBASE AUTH (LOGIN FIX)
+// =========================
 
+document.addEventListener("DOMContentLoaded", () => {
+
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    document.getElementById("login-button").addEventListener("click", async () => {
+        try {
+            const result = await auth.signInWithPopup(provider);
+            const user = result.user;
+
+            document.getElementById("admin-email-display").textContent = user.email;
+
+            document.getElementById("login-view").classList.add("hidden");
+            document.getElementById("admin-panel").classList.remove("hidden");
+
+            loadDashboard();
+
+        } catch (error) {
+            console.error("Error login:", error);
+            document.getElementById("login-error").classList.remove("hidden");
+        }
+    });
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById("login-view").classList.add("hidden");
+            document.getElementById("admin-panel").classList.remove("hidden");
+
+            document.getElementById("admin-email-display").textContent = user.email;
+
+            loadDashboard();
+        } else {
+            document.getElementById("login-view").classList.remove("hidden");
+            document.getElementById("admin-panel").classList.add("hidden");
+        }
+    });
+
+    document.getElementById("btn-logout").addEventListener("click", () => {
+        auth.signOut();
+    });
+
+});
                 // ============================================
         // PRODUCTOS (TABLA DE ADMINISTRACIÓN GENERAL)
         // ============================================
