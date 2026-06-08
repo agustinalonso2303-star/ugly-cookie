@@ -240,93 +240,127 @@
 
     </div>
 
-    <!-- MODAL DE PRODUCTO -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="background: rgba(0,0,0,0.5);">
-        <div class="min-h-screen flex items-center justify-center p-4 py-8">
-            <div class="max-w-lg w-full bg-white rounded-2xl p-8 my-4">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="font-chewy text-2xl" style="color: #512874;" id="modal-title">Nueva Cookie</h2>
-                <button onclick="closeProductModal()" class="text-3xl text-gray-400">&times;</button>
-            </div>
-            
-            <form id="product-form">
-                <input type="hidden" id="product-id">
-                
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="product-name" class="form-control" required>
-                </div>
-                
-                <div class="form-group mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Registro</label>
-        <select id="product-type" class="form-control w-full p-2 border rounded-lg" required>
-            <option value="" disabled selected>Seleccioná una opción...</option>
-            <option value="producto">Producto</option>
-            <option value="gusto">Gusto</option>
-            <option value="merch">Merch</option>
-        </select>
-    </div>
-<div class="form-group mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-        <input type="text" id="product-name" class="form-control w-full p-2 border rounded-lg" required>
-    </div>
-    
-    <div class="form-group mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-        <textarea id="product-description" class="form-control w-full p-2 border rounded-lg" rows="3"></textarea>
-    </div>
-       <div class="form-group mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Precio ($)</label>
-        <input type="number" id="product-price" class="form-control w-full p-2 border rounded-lg" step="0.01" required>
-    </div>
-     <div class="flex gap-4">
-        <button type="submit" class="btn-primary flex-1 font-chewy py-2 rounded-lg bg-purple-700 text-white">Guardar</button>
-        <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1 py-2 rounded-lg border text-gray-700">Cancelar</button>
-    </div>
-</form>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea id="product-description" class="form-control" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Precio Unidad ($)</label>
-                    <input type="number" id="product-price-unit" class="form-control" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Precio Caja ($)</label>
-                    <input type="number" id="product-price-box" class="form-control" step="0.01">
-                </div>
-                
-                <div class="form-group">
-                    <label>Stock Pilar</label>
-                    <input type="number" id="product-stock-pilar" class="form-control" value="0">
-                </div>
-                
-                <div class="form-group">
-                    <label>Stock San Isidro</label>
-                    <input type="number" id="product-stock-san-isidro" class="form-control" value="0">
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="product-visible" class="mr-2">
-                        Visible en la web
-                    </label>
-                </div>
-                
-                <div class="flex gap-4">
-                    <button type="submit" class="btn-primary flex-1 font-chewy">Guardar</button>
-                    <button type="button" onclick="closeProductModal()" class="btn-secondary flex-1">Cancelar</button>
-                </div>
-            </form>
+   <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="background: rgba(0,0,0,0.5);">
+    <div class="min-h-screen flex items-center justify-center p-4 py-8">
+
+    <div class="max-w-lg w-full bg-white rounded-2xl p-8 my-4">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="modal-title" class="font-chewy text-2xl text-purple-700">
+                Nuevo Producto
+            </h2>
+
+            <button
+                type="button"
+                onclick="closeProductModal()"
+                class="text-3xl text-gray-400">
+                &times;
+            </button>
         </div>
+
+        <form id="product-form">
+
+            <input type="hidden" id="product-id">
+
+            <div class="form-group mb-4">
+                <label class="block mb-1 font-medium">
+                    Tipo de Producto
+                </label>
+
+                <select
+                    id="product-type"
+                    class="form-control w-full p-2 border rounded-lg"
+                    required>
+
+                    <option value="">Seleccionar...</option>
+                    <option value="producto">Producto</option>
+                    <option value="gusto">Gusto</option>
+                    <option value="merch">Merch</option>
+
+                </select>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="block mb-1 font-medium">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    id="product-name"
+                    class="form-control w-full p-2 border rounded-lg"
+                    required>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="block mb-1 font-medium">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="product-description"
+                    rows="3"
+                    class="form-control w-full p-2 border rounded-lg"></textarea>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="block mb-1 font-medium">
+                    Precio ($)
+                </label>
+
+                <input
+                    type="number"
+                    id="product-price"
+                    class="form-control w-full p-2 border rounded-lg"
+                    step="0.01"
+                    required>
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="flex items-center gap-2">
+
+                    <input
+                        type="checkbox"
+                        id="product-visible-web"
+                        checked>
+
+                    <span>
+                        Visible en la Web
+                    </span>
+
+                </label>
+            </div>
+
+            <div class="flex gap-4">
+
+                <button
+                    type="submit"
+                    class="flex-1 py-2 rounded-lg bg-purple-700 text-white font-chewy">
+                    Guardar
+                </button>
+
+                <button
+                    type="button"
+                    onclick="closeProductModal()"
+                    class="flex-1 py-2 rounded-lg border border-gray-300">
+                    Cancelar
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
-    <script>
-        // CONFIGURACIÓN DE FIREBASE
-        const firebaseConfig = {
+</div>
+
+</div>
+
+<script>
+
+// CONFIGURACIÓN DE FIREBASE
+
+const firebaseConfig = {
             apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
             authDomain: "ugly-cookies.firebaseapp.com",
             projectId: "ugly-cookies",
@@ -443,15 +477,19 @@
                     const product = doc.data();
                     
                     // Evaluamos la visibilidad global basándonos en si está activo en al menos un mostrador
+                    const visibleWeb = product.visibleWeb !== false;
+
                     const visiblePilar = product.visibilidadSucursales?.pilar !== false;
+
                     const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
-                    const estaActivoGlobal = visiblePilar || visibleSanIsidro;
+
+                    const estaActivoGlobal = visibleWeb;
                     
                     const card = document.createElement('div');
                     card.className = `product-card ${estaActivoGlobal ? 'active' : 'inactive'}`;
                     card.innerHTML = `
                         <span class="status-badge ${estaActivoGlobal ? 'active' : 'inactive'}">
-                            ${estaActivoGlobal ? 'Activo en Web' : 'Oculto Global'}
+                            ${visibleWeb ? 'Visible en Web' : 'Oculto en Web'}
                         </span>
                         <!-- Mostramos la etiqueta del tipo de registro -->
                         <span class="text-xs uppercase bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded font-sans block w-fit mb-2">
@@ -527,121 +565,231 @@
                     });
             }
         }
+// ============================================
+// FORMULARIO DE PRODUCTO (ADMINISTRACIÓN GENERAL)
+// ============================================
 
-        // ============================================
-        // FORMULARIO DE PRODUCTO (ADMINISTRACIÓN GENERAL)
-        // ============================================
-        document.getElementById('product-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const productId = document.getElementById('product-id').value;
-            
-            const productData = {
-                tipo: document.getElementById('product-type').value, 
-                name: document.getElementById('product-name').value,
-                description: document.getElementById('product-description').value,
-                price: parseFloat(document.getElementById('product-price').value) || 0,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+document.getElementById('product-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const productId = document.getElementById('product-id').value;
+
+    const productData = {
+        tipo: document.getElementById('product-type').value,
+        name: document.getElementById('product-name').value.trim(),
+        description: document.getElementById('product-description').value.trim(),
+        price: parseFloat(document.getElementById('product-price').value) || 0,
+
+        // NUEVO CONTROL GLOBAL WEB
+        visibleWeb: document.getElementById('product-visible-web')?.checked ?? true,
+
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+
+        if (productId) {
+
+            await db.collection('products')
+                .doc(productId)
+                .update(productData);
+
+            alert('Producto actualizado con éxito');
+
+        } else {
+
+            productData.createdAt =
+                firebase.firestore.FieldValue.serverTimestamp();
+
+            productData.visibilidadSucursales = {
+                pilar: true,
+                sanIsidro: true
             };
-            
-            try {
-                if (productId) {
-                    await db.collection('products').doc(productId).update(productData);
-                    alert('Producto actualizado con éxito');
-                } else {
-                    productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    
-                    // Inicializamos los mostradores encendidos por defecto al crear
-                    productData.visibilidadSucursales = {
-                        pilar: true,
-                        sanIsidro: true
-                    };
-                    
-                    await db.collection('products').add(productData);
-                    alert('Producto creado con éxito');
-                }
-                closeProductModal();
-                document.getElementById('product-form').reset();
-                document.getElementById('product-id').value = '';
-            } catch (error) {
-                console.error("Error al guardar producto en Firestore:", error);
-                alert("Error al guardar el producto");
+
+            await db.collection('products')
+                .add(productData);
+
+            alert('Producto creado con éxito');
+        }
+
+        closeProductModal();
+
+        document.getElementById('product-form').reset();
+
+        document.getElementById('product-id').value = '';
+
+    } catch (error) {
+
+        console.error(
+            "Error al guardar producto en Firestore:",
+            error
+        );
+
+        alert("Error al guardar el producto");
+    }
+});
+
+
+function loadStock() {
+    const tbody = document.getElementById('stock-table-body');
+
+    db.collection('products')
+        .orderBy('name')
+        .onSnapshot((snapshot) => {
+
+            tbody.innerHTML = '';
+
+            if (snapshot.empty) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8">
+                            No hay productos cargados.
+                        </td>
+                    </tr>
+                `;
+                return;
             }
-        });
 
+            snapshot.forEach((doc) => {
 
-        // ============================================
-        // CONTROL DE MOSTRADOR / DISPONIBILIDAD (REEMPLAZA A STOCK)
-        // ============================================
-        function loadStock() {
-            const tbody = document.getElementById('stock-table-body');
-            db.collection('products').onSnapshot((snapshot) => {
-                tbody.innerHTML = '';
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8">No hay productos para mostrar en el mostrador.</td></tr>';
-                    return;
-                }
-                
-                snapshot.forEach((doc) => {
-                    const product = doc.data();
-                    
-                    // Traemos el estado de visibilidad individual de cada sucursal (si no existe, por defecto true)
-                    const visiblePilar = product.visibilidadSucursales?.pilar !== false;
-                    const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="font-bold">
-                            <span class="text-xs uppercase bg-purple-100 px-2 py-1 rounded mr-2 text-purple-700 font-sans">${product.tipo || 'producto'}</span>
-                            ${product.name}
-                        </td>
-                        <!-- CONTROL MOSTRADOR PILAR -->
-                        <td>
-                            <button onclick="toggleSucursalVisibilidad('${doc.id}', 'pilar', ${visiblePilar})" 
-                                    class="${visiblePilar ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
-                                ${visiblePilar ? '🟢 ENCENDIDO' : '🔴 APAGADO'}
-                            </button>
-                        </td>
-                        <!-- CONTROL MOSTRADOR SAN ISIDRO -->
-                        <td>
-                            <button onclick="toggleSucursalVisibilidad('${doc.id}', 'sanIsidro', ${visibleSanIsidro})" 
-                                    class="${visibleSanIsidro ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
-                                ${visibleSanIsidro ? '🟢 ENCENDIDO' : '🔴 APAGADO'}
-                            </button>
-                        </td>
-                        <!-- PRECIO BASE INFORMATIVO -->
-                        <td class="font-bold">$${product.price || 0}</td>
-                        <td>
-                            <span class="status-badge ${(visiblePilar || visibleSanIsidro) ? 'active' : 'inactive'}">
-                                ${(visiblePilar || visibleSanIsidro) ? 'Activo' : 'Inactivo'}
-                            </span>
-                        </td>
-                        <td>
-                            <button onclick="editProduct('${doc.id}')" class="btn-primary text-sm">Editar</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
+                const product = doc.data();
+
+                const visibleWeb = product.visibleWeb !== false;
+                const visiblePilar = product.visibilidadSucursales?.pilar !== false;
+                const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td class="font-bold">
+                        <span class="text-xs uppercase bg-purple-100 px-2 py-1 rounded mr-2 text-purple-700 font-sans">
+                            ${product.tipo || 'producto'}
+                        </span>
+                        ${product.name || ''}
+                    </td>
+
+                    <td>
+                        <button
+                            onclick="toggleSucursalVisibilidad('${doc.id}','pilar',${visiblePilar})"
+                            class="${visiblePilar ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
+                            ${visiblePilar ? 'ENCENDIDO' : 'APAGADO'}
+                        </button>
+                    </td>
+
+                    <td>
+                        <button
+                            onclick="toggleSucursalVisibilidad('${doc.id}','sanIsidro',${visibleSanIsidro})"
+                            class="${visibleSanIsidro ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
+                            ${visibleSanIsidro ? 'ENCENDIDO' : 'APAGADO'}
+                        </button>
+                    </td>
+
+                    <td>
+                        <button
+                            onclick="toggleWebVisibility('${doc.id}',${visibleWeb})"
+                            class="${visibleWeb ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
+                            ${visibleWeb ? 'WEB ON' : 'WEB OFF'}
+                        </button>
+                    </td>
+
+                    <td class="font-bold">
+                        $${product.price || 0}
+                    </td>
+
+                    <td>
+                        <span class="status-badge ${(visibleWeb || visiblePilar || visibleSanIsidro) ? 'active' : 'inactive'}">
+                            ${(visibleWeb || visiblePilar || visibleSanIsidro) ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+
+                    <td>
+                        <button
+                            onclick="editProduct('${doc.id}')"
+                            class="btn-primary text-sm">
+                            Editar
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
             });
-        }
+        });
+}
 
-        // Cambia de manera independiente la disponibilidad por sucursal invirtiendo su valor booleano
-        async function toggleSucursalVisibilidad(productId, branch, estadoActual) {
-            try {
-                const fieldPath = `visibilidadSucursales.${branch}`;
-                await db.collection('products').doc(productId).update({
-                    [fieldPath]: !estadoActual
-                });
-            } catch (error) {
-                console.error("Error al cambiar disponibilidad de sucursal:", error);
-                alert("No se pudo actualizar el estado del mostrador");
-            }
-        }
 
-        function refreshStock() {
-            loadStock();
-        }
+// ============================================
+// TOGGLE VISIBILIDAD SUCURSAL
+// ============================================
 
+async function toggleSucursalVisibilidad(
+    productId,
+    branch,
+    estadoActual
+) {
+
+    try {
+
+        const fieldPath =
+            `visibilidadSucursales.${branch}`;
+
+        await db.collection('products')
+            .doc(productId)
+            .update({
+                [fieldPath]: !estadoActual
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Error al cambiar disponibilidad:",
+            error
+        );
+
+        alert(
+            "No se pudo actualizar la sucursal"
+        );
+    }
+}
+
+
+// ============================================
+// TOGGLE VISIBILIDAD WEB
+// ============================================
+
+async function toggleWebVisibility(
+    productId,
+    estadoActual
+) {
+
+    try {
+
+        await db.collection('products')
+            .doc(productId)
+            .update({
+                visibleWeb: !estadoActual
+            });
+
+    } catch (error) {
+
+        console.error(
+            "Error al actualizar visibilidad web:",
+            error
+        );
+
+        alert(
+            "No se pudo actualizar la web"
+        );
+    }
+}
+
+
+// ============================================
+// REFRESH
+// ============================================
+
+function refreshStock() {
+    loadStock();
+}
         // ============================================
         // GESTIÓN DE PRECIOS UNIFICADOS
         // ============================================
