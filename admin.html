@@ -215,31 +215,79 @@ function loadBranches() {
     const container = document.getElementById("branches-list");
 
     db.collection("products").onSnapshot((snapshot) => {
-        let pilar = 0;
-        let sanIsidro = 0;
+
+        const branchMap = {};
 
         snapshot.forEach(doc => {
             const p = doc.data();
+            const branches = p.visibilidadSucursales || {};
 
-            if (p.visibilidadSucursales?.pilar !== false) pilar++;
-            if (p.visibilidadSucursales?.sanIsidro !== false) sanIsidro++;
+            Object.keys(branches).forEach(branch => {
+                if (!branchMap[branch]) {
+                    branchMap[branch] = 0;
+                }
+
+                if (branches[branch] !== false) {
+                    branchMap[branch]++;
+                }
+            });
         });
 
-        container.innerHTML = `
-            <div class="stat-card">
-                <h2>Pilar</h2>
-                <p>${pilar} productos activos</p>
-            </div>
-
-            <div class="stat-card">
-                <h2>San Isidro</h2>
-                <p>${sanIsidro} productos activos</p>
+        let html = `
+            <div style="margin-bottom:20px;">
+                <button onclick="addBranch()" class="btn-primary">
+                    + Agregar sucursal
+                </button>
             </div>
         `;
+
+        Object.keys(branchMap).forEach(branch => {
+            html += `
+                <div class="stat-card" style="margin-bottom:10px;">
+                    <h2>${branch}</h2>
+                    <p>${branchMap[branch]} productos activos</p>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
     });
 }
 
 window.loadBranches = loadBranches;
+
+function addBranch() {
+    const name = prompt("Nombre de la nueva sucursal:");
+
+    if (!name) return;
+
+    const branchKey = name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "_");
+
+    db.collection("products").get().then(snapshot => {
+
+        const batch = db.batch();
+
+        snapshot.forEach(doc => {
+            const ref = db.collection("products").doc(doc.id);
+
+            batch.update(ref, {
+                [`visibilidadSucursales.${branchKey}`]: true
+            });
+        });
+
+        return batch.commit();
+    }).then(() => {
+        alert("Sucursal agregada correctamente");
+    }).catch(err => {
+        console.error(err);
+        alert("Error al agregar sucursal");
+    });
+}
+
+window.addBranch = addBranch;
 // =========================
 // DASHBOARD FIXED
 // =========================
