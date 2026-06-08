@@ -1110,17 +1110,18 @@ auth.onAuthStateChanged(async (user) => {
 
                         snapshot.forEach(doc => {
                             const product = { id: doc.id, ...doc.data() };
-
+                            product.tipo = product.tipo || 'producto';
                             // Retrocompatibilidad: Inferir categoría si no existe
                             if (!product.category) {
-                                product.category = product.name.toLowerCase().includes('box') ? 'box' : 'producto';
+                                product.tipo = product.tipo || 'producto';
                             }
 
                             products.push(product);
                             
                             if (isEditMode) {
                                 // 1. Columna de Stock (Se muestra TODO agrupado)
-                                const catList = document.querySelector(`#cat-${product.category} .list`);
+                               const catList =
+    document.querySelector(`#cat-${product.tipo} .list`);
                                 if (catList) renderProduct(product, catList, true);
 
                                 // 2. Columna de Mostrador (Solo Boxes/Insumos visibles)
@@ -1129,9 +1130,13 @@ auth.onAuthStateChanged(async (user) => {
                                 }
                             } else {
                                 // Vista pública normal
-                                if (product.isVisible !== false && (product.category === 'box' || product.category === 'insumo')) {
-                                    renderProduct(product, container, false);
-                                }
+                                if (
+    product.visibleWeb !== false &&
+    product.tipo === 'producto'
+)
+{
+    renderProduct(product, container, false);
+}
                             }
                         });
                     }, (error) => {
