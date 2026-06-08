@@ -1,10 +1,9 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Cards - Ugly Cookies</title>
+    <title>Cartas de Felicitación - Ugly Cookies</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -12,29 +11,173 @@
         body { font-family: 'Lato', sans-serif; background-color: #512874; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-    <h1 class="text-6xl text-white font-chewy mb-6">Regalá Ugly</h1>
-    <p class="text-2xl text-[#efe6da] max-w-2xl mb-8">Nuestras Tarjetas de Regalo son el detalle perfecto. Elegí el monto y sorprendé a alguien especial con una explosión de sabor.</p>
-    <a href="index.html" class="bg-[#efe6da] text-[#512874] font-chewy py-3 px-8 rounded-xl text-xl hover:bg-white hover:scale-105 transition">Volver al inicio</a>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-[#512874] p-2 sticky top-0 z-50 shadow-md h-[65px] flex items-center">
+        <div class="max-w-6xl mx-auto w-full flex items-center relative">
+            <div class="z-[60] relative">
+                <button onclick="window.location.href='index.html'" class="text-5xl text-white p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer" style="line-height: 1;">←</button>
+            </div>
+            <div class="z-[60] relative ml-auto pr-2 text-right">
+                <span class="text-white font-chewy text-2xl block leading-tight">Cartas</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-[#512874] pt-8 pb-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl text-white font-chewy mb-4">Cartas de Felicitación</h1>
+            <p class="text-xl md:text-2xl text-[#efe6da] max-w-2xl mx-auto mb-6">Celebra cada momento especial con nuestras cartas únicas. El complemento perfecto para tus regalos.</p>
+        </div>
+    </section>
+
+    <!-- Cartas Section -->
+    <section class="bg-[#efe6da] py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Carta Happy Birthday -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-pink-400 to-purple-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🎂</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Happy Birthday</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Celebra ese día especial con nuestra carta de cumpleaños</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Happy New Year -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🎉</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Happy New Year</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Da la bienvenida al nuevo año con estilo</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Congratulations -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-green-400 to-teal-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🎊</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Congratulations</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Para esos logros y momentos especiales</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Happy Anniversary -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-red-400 to-pink-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">💕</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Happy Anniversary</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Celebra el amor y los recuerdos compartidos</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Thank You -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-blue-400 to-indigo-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🙏</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Thank You</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Agradece de manera especial y sincera</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Get Well Soon -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-purple-400 to-indigo-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🌸</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Get Well Soon</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Desea pronta recuperación con cariño</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Good Luck -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-cyan-400 to-blue-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">🍀</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Good Luck</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Mucha suerte en nuevos proyectos y desafíos</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Thinking of You -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-gradient-to-br from-rose-400 to-red-500 p-8 text-center">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">💌</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Thinking of You</h3>
+                    </div>
+                    <div class="p-6 text-center">
+                        <p class="text-[#512874] opacity-70 mb-4">Para recordarle a alguien especial que lo piensas</p>
+                        <button class="bg-[#512874] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#6a3a8d] transition">Ver carta</button>
+                    </div>
+                </div>
+
+                <!-- Carta Personalizada -->
+                <div class="bg-gradient-to-br from-[#a55641] to-[#c47a5e] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                    <div class="bg-white/20 p-8 text-center backdrop-blur-sm">
+                        <span class="text-white font-chewy text-5xl md:text-6xl">✨</span>
+                        <h3 class="text-white font-chewy text-3xl mt-4">Personalizada</h3>
+                    </div>
+                    <div class="p-6 text-center bg-white/95">
+                        <p class="text-[#a55641] opacity-70 mb-4">Crea tu carta con mensaje propio</p>
+                        <button class="bg-[#a55641] text-white font-chewy py-2 px-6 rounded-xl text-lg hover:bg-[#8a4532] transition">Crear carta</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="bg-[#512874] py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl text-white font-chewy mb-6">¿Cómo funcionan?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-white">
+                    <div class="text-5xl mb-2">1</div>
+                    <h3 class="font-chewy text-xl mb-2">Elegí la carta</h3>
+                    <p class="text-[#efe6da] opacity-80">Seleccioná la ocasión perfecta</p>
+                </div>
+                <div class="text-white">
+                    <div class="text-5xl mb-2">2</div>
+                    <h3 class="font-chewy text-xl mb-2">Personalizala</h3>
+                    <p class="text-[#efe6da] opacity-80">Agregá tu mensaje especial</p>
+                </div>
+                <div class="text-white">
+                    <div class="text-5xl mb-2">3</div>
+                    <h3 class="font-chewy text-xl mb-2">Compartila</h3>
+                    <p class="text-[#efe6da] opacity-80">Enviala por email o WhatsApp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#512874] py-6 px-4 border-t border-white/20">
+        <div class="max-w-6xl mx-auto text-center">
+            <a href="index.html" class="bg-[#efe6da] text-[#512874] font-chewy py-3 px-8 rounded-xl text-xl hover:bg-white hover:scale-105 transition inline-block">Volver al inicio</a>
+        </div>
+    </footer>
 </body>
-=======
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Cards - Ugly Cookies</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        .font-chewy { font-family: 'Chewy', cursive; }
-        body { font-family: 'Lato', sans-serif; background-color: #512874; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-    <h1 class="text-6xl text-white font-chewy mb-6">Regalá Ugly</h1>
-    <p class="text-2xl text-[#efe6da] max-w-2xl mb-8">Nuestras Tarjetas de Regalo son el detalle perfecto. Elegí el monto y sorprendé a alguien especial con una explosión de sabor.</p>
-    <a href="index.html" class="bg-[#efe6da] text-[#512874] font-chewy py-3 px-8 rounded-xl text-xl hover:bg-white hover:scale-105 transition">Volver al inicio</a>
-</body>
->>>>>>> 89e5c4be6485a3f646d8684bd11f6e8eb5d0b8d1
 </html>
