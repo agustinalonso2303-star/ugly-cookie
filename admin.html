@@ -248,80 +248,95 @@ window.loadPrices = () => console.log("loadPrices");
 function loadBranches() {
     const container = document.getElementById("branches-list");
 
-    db.collection("products").onSnapshot((snapshot) => {
+    db.collection("branches").onSnapshot((snapshot) => {
 
-        const branchMap = {};
+        if (snapshot.empty) {
+            container.innerHTML = `
+                <p class="text-gray-500 mb-4">No hay sucursales</p>
+                <button onclick="addBranch()" class="btn-primary">
+                    + Agregar sucursal
+                </button>
+            `;
+            return;
+        }
 
-        snapshot.forEach(doc => {
-            const p = doc.data();
-            const branches = p.visibilidadSucursales || {};
-
-            Object.keys(branches).forEach(branch => {
-                if (!branchMap[branch]) {
-                    branchMap[branch] = 0;
-                }
-
-                if (branches[branch] !== false) {
-                    branchMap[branch]++;
-                }
-            });
-        });
-
-        let html = `
-            <div style="margin-bottom:20px;">
+        container.innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Sucursales</h2>
                 <button onclick="addBranch()" class="btn-primary">
                     + Agregar sucursal
                 </button>
             </div>
+
+            <div class="space-y-3" id="branches-container"></div>
         `;
 
-        Object.keys(branchMap).forEach(branch => {
-            html += `
-                <div class="stat-card" style="margin-bottom:10px;">
-                    <h2>${branch}</h2>
-                    <p>${branchMap[branch]} productos activos</p>
+        const list = document.getElementById("branches-container");
+
+        snapshot.forEach((doc) => {
+            const b = doc.data();
+
+            const row = document.createElement("div");
+            row.className = "flex justify-between items-center p-3 border rounded-xl";
+
+            row.innerHTML = `
+                <div>
+                    <p class="font-bold">${b.name}</p>
+                    <p class="text-sm text-gray-500">${b.location || ""}</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button class="btn-secondary text-sm" onclick="editBranch('${doc.id}', '${b.name}', '${b.location || ""}')">
+                        Editar
+                    </button>
+
+                    <button class="btn-danger text-sm" onclick="deleteBranch('${doc.id}')">
+                        Eliminar
+                    </button>
                 </div>
             `;
-        });
 
-        container.innerHTML = html;
+            list.appendChild(row);
+        });
     });
 }
 
 window.loadBranches = loadBranches;
 
 function addBranch() {
-    const name = prompt("Nombre de la nueva sucursal:");
-
+    const name = prompt("Nombre de la sucursal:");
     if (!name) return;
 
-    const branchKey = name
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "_");
+    const location = prompt("Ubicación (opcional):");
 
-    db.collection("products").get().then(snapshot => {
-
-        const batch = db.batch();
-
-        snapshot.forEach(doc => {
-            const ref = db.collection("products").doc(doc.id);
-
-            batch.update(ref, {
-                [`visibilidadSucursales.${branchKey}`]: true
-            });
-        });
-
-        return batch.commit();
-    }).then(() => {
-        alert("Sucursal agregada correctamente");
-    }).catch(err => {
-        console.error(err);
-        alert("Error al agregar sucursal");
+    db.collection("branches").add({
+        name,
+        location: location || "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 }
 
+function editBranch(id, currentName, currentLocation) {
+    const name = prompt("Editar nombre:", currentName);
+    if (!name) return;
+
+    const location = prompt("Editar ubicación:", currentLocation);
+
+    db.collection("branches").doc(id).update({
+        name,
+        location: location || ""
+    });
+}
+
+function deleteBranch(id) {
+    if (!confirm("¿Eliminar sucursal?")) return;
+
+    db.collection("branches").doc(id).delete();
+}
+
 window.addBranch = addBranch;
+window.editBranch = editBranch;
+window.deleteBranch = deleteBranch;
 // =========================
 // DASHBOARD FIXED
 // =========================
