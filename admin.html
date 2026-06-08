@@ -210,11 +210,36 @@ window.showTab = function(tabName, event) {
 window.loadUsers = () => console.log("loadUsers");
 window.loadStock = () => console.log("loadStock");
 window.loadPrices = () => console.log("loadPrices");
-window.loadStats = () => console.log("loadStats");
-window.loadBranches = () => {
-    document.getElementById("branches-list").innerHTML = "Sin datos";
-};
 
+function loadBranches() {
+    const container = document.getElementById("branches-list");
+
+    db.collection("products").onSnapshot((snapshot) => {
+        let pilar = 0;
+        let sanIsidro = 0;
+
+        snapshot.forEach(doc => {
+            const p = doc.data();
+
+            if (p.visibilidadSucursales?.pilar !== false) pilar++;
+            if (p.visibilidadSucursales?.sanIsidro !== false) sanIsidro++;
+        });
+
+        container.innerHTML = `
+            <div class="stat-card">
+                <h2>Pilar</h2>
+                <p>${pilar} productos activos</p>
+            </div>
+
+            <div class="stat-card">
+                <h2>San Isidro</h2>
+                <p>${sanIsidro} productos activos</p>
+            </div>
+        `;
+    });
+}
+
+window.loadBranches = loadBranches;
 // =========================
 // DASHBOARD FIXED
 // =========================
@@ -222,6 +247,7 @@ window.loadBranches = () => {
 function loadDashboard() {
     loadProducts();
     loadStats();
+    loadBranches(); // 🔴 ESTO TE FALTABA
 }
 
 window.loadDashboard = loadDashboard;
