@@ -417,7 +417,7 @@ db.collection('products').onSnapshot((snapshot) => {
         function showProductModal(productId = null) {
     const modal = document.getElementById('product-modal');
     const form = document.getElementById('product-form');
-    const title = document.getElementById('modal-title');
+    const title = document.getElementById('modal-title') || {};
 
     if (!modal || !form) {
         console.error("Modal o form no encontrado en el DOM");
@@ -430,9 +430,9 @@ db.collection('products').onSnapshot((snapshot) => {
 
     document.body.style.overflow = 'hidden';
 
-    if (title) {
-        title.textContent = productId ? 'Editar Registro' : 'Nueva Cookie';
-    }
+    if (title.textContent !== undefined) {
+    title.textContent = 'Nueva Cookie';
+}
 
     if (productId) {
         db.collection('products').doc(productId).get().then((doc) => {
