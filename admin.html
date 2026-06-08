@@ -123,27 +123,61 @@
 </div>
 
 <!-- MODAL PRODUCTO -->
-<div id="product-modal" class="fixed inset-0 hidden" style="background: rgba(0,0,0,0.5);">
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white p-8 rounded-2xl w-full max-w-lg">
+<div id="product-modal" class="fixed inset-0 hidden bg-black/50 z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
 
-            <form id="product-form">
+        <div class="bg-white p-8 rounded-2xl w-full max-w-lg shadow-xl">
+
+            <!-- HEADER -->
+            <div class="mb-6">
+                <h2 id="modal-title" class="text-2xl font-bold text-[#512874]">
+                    Nueva Cookie
+                </h2>
+                <p class="text-sm text-gray-500">
+                    Completa los datos del producto
+                </p>
+            </div>
+
+            <!-- FORM -->
+            <form id="product-form" class="space-y-4">
 
                 <input type="hidden" id="product-id">
 
-                <select id="product-type" required>
-                    <option value="">Seleccionar...</option>
+                <!-- TIPO -->
+                <select id="product-type" required
+                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <option value="">Seleccionar tipo...</option>
                     <option value="producto">Producto</option>
                     <option value="gusto">Gusto</option>
                     <option value="merch">Merch</option>
                 </select>
 
-                <input type="text" id="product-name" required>
-                <textarea id="product-description"></textarea>
-                <input type="number" id="product-price" required>
+                <!-- NOMBRE -->
+                <input type="text" id="product-name" required placeholder="Nombre del producto"
+                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
 
-                <button type="submit">Guardar</button>
-                <button type="button" onclick="closeProductModal()">Cancelar</button>
+                <!-- DESCRIPCIÓN -->
+                <textarea id="product-description" placeholder="Descripción"
+                    class="w-full border rounded-xl p-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-[#512874]"></textarea>
+
+                <!-- PRECIO -->
+                <input type="number" id="product-price" required placeholder="Precio"
+                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+
+                <!-- BOTONES -->
+                <div class="flex gap-3 pt-2">
+
+                    <button type="submit"
+                        class="flex-1 bg-[#512874] text-white py-3 rounded-xl font-bold hover:bg-[#3a1a52]">
+                        Guardar
+                    </button>
+
+                    <button type="button" onclick="closeProductModal()"
+                        class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300">
+                        Cancelar
+                    </button>
+
+                </div>
 
             </form>
 
