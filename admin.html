@@ -341,18 +341,21 @@
 // MODALES SUCURSALES
 // =========================
 
-window.openBranchModal = function () {
+function openBranchModal() {
     const modal = document.getElementById("branch-modal");
     if (modal) modal.classList.remove("hidden");
-};
+}
 
-window.closeBranchModal = function () {
+function closeBranchModal() {
     const modal = document.getElementById("branch-modal");
     if (modal) modal.classList.add("hidden");
-};
+}
 
+// exponer al scope global (para onclick del HTML)
+window.openBranchModal = openBranchModal;
+window.closeBranchModal = closeBranchModal;
 // =========================
-// MODAL PRODUCTOS (TE FALTA ESTO TAMBIÉN)
+// MODAL PRODUCTOS
 // =========================
 
 window.openProductModal = function () {
@@ -365,101 +368,65 @@ window.closeProductModal = function () {
     if (modal) modal.classList.add("hidden");
 };
 
-// CONFIGURACIÓN DE FIREBASE
+// =========================
+// PLACEHOLDERS (EVITA ERRORES DE TAB)
+// =========================
 
-const firebaseConfig = {
-            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
-            authDomain: "ugly-cookies.firebaseapp.com",
-            projectId: "ugly-cookies",
-            storageBucket: "ugly-cookies.firebasestorage.app",
-            messagingSenderId: "27770165162",
-            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
-            measurementId: "G-J6RZ1L894K"
-        };
+window.loadBranches = function () {
+    const container = document.getElementById("branches-list");
+    if (container) container.innerHTML = "<p>Sin datos de sucursales todavía</p>";
+};
 
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+window.loadUsers = function () {
+    console.log("loadUsers OK");
+};
 
-        // Elementos de la interfaz
-        const loginView = document.getElementById('login-view');
-        const adminPanel = document.getElementById('admin-panel');
-        const btnLogout = document.getElementById('btn-logout');
-        const loginError = document.getElementById('login-error');
-        const adminEmailDisplay = document.getElementById('admin-email-display');
-        const loginButton = document.getElementById('login-button');
+window.loadStock = function () {
+    console.log("loadStock OK");
+};
 
-        // Email del administrador autorizado
-        const ADMIN_EMAIL = 'agustinalonso2303@gmail.com';
+window.loadPrices = function () {
+    console.log("loadPrices OK");
+};
 
-        // ============================================
-        // AUTENTICACIÓN
-        // ============================================
-        
-        // Login con Google
-        loginButton.addEventListener('click', async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch (error) {
-                console.error("Error login:", error);
-                alert("Error al iniciar sesión: " + error.message);
-            }
-        });
+window.loadStats = function () {
+    console.log("loadStats OK");
+};
 
-        // Observador de estado de autenticación
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                if (user.email === ADMIN_EMAIL) {
-                    loginView.classList.add('hidden');
-                    adminPanel.classList.remove('hidden');
-                    adminEmailDisplay.textContent = user.email;
-                    loadDashboard();
-                } else {
-                    auth.signOut();
-                    loginError.classList.remove('hidden');
-                    setTimeout(() => loginError.classList.add('hidden'), 3000);
-                }
-            } else {
-                loginView.classList.remove('hidden');
-                adminPanel.classList.add('hidden');
-            }
-        });
+// =========================
+// NAVEGACIÓN DE TABS (FIXED)
+// =========================
 
-        // Logout
-        btnLogout.addEventListener('click', async () => {
-            try {
-                await auth.signOut();
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error("Error logout:", error);
-            }
-        });
+window.showTab = function (tabName, event) {
 
-        // ============================================
-        // NAVEGACIÓN DE TABS
-        // ============================================
-        function showTab(tabName) {
-            // Ocultar todos los tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-tab').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Mostrar el tab seleccionado
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            event.target.classList.add('active');
-            
-            // Cargar datos específicos del tab
-            if (tabName === 'stock') loadStock();
-            if (tabName === 'prices') loadPrices();
-            if (tabName === 'stats') loadStats();
-            if (tabName === 'users') loadUsers();
-            if (tabName === 'branches') loadBranches();
-        }
+    // Ocultar todos los tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Quitar active de botones
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Mostrar tab seleccionado
+    const tab = document.getElementById(`tab-${tabName}`);
+    if (tab) tab.classList.add('active');
+
+    // Activar botón actual (seguro)
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+
+    // Cargar datos según tab
+    if (tabName === 'stock') loadStock();
+    if (tabName === 'prices') loadPrices();
+    if (tabName === 'stats') loadStats();
+    if (tabName === 'users') loadUsers();
+    if (tabName === 'branches') loadBranches();
+};
+
+</script>
 
         // ============================================
         // DASHBOARD
@@ -676,29 +643,42 @@ function loadStock() {
                         ${product.name || ''}
                     </td>
 
-                    <td>
-                        <button
-                            onclick="toggleSucursalVisibilidad('${doc.id}','pilar',${visiblePilar})"
-                            class="${visiblePilar ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
-                            ${visiblePilar ? 'ENCENDIDO' : 'APAGADO'}
-                        </button>
-                    </td>
+                   window.toggleSucursalVisibilidad = async function (
+    productId,
+    branch,
+    estadoActual
+) {
+    try {
+        const fieldPath = `visibilidadSucursales.${branch}`;
 
-                    <td>
-                        <button
-                            onclick="toggleSucursalVisibilidad('${doc.id}','sanIsidro',${visibleSanIsidro})"
-                            class="${visibleSanIsidro ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
-                            ${visibleSanIsidro ? 'ENCENDIDO' : 'APAGADO'}
-                        </button>
-                    </td>
+        await db.collection('products')
+            .doc(productId)
+            .update({
+                [fieldPath]: !estadoActual
+            });
 
-                    <td>
-                        <button
-                            onclick="toggleWebVisibility('${doc.id}',${visibleWeb})"
-                            class="${visibleWeb ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'} text-white px-3 py-1 rounded text-sm font-bold transition">
-                            ${visibleWeb ? 'WEB ON' : 'WEB OFF'}
-                        </button>
-                    </td>
+    } catch (error) {
+        console.error("Error al cambiar disponibilidad:", error);
+        alert("No se pudo actualizar la sucursal");
+    }
+};
+
+window.toggleWebVisibility = async function (
+    productId,
+    estadoActual
+) {
+    try {
+        await db.collection('products')
+            .doc(productId)
+            .update({
+                visibleWeb: !estadoActual
+            });
+
+    } catch (error) {
+        console.error("Error al actualizar visibilidad web:", error);
+        alert("No se pudo actualizar la web");
+    }
+};
 
                     <td class="font-bold">
                         $${product.price || 0}
