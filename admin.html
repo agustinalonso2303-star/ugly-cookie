@@ -152,6 +152,24 @@
 </div>
 
 <script>
+const firebaseConfig = {
+            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
+            authDomain: "ugly-cookies.firebaseapp.com",
+            projectId: "ugly-cookies",
+            storageBucket: "ugly-cookies.firebasestorage.app",
+            messagingSenderId: "27770165162",
+            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
+            measurementId: "G-J6RZ1L894K"
+        };
+
+firebase.initializeApp(firebaseConfig);
+
+// inicialización global
+const db = firebase.firestore();
+const auth = firebase.auth();
+</script>
+
+<script>
 
 // =========================
 // MODALES
@@ -739,6 +757,7 @@ function refreshStock() {
         function refreshUsers() {
             loadUsers();
         }
+        
  </script>
 </body>
 </html>
