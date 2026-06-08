@@ -415,36 +415,41 @@ db.collection('products').onSnapshot((snapshot) => {
 } // 👈 ESTE ES EL QUE TE FALTABA
 
         function showProductModal(productId = null) {
-            const modal = document.getElementById('product-modal');
-            const form = document.getElementById('product-form');
-            const title = document.getElementById('modal-title');
-            
-            form.reset();
-            document.getElementById('product-id').value = '';
-            
-            // CONGELA LA WEB DE ATRÁS: Arregla el bug de scroll de tu primer prompt
-            document.body.style.overflow = 'hidden'; 
-            
-            if (productId) {
-                title.textContent = 'Editar Registro';
-                db.collection('products').doc(productId).get().then((doc) => {
-                    if (doc.exists) {
-                        const product = doc.data();
-                        document.getElementById('product-id').value = productId;
-                        document.getElementById('product-type').value = product.tipo || 'producto';
-                        document.getElementById('product-name').value = product.name || '';
-                        document.getElementById('product-description').value = product.description || '';
-                        document.getElementById('product-price').value = product.price || 0;
-                    }
-                }).catch(error => {
-                    console.error("Error al cargar datos de edición:", error);
-                });
-            } else {
-                title.textContent = 'Nueva Cookie';
-            }
-            
-            modal.classList.remove('hidden');
-        }
+    const modal = document.getElementById('product-modal');
+    const form = document.getElementById('product-form');
+    const title = document.getElementById('modal-title');
+
+    if (!modal || !form) {
+        console.error("Modal o form no encontrado en el DOM");
+        return;
+    }
+
+    form.reset();
+    const idInput = document.getElementById('product-id');
+    if (idInput) idInput.value = '';
+
+    document.body.style.overflow = 'hidden';
+
+    if (title) {
+        title.textContent = productId ? 'Editar Registro' : 'Nueva Cookie';
+    }
+
+    if (productId) {
+        db.collection('products').doc(productId).get().then((doc) => {
+            if (!doc.exists) return;
+
+            const product = doc.data();
+
+            document.getElementById('product-id').value = productId;
+            document.getElementById('product-type').value = product.tipo || 'producto';
+            document.getElementById('product-name').value = product.name || '';
+            document.getElementById('product-description').value = product.description || '';
+            document.getElementById('product-price').value = product.price || 0;
+        });
+    }
+
+    modal.classList.remove('hidden');
+}
 
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
