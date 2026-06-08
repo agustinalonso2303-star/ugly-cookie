@@ -337,6 +337,34 @@
 
 <script>
 
+// =========================
+// MODALES SUCURSALES
+// =========================
+
+window.openBranchModal = function () {
+    const modal = document.getElementById("branch-modal");
+    if (modal) modal.classList.remove("hidden");
+};
+
+window.closeBranchModal = function () {
+    const modal = document.getElementById("branch-modal");
+    if (modal) modal.classList.add("hidden");
+};
+
+// =========================
+// MODAL PRODUCTOS (TE FALTA ESTO TAMBIÉN)
+// =========================
+
+window.openProductModal = function () {
+    const modal = document.getElementById("product-modal");
+    if (modal) modal.classList.remove("hidden");
+};
+
+window.closeProductModal = function () {
+    const modal = document.getElementById("product-modal");
+    if (modal) modal.classList.add("hidden");
+};
+
 // CONFIGURACIÓN DE FIREBASE
 
 const firebaseConfig = {
