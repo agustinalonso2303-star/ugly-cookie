@@ -555,10 +555,8 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
             productData.createdAt =
                 firebase.firestore.FieldValue.serverTimestamp();
 
-            productData.visibilidadSucursales = {
-                pilar: true,
-                sanIsidro: true
-            };
+            // Sucursales por defecto
+            productData.visibleIn = ["pilar", "sanIsidro"];
 
             await db.collection('products')
                 .add(productData);
@@ -578,8 +576,14 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     }
 });
 
+
+// ============================================
+// TOGGLE VISIBILIDAD SUCURSAL
+// ============================================
+
 async function toggleSucursalVisibilidad(productId, branch, estadoActual) {
     try {
+
         const fieldPath = `visibilidadSucursales.${branch}`;
 
         await db.collection('products')
@@ -589,13 +593,20 @@ async function toggleSucursalVisibilidad(productId, branch, estadoActual) {
             });
 
     } catch (error) {
+
         console.error("Error al cambiar disponibilidad:", error);
         alert("No se pudo actualizar la sucursal");
     }
 }
 
+
+// ============================================
+// TOGGLE VISIBILIDAD WEB
+// ============================================
+
 async function toggleWebVisibility(productId, estadoActual) {
     try {
+
         await db.collection('products')
             .doc(productId)
             .update({
@@ -603,11 +614,11 @@ async function toggleWebVisibility(productId, estadoActual) {
             });
 
     } catch (error) {
+
         console.error("Error al actualizar visibilidad web:", error);
         alert("No se pudo actualizar la web");
     }
 }
-
 // ============================================
 // STOCK
 // ============================================
@@ -636,9 +647,9 @@ function loadStock() {
 
                 const product = doc.data();
 
-                const visibleWeb = product.visibleWeb !== false;
-                const visiblePilar = product.visibilidadSucursales?.pilar !== false;
-                const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+const visibleIn = product.visibleIn || [];
+const visiblePilar = visibleIn.includes("pilar");
+const visibleSanIsidro = visibleIn.includes("sanIsidro");
 
                 const row = document.createElement('tr');
 
@@ -814,8 +825,10 @@ function refreshStock() {
                     const product = doc.data();
                     
                     // Obtenemos los estados individuales por sucursal
-                    const visiblePilar = product.visibilidadSucursales?.pilar !== false;
-                    const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
+                    const visibleIn = product.visibleIn || [];
+
+                    const visiblePilar = visibleIn.includes("pilar");
+                    const visibleSanIsidro = visibleIn.includes("sanIsidro");
                     
                     // Un producto cuenta como activo general si está visible en al menos una sucursal
                     if (visiblePilar || visibleSanIsidro) {
