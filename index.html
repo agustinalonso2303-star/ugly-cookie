@@ -2045,20 +2045,19 @@ window.addNewProduct = async function(name, description) {
         }
 
         // Función principal de selección de sucursal
-        function detectBranch() {
-            const savedBranch = localStorage.getItem('selectedBranch');
-            if (savedBranch) {
-                console.log('Cargando sucursal guardada:', savedBranch);
-                selectBranch(savedBranch);
-            } else {
-                console.log('No hay sucursal, solicitando selección manual');
-                showBranchModal();
-            }
-        }
+    function detectBranch() {
+        console.log('Solicitando selección manual de sucursal');
 
-        // Ejecutar detección al cargar la página
-        document.addEventListener('DOMContentLoaded', detectBranch);
-    </script>
+        // Elimina cualquier sucursal previamente guardada
+        localStorage.removeItem('selectedBranch');
+
+        // Muestra siempre el selector manual
+        showBranchModal();
+    }
+
+    // Ejecutar al cargar la página
+    document.addEventListener('DOMContentLoaded', detectBranch);
+</script>
 </body>
 
     <!-- Modal de Arrepentimiento (Added to index.html) -->
