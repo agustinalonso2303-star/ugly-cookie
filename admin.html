@@ -622,7 +622,6 @@ async function toggleWebVisibility(productId, estadoActual) {
 // ============================================
 // STOCK
 // ============================================
-
 function loadStock() {
     const tbody = document.getElementById('stock-table-body');
 
@@ -647,9 +646,21 @@ function loadStock() {
 
                 const product = doc.data();
 
-const visibleIn = product.visibleIn || [];
-const visiblePilar = visibleIn.includes("pilar");
-const visibleSanIsidro = visibleIn.includes("sanIsidro");
+                const inaugurado = product.inaugurado === false;
+
+                const visibleIn = product.visibleIn || [];
+
+                const visiblePilar =
+                    visibleIn.includes("pilar");
+
+                const visibleSanIsidro =
+                    visibleIn.includes("sanIsidro");
+
+                const activo =
+                    inaugurado &&
+                    (product.visibleWeb ||
+                        visiblePilar ||
+                        visibleSanIsidro);
 
                 const row = document.createElement('tr');
 
@@ -666,15 +677,39 @@ const visibleSanIsidro = visibleIn.includes("sanIsidro");
                     </td>
 
                     <td>
-                        <span class="status-badge ${(visibleWeb || visiblePilar || visibleSanIsidro) ? 'active' : 'inactive'}">
-                            ${(visibleWeb || visiblePilar || visibleSanIsidro) ? 'Activo' : 'Inactivo'}
-                        </span>
+                        ${
+                            !inaugurado
+                                ? `
+                                <span class="status-badge bg-yellow-100 text-yellow-700">
+                                    Pendiente de lanzamiento
+                                </span>
+                                `
+                                : `
+                                <span class="status-badge ${activo ? 'active' : 'inactive'}">
+                                    ${activo ? 'Activo' : 'Inactivo'}
+                                </span>
+                                `
+                        }
                     </td>
 
-                    <td>
-                        <button onclick="editProduct('${doc.id}')" class="btn-primary text-sm">
+                    <td class="flex gap-2">
+                        <button
+                            onclick="editProduct('${doc.id}')"
+                            class="btn-primary text-sm">
                             Editar
                         </button>
+
+                        ${
+                            !inaugurado
+                                ? `
+                                <button
+                                    onclick="inaugurarProducto('${doc.id}')"
+                                    class="btn-success text-sm">
+                                    🚀 Inaugurar
+                                </button>
+                                `
+                                : ''
+                        }
                     </td>
                 `;
 
@@ -747,7 +782,35 @@ async function toggleWebVisibility(
     }
 }
 
+// ============================================
+// INAUGURAR PRODUCTO
+// ============================================
 
+async function inaugurarProducto(productId) {
+
+    try {
+
+        await db.collection('products')
+            .doc(productId)
+            .update({
+                inaugurado: true,
+                visibleWeb: true
+            });
+
+        alert('Producto inaugurado correctamente');
+
+    } catch (error) {
+
+        console.error(
+            'Error al inaugurar producto:',
+            error
+        );
+
+        alert(
+            'No se pudo inaugurar el producto'
+        );
+    }
+}
 // ============================================
 // REFRESH
 // ============================================

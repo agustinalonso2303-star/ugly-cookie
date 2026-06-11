@@ -1023,7 +1023,7 @@ auth.onAuthStateChanged(async (user) => {
         // Lógica de rangos secundarios que ya tenías
         const userDoc = await db.collection('users').doc(user.uid).get();
         const userData = userDoc.exists ? userDoc.data() : {};
-        if (user.email === 'cookiespilar@gmail.com' || userData.role === 'admin_pilar') {
+        if (user.email === 'vantuwebsite@gmail.com' || userData.role === 'admin_pilar') {
             if (typeof enableEditMode === 'function') enableEditMode();
         }
     } else {
@@ -1288,11 +1288,20 @@ window.addNewProduct = async function(name, description) {
         return;
     }
     try {
-        const newDoc = await db.collection('products').add({
-            name: name,
-            description: description,
-            isVisible: false // Se agrega oculto por defecto para configurarlo
-        });
+const newDoc = await db.collection('products').add({
+    name: name,
+    description: description,
+
+    // Nuevo sistema
+    inaugurado: false,
+
+    // Compatibilidad con el resto del sistema
+    visibleWeb: false,
+    visibleIn: [],
+
+    // Estado inicial
+    isVisible: false
+});
         console.log('Producto agregado con ID:', newDoc.id);
         alert('Producto creado con éxito');
     } catch (error) {
