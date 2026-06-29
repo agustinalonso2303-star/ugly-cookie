@@ -373,31 +373,31 @@ function loadDashboard() {
 
 window.loadDashboard = loadDashboard;
 // =========================
-// FIREBASE AUTH (LOGIN FIX)
+// FIREBASE AUTH (LOGIN)
 // =========================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Verificar si viene del botón provisorio (modo bypass)
-    const urlParams = new URLSearchParams(window.location.search);
-    const bypassAuth = urlParams.get('bypass') === 'true';
-
-    if (bypassAuth) {
-        console.log('Modo provisorio: Saltando autenticación');
-        document.getElementById("login-view").classList.add("hidden");
-        document.getElementById("admin-panel").classList.remove("hidden");
-        document.getElementById("admin-email-display").textContent = "Modo Provisorio (Sin Auth)";
-        loadDashboard();
-        return;
-    }
-
     // Configuración de auth con version compat
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
+    // Configurar provider para mejor popup
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+
     document.getElementById("login-button").addEventListener("click", async () => {
         try {
+            // Mostrar loading
+            const loginButton = document.getElementById("login-button");
+            loginButton.textContent = "Iniciando sesión...";
+            loginButton.disabled = true;
+
+            // Iniciar sesión con popup
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
+
+            console.log("Usuario autenticado:", user.email);
 
             document.getElementById("admin-email-display").textContent = user.email;
 
@@ -408,12 +408,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
             console.error("Error login:", error);
+            const loginButton = document.getElementById("login-button");
+            loginButton.textContent = "Iniciar Sesión con Google";
+            loginButton.disabled = false;
+
+            let errorMessage = "Error al iniciar sesión";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Popup cerrado por el usuario. Intente nuevamente.";
+            } else if (error.code === 'auth/popup-blocked') {
+                errorMessage = "Popup bloqueado. Permita popups para este sitio.";
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                errorMessage = "Operación cancelada. Intente nuevamente.";
+            }
+
+            document.getElementById("login-error").textContent = errorMessage;
             document.getElementById("login-error").classList.remove("hidden");
         }
     });
 
     auth.onAuthStateChanged((user) => {
         if (user) {
+            console.log("Estado de autenticación: Usuario logueado", user.email);
             document.getElementById("login-view").classList.add("hidden");
             document.getElementById("admin-panel").classList.remove("hidden");
 
@@ -421,13 +436,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             loadDashboard();
         } else {
+            console.log("Estado de autenticación: Usuario no logueado");
             document.getElementById("login-view").classList.remove("hidden");
             document.getElementById("admin-panel").classList.add("hidden");
         }
     });
 
     document.getElementById("btn-logout").addEventListener("click", () => {
-        auth.signOut();
+        auth.signOut().then(() => {
+            console.log("Sesión cerrada");
+        }).catch((error) => {
+            console.error("Error al cerrar sesión:", error);
+        });
     });
 
 });
