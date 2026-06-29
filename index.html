@@ -9,8 +9,8 @@
     <!-- Google Fonts: Chewy para nombres y Lato para descripciones -->
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Google reCAPTCHA v3 - Reemplaza con tu SITE_KEY real -->
-    <script src="https://www.google.com/recaptcha/api.js?render=TU_SITE_KEY_AQUI"></script>
+    <!-- Google reCAPTCHA v3 - Site Key del proyecto ugly-cookie -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LcDgP4UAAAAAAG9qYjM0U4Vw7xQ6Z8r4T2W0"></script>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -641,13 +641,13 @@
         // CONFIGURACIÓN DE FIREBASE
         // ============================================
         const firebaseConfig = {
-            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
-            authDomain: "ugly-cookies.firebaseapp.com",
-            projectId: "ugly-cookies",
-            storageBucket: "ugly-cookies.firebasestorage.app",
-            messagingSenderId: "27770165162",
-            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
-            measurementId: "G-J6RZ1L894K"
+            apiKey: "AIzaSyC3HpJ9CwSR3Z8K5NPc5qBz4gqGIrHT5vk",
+            authDomain: "ugly-cookie.firebaseapp.com",
+            projectId: "ugly-cookie",
+            storageBucket: "ugly-cookie.firebasestorage.app",
+            messagingSenderId: "848026605150",
+            appId: "1:848026605150:web:99a1e0b72eee3572c606cf",
+            measurementId: "G-K3MDH7HYRS"
         };
 
         // Inicializar Firebase
@@ -1848,7 +1848,7 @@ const newDoc = await db.collection('products').add({
                     const token = await new Promise((resolve, reject) => {
                         grecaptcha.ready(async () => {
                             try {
-                                const res = await grecaptcha.execute('TU_SITE_KEY_AQUI', {action: 'payment'});
+                                const res = await grecaptcha.execute('6LcDgP4UAAAAAAG9qYjM0U4Vw7xQ6Z8r4T2W0', {action: 'payment'});
                                 resolve(res);
                             } catch (e) { 
                                 console.error("Error al ejecutar reCAPTCHA:", e);
