@@ -162,23 +162,31 @@ async function loadProducts() {
     const container = document.getElementById('products-container');
     container.innerHTML = '<p class="text-center text-[#a55641]">Cargando productos...</p>';
 
+    console.log("Iniciando carga de productos...");
+    console.log("Firebase db:", db);
+
     try {
         // Usar colección 'cookies' con versión compat
         db.collection('cookies').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            console.log("Snapshot recibido, cantidad de documentos:", snapshot.size);
             container.innerHTML = '';
             
             if (snapshot.empty) {
+                console.log("No hay productos en la colección");
                 container.innerHTML = '<p class="text-center text-[#a55641]">No hay productos disponibles</p>';
                 return;
             }
 
             products = []; // Limpiar array
+            let availableCount = 0;
 
             snapshot.forEach(doc => {
                 const product = { id: doc.id, ...doc.data() };
+                console.log("Producto:", product.name, "Available:", product.available);
                 
                 // Solo mostrar productos disponibles
                 if (product.available === true) {
+                    availableCount++;
                     products.push(product);
                     
                     const productCard = document.createElement('div');
@@ -201,6 +209,12 @@ async function loadProducts() {
                     container.appendChild(productCard);
                 }
             });
+
+            console.log("Productos disponibles encontrados:", availableCount);
+            
+            if (availableCount === 0) {
+                container.innerHTML = '<p class="text-center text-[#a55641]">No hay productos disponibles</p>';
+            }
         });
     } catch (error) {
         console.error('Error al cargar productos:', error);
