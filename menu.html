@@ -253,8 +253,8 @@ async function loadProducts() {
                         `;
                         boxCard.onclick = () => openFlavorModal(product);
                         boxesContainer.appendChild(boxCard);
-                    } else {
-                        // Merch - Tarjeta normal
+                    } else if (product.category === 'producto') {
+                        // Merch - Solo productos tipo "producto"
                         merchCount++;
                         const merchCard = document.createElement('div');
                         merchCard.className = 'bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-all transform hover:scale-105';
