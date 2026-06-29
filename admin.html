@@ -234,7 +234,7 @@
                 <select id="product-type" class="w-full border rounded-xl p-3">
                     <option value="producto">Producto</option>
                     <option value="box">Box</option>
-                    <option value="combo">Combo</option>
+                    <option value="gustos">Gustos</option>
                 </select>
             </div>
             
@@ -435,12 +435,19 @@ db.collection('products').onSnapshot((snapshot) => {
         const visibleCanitas = product.visibilidadSucursales?.canitas !== false;
         const visibleBelgrano = product.visibilidadSucursales?.belgrano !== false;
 
+        // Mapeo de tipos para mostrar nombres amigables
+        const tipoNombres = {
+            'producto': 'Producto',
+            'box': 'Box',
+            'gustos': 'Gustos'
+        };
+
         const card = document.createElement('div');
         card.className = 'bg-white p-4 rounded-xl shadow border border-gray-200';
         card.innerHTML = `
             <div class="flex justify-between items-start mb-2">
                 <h3 class="font-bold text-lg">${product.name || 'Sin nombre'}</h3>
-                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${product.tipo || 'producto'}</span>
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${tipoNombres[product.tipo] || product.tipo || 'producto'}</span>
             </div>
             <p class="text-sm text-gray-600 mb-2">${product.description || 'Sin descripción'}</p>
             <p class="font-bold text-[#512874] mb-3">$${(product.price || 0).toFixed(2)}</p>

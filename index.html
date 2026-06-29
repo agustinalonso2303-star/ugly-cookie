@@ -1316,7 +1316,7 @@ const newDoc = await db.collection('products').add({
         window.addToCart = function(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
-            
+
             const branchStock = product.stock?.[currentBranch] || 0;
             const branchBuffer = product.stockBuffer?.[currentBranch] || 0;
             const availableStock = Math.max(0, branchStock - branchBuffer);
@@ -1326,7 +1326,7 @@ const newDoc = await db.collection('products').add({
                 return;
             }
 
-            if (product.category === 'box') {
+            if (product.tipo === 'box') {
                 // Lógica de Box: Elegir sabores
                 let size = 4;
                 if (product.name.includes('8')) size = 8;
@@ -1382,12 +1382,12 @@ const newDoc = await db.collection('products').add({
 
         function openFlavorModal() {
             const modal = document.getElementById('flavor-selection-modal');
-            
+
             // Resetear el buscador cada vez que se abre el modal
             const searchInput = document.getElementById('flavor-search-input');
             if (searchInput) searchInput.value = '';
 
-            const flavors = products.filter(p => p.category === 'producto');
+            const flavors = products.filter(p => p.tipo === 'gustos');
             renderFlavorList(flavors);
 
             updateFlavorUI();
