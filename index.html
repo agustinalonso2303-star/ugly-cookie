@@ -294,12 +294,6 @@
 
     <!-- Botones Flotantes -->
     <div class="fixed bottom-6 right-6 z-[200] flex flex-col gap-4">
-        <!-- Botón Admin -->
-        <a href="admin.html" class="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
-            <span class="absolute right-full mr-3 bg-red-600 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">Panel Admin</span>
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        </a>
-
         <!-- Botón Ayuda General -->
         <a id="help-float-btn" href="https://wa.me/5491170983414?text=Hola!%20Necesito%20ayuda%20con%20Ugly%20Cookies" target="_blank" class="bg-[#512874] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
             <span class="absolute right-full mr-3 bg-[#512874] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">¿Necesitás Ayuda?</span>
@@ -350,21 +344,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Barra inferior fija del carrito -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-amber-200 shadow-lg z-50">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex flex-col">
-                <span class="text-xs text-[#a55641] opacity-70">Total del carrito</span>
-                <span class="text-xl font-bold text-[#a55641]" id="cart-total">$0.00</span>
-            </div>
-            <button class="bg-[#efe6da] text-[#512874] border border-[#512874] hover:bg-white font-bold py-3 px-6 rounded-xl transition transform active:scale-95 flex items-center gap-2">
-                <span class="text-lg">🛒</span>
-                <span>Ver Carrito</span>
-                <span class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full" id="cart-count">0</span>
-            </button>
-        </div>
-    </div>
 
     <!-- Modal de Login/Registro -->
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
