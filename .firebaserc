@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "ugly-cookies"
-  }
+    "default": "ugly-cookie"
+  },
+  "targets": {},
+  "etags": {}
 }

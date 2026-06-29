@@ -584,14 +584,14 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     try {
         if (productId) {
             // Actualizar producto existente
-            await window.db.collection('cookies')
+            await db.collection('cookies')
                 .doc(productId)
                 .update(productData);
             alert('Producto actualizado con éxito');
         } else {
             // Crear nuevo producto
-            productData.createdAt = window.serverTimestamp();
-            await window.db.collection('cookies').add(productData);
+            productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('cookies').add(productData);
             alert('Producto creado con éxito');
         }
 
