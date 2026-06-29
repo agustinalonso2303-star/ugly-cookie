@@ -29,11 +29,16 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Hacer db y auth disponibles globalmente
+        // Hacer db, auth y serverTimestamp disponibles globalmente
         window.db = db;
         window.auth = auth;
         window.serverTimestamp = serverTimestamp;
     </script>
+
+    <!-- Firebase SDK Compat para compatibilidad con código existente -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -392,10 +397,6 @@ window.loadDashboard = loadDashboard;
 // =========================
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
-
     // Verificar si viene del botón provisorio (modo bypass)
     const urlParams = new URLSearchParams(window.location.search);
     const bypassAuth = urlParams.get('bypass') === 'true';
@@ -408,6 +409,10 @@ document.addEventListener("DOMContentLoaded", () => {
         loadDashboard();
         return;
     }
+
+    // Configuración de auth con version compat
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
 
     document.getElementById("login-button").addEventListener("click", async () => {
         try {
