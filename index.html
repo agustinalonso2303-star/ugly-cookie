@@ -1128,10 +1128,10 @@ auth.onAuthStateChanged(async (user) => {
                                     renderProduct(product, document.getElementById('mostrador-list'), false);
                                 }
                             } else {
-                                // Vista pública normal
+                                // Vista pública normal - mostrar productos y boxes
                                 if (
     product.visibleWeb !== false &&
-    product.tipo === 'producto'
+    (product.tipo === 'producto' || product.tipo === 'box')
 )
 {
     renderProduct(product, container, false);
@@ -1200,7 +1200,7 @@ auth.onAuthStateChanged(async (user) => {
             } else {
                 // Vista de Público (Columna Mostrador o Home)
                 const isAkatsuki = availableStock <= 3 && availableStock > 0;
-                const isBox = product.category === 'box';
+                const isBox = product.tipo === 'box';
                 
                 // Verificar si estamos en modo edición para la previsualización
                 const editBadge = document.getElementById('edit-mode-badge');
