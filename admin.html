@@ -8,11 +8,12 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+    <script>
         // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC3HpJ9CwSR3Z8K5NPc5qBz4gqGIrHT5vk",
@@ -25,20 +26,10 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Hacer db, auth y serverTimestamp disponibles globalmente
-        window.db = db;
-        window.auth = auth;
-        window.serverTimestamp = serverTimestamp;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
     </script>
-
-    <!-- Firebase SDK Compat para compatibilidad con código existente -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -518,7 +509,7 @@ db.collection('cookies').onSnapshot((snapshot) => {
 }
 
     if (productId) {
-        window.db.collection('cookies').doc(productId).get().then((doc) => {
+        db.collection('cookies').doc(productId).get().then((doc) => {
             if (!doc.exists) return;
 
             const product = doc.data();
@@ -547,7 +538,7 @@ db.collection('cookies').onSnapshot((snapshot) => {
 
         function deleteProduct(productId) {
             if (confirm('¿Estás seguro de eliminar este producto?')) {
-                window.db.collection('cookies').doc(productId).delete()
+                db.collection('cookies').doc(productId).delete()
                     .then(() => alert('Producto eliminado correctamente'))
                     .catch(error => {
                         console.error("Error delete:", error);
@@ -587,7 +578,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         available: document.getElementById('product-available').checked,
         featured: false, // Campo por defecto
         stock: 0, // Campo por defecto
-        updatedAt: window.serverTimestamp()
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {

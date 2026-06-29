@@ -9,11 +9,11 @@
     <!-- Google Fonts: Chewy para nombres y Lato para descripciones -->
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Lato:wght@400;700;900&family=Montserrat:wght@700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK v11 Modular -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+    <script>
         // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC3HpJ9CwSR3Z8K5NPc5qBz4gqGIrHT5vk",
@@ -26,11 +26,8 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Hacer db disponible globalmente
-        window.db = db;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
     </script>
 
 <style>
@@ -166,11 +163,8 @@ async function loadProducts() {
     container.innerHTML = '<p class="text-center text-[#a55641]">Cargando productos...</p>';
 
     try {
-        // Usar colección 'cookies' con v11 modular
-        const cookiesCollection = collection(window.db, 'cookies');
-        const cookiesQuery = query(cookiesCollection, orderBy('createdAt', 'desc'));
-        
-        onSnapshot(cookiesQuery, (snapshot) => {
+        // Usar colección 'cookies' con versión compat
+        db.collection('cookies').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
             container.innerHTML = '';
             
             if (snapshot.empty) {
