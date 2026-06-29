@@ -388,16 +388,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("login-button").addEventListener("click", async () => {
         try {
+            console.log("Iniciando proceso de login...");
+            
             // Mostrar loading
             const loginButton = document.getElementById("login-button");
             loginButton.textContent = "Iniciando sesión...";
             loginButton.disabled = true;
 
             // Iniciar sesión con popup
+            console.log("Llamando a signInWithPopup...");
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
 
-            console.log("Usuario autenticado:", user.email);
+            console.log("Usuario autenticado exitosamente:", user.email);
 
             document.getElementById("admin-email-display").textContent = user.email;
 
@@ -407,18 +410,23 @@ document.addEventListener("DOMContentLoaded", () => {
             loadDashboard();
 
         } catch (error) {
-            console.error("Error login:", error);
+            console.error("Error completo:", error);
+            console.error("Código de error:", error.code);
+            console.error("Mensaje de error:", error.message);
+            
             const loginButton = document.getElementById("login-button");
             loginButton.textContent = "Iniciar Sesión con Google";
             loginButton.disabled = false;
 
-            let errorMessage = "Error al iniciar sesión";
+            let errorMessage = "Error al iniciar sesión: " + error.message;
             if (error.code === 'auth/popup-closed-by-user') {
                 errorMessage = "Popup cerrado por el usuario. Intente nuevamente.";
             } else if (error.code === 'auth/popup-blocked') {
                 errorMessage = "Popup bloqueado. Permita popups para este sitio.";
             } else if (error.code === 'auth/cancelled-popup-request') {
                 errorMessage = "Operación cancelada. Intente nuevamente.";
+            } else if (error.code === 'auth/popup-failed-to-open') {
+                errorMessage = "No se pudo abrir el popup. Verifique que los popups estén permitidos.";
             }
 
             document.getElementById("login-error").textContent = errorMessage;
