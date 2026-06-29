@@ -1128,14 +1128,11 @@ auth.onAuthStateChanged(async (user) => {
                                     renderProduct(product, document.getElementById('mostrador-list'), false);
                                 }
                             } else {
-                                // Vista pública normal - mostrar productos y boxes
-                                if (
-    product.visibleWeb !== false &&
-    (product.tipo === 'producto' || product.tipo === 'box')
-)
-{
-    renderProduct(product, container, false);
-}
+                                // Vista pública normal - mostrar todos los productos visibles
+                                if (product.visibleWeb !== false) {
+                                    renderProduct(product, container, false);
+                                }
+                            }
                             }
                         });
                     }, (error) => {
