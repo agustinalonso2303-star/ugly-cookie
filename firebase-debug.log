@@ -1,0 +1,86 @@
+[debug] [2026-06-29T05:29:36.568Z] ----------------------------------------------------------------------
+[debug] [2026-06-29T05:29:36.571Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\agust\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js login
+[debug] [2026-06-29T05:29:36.571Z] CLI Version:   15.18.0
+[debug] [2026-06-29T05:29:36.571Z] Platform:      win32
+[debug] [2026-06-29T05:29:36.571Z] Node Version:  v24.16.0
+[debug] [2026-06-29T05:29:36.571Z] Time:          Mon Jun 29 2026 02:29:36 GMT-0300 (hora estándar de Paraguay)
+[debug] [2026-06-29T05:29:36.571Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-29T05:29:36.574Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[error] 
+[error] Error: Cannot run login in non-interactive mode. See login:ci to generate a token for use in non-interactive environments.
+[debug] [2026-06-29T05:29:45.657Z] ----------------------------------------------------------------------
+[debug] [2026-06-29T05:29:45.660Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\agust\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-06-29T05:29:45.660Z] CLI Version:   15.18.0
+[debug] [2026-06-29T05:29:45.660Z] Platform:      win32
+[debug] [2026-06-29T05:29:45.660Z] Node Version:  v24.16.0
+[debug] [2026-06-29T05:29:45.660Z] Time:          Mon Jun 29 2026 02:29:45 GMT-0300 (hora estándar de Paraguay)
+[debug] [2026-06-29T05:29:45.660Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-29T05:29:45.663Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-06-29T05:29:50.269Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-29T05:29:50.269Z] > authorizing via signed-in user (agustinalonso2303@gmail.com)
+[debug] [2026-06-29T05:29:50.270Z] [iam] checking project ugly-cookies for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-06-29T05:29:50.271Z] Checked if tokens are valid: false, expires at: 1782709444898
+[debug] [2026-06-29T05:29:50.271Z] Checked if tokens are valid: false, expires at: 1782709444898
+[debug] [2026-06-29T05:29:50.271Z] > refreshing access token with scopes: []
+[debug] [2026-06-29T05:29:50.272Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-29T05:29:50.272Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-29T05:29:50.360Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-06-29T05:29:50.360Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-29T05:29:50.369Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies:testIamPermissions [none]
+[debug] [2026-06-29T05:29:50.369Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies:testIamPermissions  x-goog-user-project=ugly-cookies
+[debug] [2026-06-29T05:29:50.369Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-06-29T05:29:50.667Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-06-29T05:29:50.667Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-06-29T05:29:51.418Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies:testIamPermissions 200
+[debug] [2026-06-29T05:29:51.418Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-06-29T05:29:51.418Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:51.418Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:51.418Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/ugly-cookies/serviceAccounts/ugly-cookies@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-06-29T05:29:51.418Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/ugly-cookies/serviceAccounts/ugly-cookies@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-06-29T05:29:52.465Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/ugly-cookies/serviceAccounts/ugly-cookies@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-06-29T05:29:52.465Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/ugly-cookies/serviceAccounts/ugly-cookies@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'ugly-cookies'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-06-29T05:29:52.468Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:52.468Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:52.468Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies [none]
+[debug] [2026-06-29T05:29:52.687Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies 200
+[debug] [2026-06-29T05:29:52.687Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/ugly-cookies {"projectNumber":"27770165162","projectId":"ugly-cookies","lifecycleState":"ACTIVE","name":"ugly cookies","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-05-15T01:52:23.697Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2026-06-29T05:29:52.689Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:52.690Z] Checked if tokens are valid: true, expires at: 1782714589360
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-06-29T05:29:52.690Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:52.690Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:52.691Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com [none]
+[debug] [2026-06-29T05:29:52.691Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com  x-goog-user-project=ugly-cookies
+[debug] [2026-06-29T05:29:52.692Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com [none]
+[debug] [2026-06-29T05:29:52.692Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com  x-goog-user-project=ugly-cookies
+[debug] [2026-06-29T05:29:53.885Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com 200
+[debug] [2026-06-29T05:29:53.885Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com [omitted]
+[warn] !  artifactregistry: missing required API artifactregistry.googleapis.com. Enabling now... 
+[debug] [2026-06-29T05:29:53.886Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:53.886Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:53.886Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com:enable [none]
+[debug] [2026-06-29T05:29:53.886Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com:enable  x-goog-user-project=ugly-cookies
+[debug] [2026-06-29T05:29:53.901Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com 200
+[debug] [2026-06-29T05:29:53.901Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com [omitted]
+[warn] !  functions: missing required API cloudbuild.googleapis.com. Enabling now... 
+[debug] [2026-06-29T05:29:53.901Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:53.901Z] Checked if tokens are valid: true, expires at: 1782714589360
+[debug] [2026-06-29T05:29:53.901Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com:enable [none]
+[debug] [2026-06-29T05:29:53.902Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com:enable  x-goog-user-project=ugly-cookies
+[debug] [2026-06-29T05:29:54.276Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com:enable 400
+[debug] [2026-06-29T05:29:54.276Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/artifactregistry.googleapis.com:enable [omitted]
+[debug] [2026-06-29T05:29:54.284Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com:enable 400
+[debug] [2026-06-29T05:29:54.284Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/ugly-cookies/services/cloudbuild.googleapis.com:enable [omitted]
+[error] 
+[error] Error: Your project ugly-cookies must be on the Blaze (pay-as-you-go) plan to complete this command. Required API artifactregistry.googleapis.com can't be enabled until the upgrade is complete. To upgrade, visit the following URL:
+
+https://console.firebase.google.com/project/ugly-cookies/usage/details

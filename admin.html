@@ -166,30 +166,30 @@
             <form id="mp-config-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-bold mb-2">Access Token de Mercado Pago</label>
-                    <input type="text" id="mp-access-token" placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" 
+                    <input type="text" id="mp-access-token" placeholder="APP_USR-xxxxxxxxxxxx" 
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-                    <p class="text-xs text-gray-500 mt-1">Token de acceso de Mercado Pago (Producción)</p>
+                    <p class="text-xs text-gray-500 mt-1">Token de acceso de Mercado Pago Developers</p>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-bold mb-2">URL de Éxito</label>
-                    <input type="text" id="mp-success-url" placeholder="https://tu-sitio.com/success" 
+                    <input type="text" id="mp-success-url" placeholder="https://tu-sitio.com/?order_id={id}&payment_status=success" 
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir después de pago exitoso</p>
+                    <p class="text-xs text-gray-500 mt-1">URL a la que redirigir cuando el pago sea exitoso</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold mb-2">URL de Fallo</label>
-                    <input type="text" id="mp-failure-url" placeholder="https://tu-sitio.com/failure" 
+                    <input type="text" id="mp-failure-url" placeholder="https://tu-sitio.com/?order_id={id}&payment_status=failure" 
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir después de pago fallido</p>
+                    <p class="text-xs text-gray-500 mt-1">URL a la que redirigir cuando el pago falle</p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold mb-2">URL de Pendiente</label>
-                    <input type="text" id="mp-pending-url" placeholder="https://tu-sitio.com/pending" 
+                    <input type="text" id="mp-pending-url" placeholder="https://tu-sitio.com/?order_id={id}&payment_status=pending" 
                         class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir si el pago está pendiente</p>
+                    <p class="text-xs text-gray-500 mt-1">URL a la que redirigir cuando el pago esté pendiente</p>
                 </div>
 
                 <button type="submit" class="btn-primary w-full font-chewy text-xl">
@@ -203,95 +203,77 @@
             <ol class="text-sm text-blue-700 list-decimal list-inside space-y-1">
                 <li>Ve a <a href="https://www.mercadopago.com.ar/developers/" target="_blank" class="underline">Mercado Pago Developers</a></li>
                 <li>Crea una aplicación o usa una existente</li>
-                <li>Obtén el Access Token en la sección de Credenciales</li>
-                <li>Configura las URLs de redirección según tu sitio</li>
-                <li>El webhook se configurará automáticamente en Firebase Functions</li>
+                <li>Obtén el Access Token en credenciales</li>
+                <li>Configura las URLs de redirección en tu aplicación</li>
+                <li>Configura el webhook en Mercado Pago con la URL que aparece abajo</li>
             </ol>
         </div>
 
-        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-xl">
+        <div class="mt-4 bg-green-50 border border-green-200 p-4 rounded-xl">
             <h3 class="font-bold text-green-800 mb-2">🔗 Webhook URL:</h3>
-            <p class="text-sm text-green-700 mb-2">Configura esta URL en tu aplicación de Mercado Pago:</p>
-            <code class="text-xs bg-green-100 p-2 rounded block break-all">
-                https://tu-region-proyecto.cloudfunctions.net/mercadoPagoWebhook
-            </code>
+            <p class="text-sm text-green-700 font-mono">https://tu-region-proyecto.cloudfunctions.net/mercadoPagoWebhook</p>
+            <p class="text-xs text-green-600 mt-1">Configura esta URL en tu aplicación de Mercado Pago para recibir notificaciones de pago</p>
         </div>
     </div>
 
 </div>
 
-<!-- MODAL PRODUCTO -->
-<div id="product-modal" class="fixed inset-0 hidden bg-black/50 z-50">
-    <div class="flex items-center justify-center min-h-screen p-4">
-
-        <div class="bg-white p-8 rounded-2xl w-full max-w-lg shadow-xl">
-
-            <!-- HEADER -->
-            <div class="mb-6">
-                <h2 id="modal-title" class="text-2xl font-bold text-[#512874]">
-                    Nueva Cookie
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Completa los datos del producto
-                </p>
+<!-- Modal Producto -->
+<div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 id="modal-title" class="text-2xl font-bold text-[#512874]">Nueva Cookie</h3>
+            <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        
+        <form id="product-form" class="space-y-4">
+            <input type="hidden" id="product-id">
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Tipo</label>
+                <select id="product-type" class="w-full border rounded-xl p-3">
+                    <option value="producto">Producto</option>
+                    <option value="box">Box</option>
+                    <option value="combo">Combo</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Nombre</label>
+                <input type="text" id="product-name" required class="w-full border rounded-xl p-3">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Descripción</label>
+                <textarea id="product-description" class="w-full border rounded-xl p-3"></textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Precio</label>
+                <input type="number" id="product-price" step="0.01" required class="w-full border rounded-xl p-3">
             </div>
 
-            <!-- FORM -->
-            <form id="product-form" class="space-y-4">
-
-                <input type="hidden" id="product-id">
-
-                <!-- TIPO -->
-                <select id="product-type" required
-                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-                    <option value="">Seleccionar tipo...</option>
-                    <option value="producto">Producto</option>
-                    <option value="gusto">Gusto</option>
-                    <option value="merch">Merch</option>
-                </select>
-
-                <!-- NOMBRE -->
-                <input type="text" id="product-name" required placeholder="Nombre del producto"
-                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-
-                <!-- DESCRIPCIÓN -->
-                <textarea id="product-description" placeholder="Descripción"
-                    class="w-full border rounded-xl p-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-[#512874]"></textarea>
-
-                <!-- PRECIO -->
-                <input type="number" id="product-price" required placeholder="Precio"
-                    class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
-
-                <!-- BOTONES -->
-                <div class="flex gap-3 pt-2">
-
-                    <button type="submit"
-                        class="flex-1 bg-[#512874] text-white py-3 rounded-xl font-bold hover:bg-[#3a1a52]">
-                        Guardar
-                    </button>
-
-                    <button type="button" onclick="closeProductModal()"
-                        class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300">
-                        Cancelar
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="product-visible-web" checked>
+                    <span class="text-sm">Visible en Web</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-primary w-full font-chewy text-xl">Guardar</button>
+        </form>
     </div>
 </div>
 
 <script>
 const firebaseConfig = {
-            apiKey: "AIzaSyAiakHsYU0PmG_Gcs4lh87rX8iIHv-4TsI",
-            authDomain: "ugly-cookies.firebaseapp.com",
-            projectId: "ugly-cookies",
-            storageBucket: "ugly-cookies.firebasestorage.app",
-            messagingSenderId: "27770165162",
-            appId: "1:27770165162:web:cca7c68aa29dbf5d66bdd3",
-            measurementId: "G-J6RZ1L894K"
+            apiKey: "AIzaSyC3HpJ9CwSR3Z8K5NPc5qBz4gqGIrHT5vk",
+            authDomain: "ugly-cookie.firebaseapp.com",
+            projectId: "ugly-cookie",
+            storageBucket: "ugly-cookie.firebasestorage.app",
+            messagingSenderId: "848026605150",
+            appId: "1:848026605150:web:99a1e0b72eee3572c606cf",
+            measurementId: "G-K3MDH7HYRS"
         };
 
 firebase.initializeApp(firebaseConfig);
@@ -307,174 +289,48 @@ const auth = firebase.auth();
 // MODALES
 // =========================
 
-function openProductModal() {
-    document.getElementById("product-modal")?.classList.remove("hidden");
-}
-
-function closeProductModal() {
-    document.getElementById("product-modal")?.classList.add("hidden");
-}
-
-// FIX CRÍTICO: alias para botón HTML
-window.showProductModal = openProductModal;
-
-window.openProductModal = openProductModal;
-window.closeProductModal = closeProductModal;
-
-// =========================
-// TABS
-// =========================
-
-window.showTab = function(tabName, event) {
-
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-
-    document.getElementById(`tab-${tabName}`)?.classList.add('active');
-    if (event?.target) event.target.classList.add('active');
-
-};
-
-// =========================
-// PLACEHOLDERS
-// =========================
-
-window.loadUsers = () => console.log("loadUsers");
-window.loadStock = () => console.log("loadStock");
-window.loadPrices = () => console.log("loadPrices");
-
-function loadBranches() {
-    const container = document.getElementById("branches-list");
-
-    db.collection("branches").onSnapshot((snapshot) => {
-
-        if (snapshot.empty) {
-            container.innerHTML = `
-                <p class="text-gray-500 mb-4">No hay sucursales</p>
-                <button onclick="addBranch()" class="btn-primary">
-                    + Agregar sucursal
-                </button>
-            `;
-            return;
-        }
-
-        container.innerHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Sucursales</h2>
-                <button onclick="addBranch()" class="btn-primary">
-                    + Agregar sucursal
-                </button>
-            </div>
-
-            <div class="space-y-3" id="branches-container"></div>
-        `;
-
-        const list = document.getElementById("branches-container");
-
-        snapshot.forEach((doc) => {
-            const b = doc.data();
-
-            const row = document.createElement("div");
-            row.className = "flex justify-between items-center p-3 border rounded-xl";
-
-            row.innerHTML = `
-                <div>
-                    <p class="font-bold">${b.name}</p>
-                    <p class="text-sm text-gray-500">${b.location || ""}</p>
-                    <p class="text-xs text-green-600">📱 WhatsApp: ${b.whatsappNumber || "No configurado"}</p>
-                </div>
-
-                <div class="flex gap-2">
-                    <button class="btn-secondary text-sm" onclick="editBranch('${doc.id}', '${b.name}', '${b.location || ""}', '${b.whatsappNumber || ""}')">
-                        Editar
-                    </button>
-
-                    <button class="btn-danger text-sm" onclick="deleteBranch('${doc.id}')">
-                        Eliminar
-                    </button>
-                </div>
-            `;
-
-            list.appendChild(row);
-        });
-    });
-}
-
-window.loadBranches = loadBranches;
-
-// Función para inicializar sucursales si no existen
-async function initializeDefaultBranches() {
-    const branchesRef = db.collection('branches');
-    const snapshot = await branchesRef.get();
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
     
-    if (snapshot.empty) {
-        console.log('Inicializando sucursales por defecto...');
-        
-        // Crear sucursales por defecto
-        const pilarRef = await branchesRef.add({
-            name: 'Pilar',
-            location: 'Pilar, Buenos Aires',
-            whatsappNumber: '', // Se debe configurar después
-            isActive: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        const canitasRef = await branchesRef.add({
-            name: 'Cañitas',
-            location: 'Cañitas, Buenos Aires',
-            whatsappNumber: '', // Se debe configurar después
-            isActive: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        const belgranoRef = await branchesRef.add({
-            name: 'Belgrano',
-            location: 'Belgrano, Buenos Aires',
-            whatsappNumber: '', // Se debe configurar después
-            isActive: true,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        console.log('Sucursales inicializadas correctamente');
-        console.log('Pilar ID:', pilarRef.id);
-        console.log('Cañitas ID:', canitasRef.id);
-        console.log('Belgrano ID:', belgranoRef.id);
-    }
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.target.classList.add('active');
 }
 
-// Llamar a la inicialización cuando cargue el dashboard
-const originalLoadDashboard = window.loadDashboard;
-window.loadDashboard = function() {
-    initializeDefaultBranches();
-    originalLoadDashboard();
-};
+// =========================
+// SUCURSALES
+// =========================
 
 function addBranch() {
     const name = prompt("Nombre de la sucursal:");
-    if (!name) return;
+    const location = prompt("Ubicación:");
+    const whatsapp = prompt("Número de WhatsApp (con código de país):");
 
-    const location = prompt("Ubicación (opcional):");
-    const whatsappNumber = prompt("Número de WhatsApp (con código país, ej: 5491112345678):");
-
-    db.collection("branches").add({
-        name,
-        location: location || "",
-        whatsappNumber: whatsappNumber || "",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    if (name && location) {
+        db.collection("branches").add({
+            name,
+            location,
+            whatsappNumber: whatsapp || "",
+            isActive: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
 }
 
-function editBranch(id, currentName, currentLocation, currentWhatsappNumber) {
-    const name = prompt("Editar nombre:", currentName);
-    if (!name) return;
+function editBranch(id) {
+    db.collection("branches").doc(id).get().then((doc) => {
+        const branch = doc.data();
+        const newName = prompt("Nuevo nombre:", branch.name);
+        const newLocation = prompt("Nueva ubicación:", branch.location);
+        const newWhatsapp = prompt("Nuevo WhatsApp:", branch.whatsappNumber || "");
 
-    const location = prompt("Editar ubicación:", currentLocation);
-    const whatsappNumber = prompt("Editar número WhatsApp:", currentWhatsappNumber || "");
-
-    db.collection("branches").doc(id).update({
-        name,
-        location: location || "",
-        whatsappNumber: whatsappNumber || ""
+        if (newName) {
+            db.collection("branches").doc(id).update({
+                name: newName,
+                location: newLocation,
+                whatsappNumber: newWhatsapp
+            });
+        }
     });
 }
 
@@ -576,57 +432,49 @@ db.collection('products').onSnapshot((snapshot) => {
 
         const visibleWeb = product.visibleWeb !== false;
         const visiblePilar = product.visibilidadSucursales?.pilar !== false;
-        const visibleSanIsidro = product.visibilidadSucursales?.sanIsidro !== false;
-
-        const estaActivoGlobal = visibleWeb;
+        const visibleCanitas = product.visibilidadSucursales?.canitas !== false;
+        const visibleBelgrano = product.visibilidadSucursales?.belgrano !== false;
 
         const card = document.createElement('div');
-        card.className = `product-card ${estaActivoGlobal ? 'active' : 'inactive'}`;
-
+        card.className = 'bg-white p-4 rounded-xl shadow border border-gray-200';
         card.innerHTML = `
-            <span class="status-badge ${estaActivoGlobal ? 'active' : 'inactive'}">
-                ${visibleWeb ? 'Visible en Web' : 'Oculto en Web'}
-            </span>
-
-            <span class="text-xs uppercase bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded font-sans block w-fit mb-2">
-                ${product.tipo || 'producto'}
-            </span>
-
-            <h3 class="font-chewy text-xl mb-2" style="color: #512874;">
-                ${product.name}
-            </h3>
-
-            <p class="text-gray-600 text-sm mb-4">
-                ${product.description || 'Sin descripción'}
-            </p>
-
-            <div class="flex justify-between text-sm mb-2">
-                <span class="font-bold text-[#a55641]">
-                    Precio: $${product.price || 0}
-                </span>
-
-                <span class="text-gray-500 text-xs">
-                    P: ${visiblePilar ? '🟢' : '🔴'} | SI: ${visibleSanIsidro ? '🟢' : '🔴'}
-                </span>
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-lg">${product.name || 'Sin nombre'}</h3>
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${product.tipo || 'producto'}</span>
             </div>
-
-            <div class="flex gap-2 mt-4">
-                <button onclick="editProduct('${doc.id}')" class="btn-secondary text-sm flex-1">
-                    Editar
-                </button>
-                <button onclick="deleteProduct('${doc.id}')" class="btn-danger text-sm px-3">
-                    🗑️
-                </button>
+            <p class="text-sm text-gray-600 mb-2">${product.description || 'Sin descripción'}</p>
+            <p class="font-bold text-[#512874] mb-3">$${(product.price || 0).toFixed(2)}</p>
+            
+            <div class="space-y-1 text-xs mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${visibleWeb ? 'bg-green-500' : 'bg-red-500'}"></span>
+                    <span>Web: ${visibleWeb ? 'Visible' : 'Oculto'}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${visiblePilar ? 'bg-green-500' : 'bg-red-500'}"></span>
+                    <span>Pilar: ${visiblePilar ? 'Visible' : 'Oculto'}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${visibleCanitas ? 'bg-green-500' : 'bg-red-500'}"></span>
+                    <span>Cañitas: ${visibleCanitas ? 'Visible' : 'Oculto'}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${visibleBelgrano ? 'bg-green-500' : 'bg-red-500'}"></span>
+                    <span>Belgrano: ${visibleBelgrano ? 'Visible' : 'Oculto'}</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="editProduct('${doc.id}')" class="btn-primary text-xs flex-1">Editar</button>
+                <button onclick="deleteProduct('${doc.id}')" class="btn-danger text-xs flex-1">Eliminar</button>
             </div>
         `;
-
         container.appendChild(card);
     });
-
 });
-} // 👈 ESTE ES EL QUE TE FALTABA
+}
 
-        function showProductModal(productId = null) {
+        function showProductModal(productId) {
     const modal = document.getElementById('product-modal');
     const form = document.getElementById('product-form');
     const title = document.getElementById('modal-title') || {};
@@ -666,7 +514,7 @@ db.collection('products').onSnapshot((snapshot) => {
         function closeProductModal() {
             document.getElementById('product-modal').classList.add('hidden');
             // DEVUELVE EL SCROLL NORMAL A LA PÁGINA
-            document.body.style.overflow = 'auto'; 
+            document.body.style.overflow = 'auto';
         }
 
         function editProduct(productId) {
@@ -719,7 +567,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
                 firebase.firestore.FieldValue.serverTimestamp();
 
             // Sucursales por defecto
-            productData.visibleIn = ["pilar", "sanIsidro"];
+            productData.visibleIn = ["pilar", "canitas", "belgrano"];
 
             await db.collection('products')
                 .add(productData);
@@ -729,379 +577,68 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
 
         closeProductModal();
 
-        document.getElementById('product-form').reset();
-        document.getElementById('product-id').value = '';
-
     } catch (error) {
-
-        console.error("Error al guardar producto en Firestore:", error);
+        console.error("Error save:", error);
         alert("Error al guardar el producto");
     }
 });
 
-
-// ============================================
-// TOGGLE VISIBILIDAD SUCURSAL
-// ============================================
-
-async function toggleSucursalVisibilidad(productId, branch, estadoActual) {
-    try {
-
-        const fieldPath = `visibilidadSucursales.${branch}`;
-
-        await db.collection('products')
-            .doc(productId)
-            .update({
-                [fieldPath]: !estadoActual
-            });
-
-    } catch (error) {
-
-        console.error("Error al cambiar disponibilidad:", error);
-        alert("No se pudo actualizar la sucursal");
-    }
-}
-
-
-// ============================================
-// TOGGLE VISIBILIDAD WEB
-// ============================================
-
-async function toggleWebVisibility(productId, estadoActual) {
-    try {
-
-        await db.collection('products')
-            .doc(productId)
-            .update({
-                visibleWeb: !estadoActual
-            });
-
-    } catch (error) {
-
-        console.error("Error al actualizar visibilidad web:", error);
-        alert("No se pudo actualizar la web");
-    }
-}
-
-// ============================================
-// WHATSAPP CONFIG
-// ============================================
-
-function loadWhatsAppConfig() {
-    db.collection('admin_config').doc('whatsapp_config').get().then((doc) => {
-        if (doc.exists) {
-            const config = doc.data();
-            document.getElementById('wa-api-key').value = config.apiKey || '';
-            document.getElementById('wa-phone-id').value = config.phoneNumberId || '';
-        }
-    }).catch(error => {
-        console.error("Error cargando config WhatsApp:", error);
-    });
-}
-
-document.getElementById('whatsapp-config-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const apiKey = document.getElementById('wa-api-key').value.trim();
-    const phoneNumberId = document.getElementById('wa-phone-id').value.trim();
-    
-    if (!apiKey || !phoneNumberId) {
-        alert('Por favor completa todos los campos');
-        return;
-    }
-    
-    try {
-        await db.collection('admin_config').doc('whatsapp_config').set({
-            apiKey: apiKey,
-            phoneNumberId: phoneNumberId,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        alert('Configuración de WhatsApp guardada exitosamente');
-    } catch (error) {
-        console.error("Error guardando config WhatsApp:", error);
-        alert('Error al guardar la configuración');
-    }
-});
-
-// Cargar configuración cuando se abra el tab
-const originalShowTab = window.showTab;
-window.showTab = function(tabName, event) {
-    originalShowTab(tabName, event);
-    if (tabName === 'whatsapp') {
-        loadWhatsAppConfig();
-    }
-    if (tabName === 'mercadopago') {
-        loadMercadoPagoConfig();
-    }
-};
-
-// ============================================
-// MERCADO PAGO CONFIG
-// ============================================
-
-function loadMercadoPagoConfig() {
-    db.collection('admin_config').doc('mercadopago_config').get().then((doc) => {
-        if (doc.exists) {
-            const config = doc.data();
-            document.getElementById('mp-access-token').value = config.accessToken || '';
-            document.getElementById('mp-success-url').value = config.successUrl || '';
-            document.getElementById('mp-failure-url').value = config.failureUrl || '';
-            document.getElementById('mp-pending-url').value = config.pendingUrl || '';
-        }
-    }).catch(error => {
-        console.error("Error cargando config Mercado Pago:", error);
-    });
-}
-
-document.getElementById('mp-config-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const accessToken = document.getElementById('mp-access-token').value.trim();
-    const successUrl = document.getElementById('mp-success-url').value.trim();
-    const failureUrl = document.getElementById('mp-failure-url').value.trim();
-    const pendingUrl = document.getElementById('mp-pending-url').value.trim();
-    
-    if (!accessToken || !successUrl || !failureUrl || !pendingUrl) {
-        alert('Por favor completa todos los campos');
-        return;
-    }
-    
-    try {
-        await db.collection('admin_config').doc('mercadopago_config').set({
-            accessToken: accessToken,
-            successUrl: successUrl,
-            failureUrl: failureUrl,
-            pendingUrl: pendingUrl,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        alert('Configuración de Mercado Pago guardada exitosamente');
-    } catch (error) {
-        console.error("Error guardando config Mercado Pago:", error);
-        alert('Error al guardar la configuración');
-    }
-});
-
-// ============================================
-// STOCK
-// ============================================
-function loadStock() {
-    const tbody = document.getElementById('stock-table-body');
-
-    db.collection('products')
-        .orderBy('name')
-        .onSnapshot((snapshot) => {
-
-            tbody.innerHTML = '';
-
-            if (snapshot.empty) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center py-8">
-                            No hay productos cargados.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            snapshot.forEach((doc) => {
-
-                const product = doc.data();
-
-                const inaugurado = product.inaugurado === false;
-
-                const visibleIn = product.visibleIn || [];
-
-                const visiblePilar =
-                    visibleIn.includes("pilar");
-
-                const visibleSanIsidro =
-                    visibleIn.includes("sanIsidro");
-
-                const activo =
-                    inaugurado &&
-                    (product.visibleWeb ||
-                        visiblePilar ||
-                        visibleSanIsidro);
-
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td class="font-bold">
-                        <span class="text-xs uppercase bg-purple-100 px-2 py-1 rounded mr-2 text-purple-700 font-sans">
-                            ${product.tipo || 'producto'}
-                        </span>
-                        ${product.name || ''}
-                    </td>
-
-                    <td class="font-bold">
-                        $${product.price || 0}
-                    </td>
-
-                    <td>
-                        ${
-                            !inaugurado
-                                ? `
-                                <span class="status-badge bg-yellow-100 text-yellow-700">
-                                    Pendiente de lanzamiento
-                                </span>
-                                `
-                                : `
-                                <span class="status-badge ${activo ? 'active' : 'inactive'}">
-                                    ${activo ? 'Activo' : 'Inactivo'}
-                                </span>
-                                `
-                        }
-                    </td>
-
-                    <td class="flex gap-2">
-                        <button
-                            onclick="editProduct('${doc.id}')"
-                            class="btn-primary text-sm">
-                            Editar
-                        </button>
-
-                        ${
-                            !inaugurado
-                                ? `
-                                <button
-                                    onclick="inaugurarProducto('${doc.id}')"
-                                    class="btn-success text-sm">
-                                    🚀 Inaugurar
-                                </button>
-                                `
-                                : ''
-                        }
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
-        });
-}
-// ============================================
-// TOGGLE VISIBILIDAD SUCURSAL
-// ============================================
-
-async function toggleSucursalVisibilidad(
-    productId,
-    branch,
-    estadoActual
-) {
-
-    try {
-
-        const fieldPath =
-            `visibilidadSucursales.${branch}`;
-
-        await db.collection('products')
-            .doc(productId)
-            .update({
-                [fieldPath]: !estadoActual
-            });
-
-    } catch (error) {
-
-        console.error(
-            "Error al cambiar disponibilidad:",
-            error
-        );
-
-        alert(
-            "No se pudo actualizar la sucursal"
-        );
-    }
-}
-
-
-// ============================================
-// TOGGLE VISIBILIDAD WEB
-// ============================================
-
-async function toggleWebVisibility(
-    productId,
-    estadoActual
-) {
-
-    try {
-
-        await db.collection('products')
-            .doc(productId)
-            .update({
-                visibleWeb: !estadoActual
-            });
-
-    } catch (error) {
-
-        console.error(
-            "Error al actualizar visibilidad web:",
-            error
-        );
-
-        alert(
-            "No se pudo actualizar la web"
-        );
-    }
-}
-
-// ============================================
-// INAUGURAR PRODUCTO
-// ============================================
-
-async function inaugurarProducto(productId) {
-
-    try {
-
-        await db.collection('products')
-            .doc(productId)
-            .update({
-                inaugurado: true,
-                visibleWeb: true
-            });
-
-        alert('Producto inaugurado correctamente');
-
-    } catch (error) {
-
-        console.error(
-            'Error al inaugurar producto:',
-            error
-        );
-
-        alert(
-            'No se pudo inaugurar el producto'
-        );
-    }
-}
-// ============================================
-// REFRESH
-// ============================================
-
-function refreshStock() {
-    loadStock();
-}
         // ============================================
-        // GESTIÓN DE PRECIOS UNIFICADOS
+        // STOCK (ADMINISTRACIÓN DE STOCK)
+        // ============================================
+        function loadStock() {
+            const tbody = document.getElementById('stock-table-body');
+            db.collection('products').onSnapshot((snapshot) => {
+                tbody.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const stock = product.stock || {};
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border p-2">${product.name}</td>
+                        <td class="border p-2">
+                            <input type="number" class="border p-1 w-20" 
+                                value="${stock.pilar || 0}" 
+                                onchange="updateStock('${doc.id}', 'pilar', this.value)">
+                        </td>
+                        <td class="border p-2">
+                            <input type="number" class="border p-1 w-20" 
+                                value="${stock.canitas || 0}" 
+                                onchange="updateStock('${doc.id}', 'canitas', this.value)">
+                        </td>
+                        <td class="border p-2">
+                            <input type="number" class="border p-1 w-20" 
+                                value="${stock.belgrano || 0}" 
+                                onchange="updateStock('${doc.id}', 'belgrano', this.value)">
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        function updateStock(productId, branch, value) {
+            db.collection('products').doc(productId).update({
+                [`stock.${branch}`]: parseInt(value)
+            });
+        }
+
+        // ============================================
+        // PRECIOS (ADMINISTRACIÓN DE PRECIOS)
         // ============================================
         function loadPrices() {
             const tbody = document.getElementById('prices-table-body');
             db.collection('products').onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8">No hay productos para mostrar precios.</td></tr>';
-                    return;
-                }
-                
                 snapshot.forEach((doc) => {
                     const product = doc.data();
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="font-bold">${product.name}</td>
-                        <td>
-                            <input type="number" class="form-control price-input" data-id="${doc.id}" 
-                                   value="${product.price || 0}" step="0.01" style="width: 140px;">
+                        <td class="border p-2">${product.name}</td>
+                        <td class="border p-2">
+                            <input type="number" class="border p-1 w-24 price-input" 
+                                data-id="${doc.id}"
+                                value="${product.price || 0}" step="0.01">
                         </td>
                         <td>
                             <button onclick="editProduct('${doc.id}')" class="btn-primary text-sm">Editar Todo</button>
@@ -1115,18 +652,18 @@ function refreshStock() {
         async function saveAllPrices() {
             const inputs = document.querySelectorAll('.price-input');
             const updates = [];
-            
+
             inputs.forEach(input => {
                 const productId = input.dataset.id;
                 const value = parseFloat(input.value) || 0;
-                
+
                 updates.push(
                     db.collection('products').doc(productId).update({
                         price: value
                     })
                 );
             });
-            
+
             try {
                 await Promise.all(updates);
                 alert('Precios generales actualizados correctamente');
@@ -1144,88 +681,176 @@ function refreshStock() {
             // Contar productos totales
             db.collection('products').get().then(snapshot => {
                 document.getElementById('stat-total-products').textContent = snapshot.size;
-                
-                let activeCount = 0;
-                let totalDisponiblesMostrador = 0;
-                
-                snapshot.forEach(doc => {
-                    const product = doc.data();
-                    
-                    // Obtenemos los estados individuales por sucursal
-                    const visibleIn = product.visibleIn || [];
-
-                    const visiblePilar = visibleIn.includes("pilar");
-                    const visibleSanIsidro = visibleIn.includes("sanIsidro");
-                    
-                    // Un producto cuenta como activo general si está visible en al menos una sucursal
-                    if (visiblePilar || visibleSanIsidro) {
-                        activeCount++;
-                    }
-                    
-                    // Sumamos cuántas "disponibilidades de mostrador" hay activas en toda la empresa
-                    if (visiblePilar) totalDisponiblesMostrador++;
-                    if (visibleSanIsidro) totalDisponiblesMostrador++;
-                });
-                
-                document.getElementById('stat-active-products').textContent = activeCount;
-                
-                // Reutilizamos el cuadro de stock viejo para mostrar cuántos ítems están listos en mostrador
-                document.getElementById('stat-total-stock').textContent = totalDisponiblesMostrador;
-            }).catch(error => {
-                console.error("Error al cargar estadísticas de productos:", error);
             });
-            
-            // Contar usuarios de Firebase
+
+            // Contar productos activos (visibleWeb = true)
+            db.collection('products').where('visibleWeb', '==', true).get().then(snapshot => {
+                document.getElementById('stat-active-products').textContent = snapshot.size;
+            });
+
+            // Contar usuarios totales
             db.collection('users').get().then(snapshot => {
                 document.getElementById('stat-total-users').textContent = snapshot.size;
-            }).catch(error => {
-                console.error("Error al cargar estadísticas de usuarios:", error);
+            });
+
+            // Sumar stock total
+            db.collection('products').get().then(snapshot => {
+                let totalStock = 0;
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const stock = product.stock || {};
+                    totalStock += (stock.pilar || 0) + (stock.canitas || 0) + (stock.belgrano || 0);
+                });
+                document.getElementById('stat-total-stock').textContent = totalStock;
             });
         }
 
         // ============================================
-        // USUARIOS (SE MANTIENE LIMPIO Y OPTIMIZADO)
+        // USUARIOS (ADMINISTRACIÓN DE USUARIOS)
         // ============================================
         function loadUsers() {
             const tbody = document.getElementById('users-table-body');
             db.collection('users').onSnapshot((snapshot) => {
                 tbody.innerHTML = '';
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8">No hay usuarios registrados.</td></tr>';
-                    return;
-                }
-                
                 snapshot.forEach((doc) => {
                     const user = doc.data();
                     const row = document.createElement('tr');
-                    
-                    // Manejo seguro por si Firebase no cargó el timestamp del último login
-                    const lastLogin = user.lastLogin && user.lastLogin.seconds 
-                        ? new Date(user.lastLogin.seconds * 1000).toLocaleDateString() 
-                        : 'N/A';
-                    
                     row.innerHTML = `
-                        <td class="font-bold">${user.name || 'Usuario'}</td>
-                        <td>${user.email}</td>
-                        <td class="capitalize">${user.branch || 'General'}</td>
-                        <td>${lastLogin}</td>
-                        <td>
-                            <span class="status-badge active bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">
-                                ${user.role || 'Cliente'}
-                            </span>
-                        </td>
+                        <td class="border p-2">${user.email || 'Sin email'}</td>
+                        <td class="border p-2">${user.displayName || 'Sin nombre'}</td>
+                        <td class="border p-2">${user.role || 'user'}</td>
                     `;
                     tbody.appendChild(row);
                 });
-            }, error => {
-                console.error("Error en tiempo real de usuarios:", error);
             });
         }
 
-        function refreshUsers() {
-            loadUsers();
+        // ============================================
+        // SUCURSALES (ADMINISTRACIÓN DE SUCURSALES)
+        // ============================================
+        function loadBranches() {
+            const list = document.getElementById('branches-list');
+            db.collection('branches').onSnapshot((snapshot) => {
+                list.innerHTML = '';
+                if (snapshot.empty) {
+                    list.innerHTML = '<p class="text-gray-600">No hay sucursales configuradas.</p>';
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const branch = doc.data();
+                    const div = document.createElement('div');
+                    div.className = 'bg-white p-4 rounded-xl shadow border border-gray-200 mb-3';
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-lg">${branch.name}</h3>
+                                <p class="text-sm text-gray-600">${branch.location}</p>
+                                <p class="text-sm text-gray-600">WhatsApp: ${branch.whatsappNumber || 'No configurado'}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editBranch('${doc.id}')" class="btn-primary text-sm">Editar</button>
+                                <button onclick="deleteBranch('${doc.id}')" class="btn-danger text-sm">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            });
         }
-        
- </script>
+
+        // ============================================
+        // WHATSAPP CONFIG
+        // ============================================
+
+        function loadWhatsAppConfig() {
+            db.collection('admin_config').doc('whatsapp_config').get().then((doc) => {
+                if (doc.exists) {
+                    const config = doc.data();
+            document.getElementById('wa-api-key').value = config.apiKey || '';
+            document.getElementById('wa-phone-id').value = config.phoneNumberId || '';
+        }
+    }).catch(error => {
+        console.error("Error cargando config WhatsApp:", error);
+    });
+}
+
+document.getElementById('whatsapp-config-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const apiKey = document.getElementById('wa-api-key').value.trim();
+    const phoneNumberId = document.getElementById('wa-phone-id').value.trim();
+
+    if (!apiKey || !phoneNumberId) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+
+    try {
+        await db.collection('admin_config').doc('whatsapp_config').set({
+            apiKey: apiKey,
+            phoneNumberId: phoneNumberId,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Configuración de WhatsApp guardada exitosamente');
+    } catch (error) {
+        console.error("Error guardando config WhatsApp:", error);
+        alert('Error al guardar la configuración');
+    }
+});
+
+        // ============================================
+        // MERCADO PAGO CONFIG
+        // ============================================
+
+        function loadMercadoPagoConfig() {
+            db.collection('admin_config').doc('mercadopago_config').get().then((doc) => {
+                if (doc.exists) {
+                    const config = doc.data();
+                    document.getElementById('mp-access-token').value = config.accessToken || '';
+                    document.getElementById('mp-success-url').value = config.successUrl || '';
+                    document.getElementById('mp-failure-url').value = config.failureUrl || '';
+                    document.getElementById('mp-pending-url').value = config.pendingUrl || '';
+                }
+            }).catch(error => {
+                console.error("Error cargando config Mercado Pago:", error);
+            });
+        }
+
+        document.getElementById('mp-config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const accessToken = document.getElementById('mp-access-token').value.trim();
+            const successUrl = document.getElementById('mp-success-url').value.trim();
+            const failureUrl = document.getElementById('mp-failure-url').value.trim();
+            const pendingUrl = document.getElementById('mp-pending-url').value.trim();
+
+            if (!accessToken) {
+                alert('Por favor completa el Access Token');
+                return;
+            }
+
+            try {
+                await db.collection('admin_config').doc('mercadopago_config').set({
+                    accessToken: accessToken,
+                    successUrl: successUrl,
+                    failureUrl: failureUrl,
+                    pendingUrl: pendingUrl,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('Configuración de Mercado Pago guardada exitosamente');
+            } catch (error) {
+                console.error("Error guardando config Mercado Pago:", error);
+                alert('Error al guardar la configuración');
+            }
+        });
+
+        // Cargar configuraciones al iniciar
+        loadWhatsAppConfig();
+        loadMercadoPagoConfig();
+
+</script>
+
 </body>
 </html>
