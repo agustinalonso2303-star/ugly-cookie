@@ -301,14 +301,20 @@
 
     <!-- Botones Flotantes -->
     <div class="fixed bottom-6 right-6 z-[200] flex flex-col gap-4">
-        <!-- Botón Ayuda General (Arriba) -->
+        <!-- Botón Admin Provisorio (Arriba) -->
+        <a href="admin.html?bypass=true" class="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+            <span class="absolute right-full mr-3 bg-red-600 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">Panel Admin</span>
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </a>
+
+        <!-- Botón Ayuda General -->
         <a id="help-float-btn" href="https://wa.me/5491170983414?text=Hola!%20Necesito%20ayuda%20con%20Ugly%20Cookies" target="_blank" class="bg-[#512874] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
             <span class="absolute right-full mr-3 bg-[#512874] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">¿Necesitás Ayuda?</span>
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </a>
         
         <!-- Botón WhatsApp Sucursal (Abajo) -->
-        <a id="wa-float-btn" href="#" target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
+        <a id="wa-float-btn" href="https://wa.me/5491124786507?text=¡Hola%20Ugly%20Cookies!%20Quiero%20hacer%20una%20consulta%20sobre%20mi%20pedido." target="_blank" class="bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center group relative">
             <span class="absolute right-full mr-3 bg-[#25D366] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-bold uppercase tracking-widest pointer-events-none shadow-lg">WhatsApp Local</span>
             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         </a>
@@ -320,23 +326,23 @@
             <!-- Ubicación y Mapa Dinámico -->
             <div class="text-center mb-5 w-full max-w-2xl">
                 <p class="text-amber-200 font-bold uppercase tracking-widest text-xs mb-3 mt-0">Nuestra Casa</p>
-                <p id="footer-address" class="text-2xl font-chewy mb-6">Cargando ubicación...</p>
+                <p id="footer-address" class="text-2xl font-chewy mb-6">Rua Caamaño 844, Pilar</p>
                 
                 <!-- Contenedor del Mapa -->
                 <div class="w-full h-64 md:h-80 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/5 relative bg-purple-900/20 group">
-                    <iframe id="footer-map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src=""></iframe>
+                    <iframe id="footer-map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua%20Caamaño%20844,%20Pilar&output=embed"></iframe>
                 </div>
             </div>
 
             <!-- Redes Sociales Fix -->
             <div class="flex gap-8 mb-5">
-                <a id="footer-ig" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Instagram">
+                <a id="footer-ig" href="https://www.instagram.com/uglyamericancookie?igsh=MXJ0eGU5MWs1d3VuZA==" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Instagram">
                     <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 </a>
-                <a id="footer-tt" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="TikTok">
+                <a id="footer-tt" href="https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="TikTok">
                     <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
                 </a>
-                <a id="footer-th" href="#" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Threads">
+                <a id="footer-th" href="https://threads.net/@uglycookiespilar" target="_blank" class="hover:scale-125 transition transform text-amber-200 hover:text-white block" title="Threads">
                     <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M15.42 13.56c-.53 0-.96-.44-.96-.98V9.17c0-1.63-1.09-2.25-2.43-2.25-.87 0-1.7.3-2.35.81l-.64-1.57c1-.76 2.16-1.16 3.42-1.16 2.76 0 4.38 1.57 4.38 4.2v5.82c0 .7.21.95.53.95.17 0 .33-.05.47-.15l.59 1.46c-.38.28-.9.44-1.45.44-1.1 0-1.66-.7-1.66-1.78v-.5c-.65.51-1.54.78-2.48.78-.01 0-.01 0-.02 0-3.7 0-5.74-1.9-5.74-4.04 0-2.12 1.84-3.73 4.67-3.73.51 0 1 .04 1.46.11v1.83c-.47-.07-.94-.1-1.42-.1-1.7 0-2.62.77-2.62 1.93 0 1.15 1.1 1.75 2.21 1.75.99 0 1.83-.4 2.25-1.02v.01zm-3.42-13.56C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 22c-5.52 0-10-4.48-10-10S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/></svg>
                 </a>
             </div>
@@ -447,7 +453,7 @@
                 </div>
 
                 <div class="space-y-3">
-                    <button onclick="processPayment('card')" class="w-full bg-[#009EE3] text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
+                    <button onclick="processPayment('mercadopago')" class="w-full bg-[#009EE3] text-white font-bold py-4 px-6 rounded-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
                         <span class="text-2xl">💳</span>
                         <div class="text-left">
                             <span class="block font-chewy">Pagar con Mercado Pago</span>
@@ -521,15 +527,8 @@
                 <h3 class="text-2xl font-bold text-[#512874] mb-2">Selecciona tu sucursal</h3>
                 <p class="text-[#a55641] text-sm opacity-80">Elige la sucursal donde retirarás tu pedido</p>
             </div>
-            <div class="space-y-3">
-                <button onclick="selectBranch('Pilar')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
-                    <span class="text-2xl">🏢</span>
-                    <span>Pilar</span>
-                </button>
-                <button onclick="selectBranch('San Isidro')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
-                    <span class="text-2xl">🏛️</span>
-                    <span>San Isidro</span>
-                </button>
+            <div class="space-y-3" id="branch-buttons-container">
+                <p class="text-center text-gray-500">Cargando sucursales...</p>
             </div>
             <p class="text-center text-gray-400 text-xs mt-4">Tu selección se guardará para futuras visitas</p>
         </div>
@@ -1844,7 +1843,7 @@ const newDoc = await db.collection('products').add({
             }
 
             // reCAPTCHA v3: Validación de seguridad con Promesa para evitar bloqueos
-            if (paymentMethod === 'card') {
+            if (paymentMethod === 'mercadopago') {
                 try {
                     const token = await new Promise((resolve, reject) => {
                         grecaptcha.ready(async () => {
@@ -1878,14 +1877,14 @@ const newDoc = await db.collection('products').add({
             }
 
             try {
-                // Recuperamos los datos completos del usuario para el envío a Fudo
+                // Recuperamos los datos completos del usuario
                 let userData = {};
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (userDoc.exists) {
                     userData = userDoc.data();
                 }
 
-                // Crear orden en Firestore
+                // Crear orden en Firestore con datos completos
                 const orderData = {
                     userId: currentUser.uid,
                     userName: userData.name || currentUser.displayName || 'Cliente',
@@ -1897,12 +1896,69 @@ const newDoc = await db.collection('products').add({
                     total: total,
                     paymentMethod: paymentMethod,
                     branch: currentBranch,
-                    status: 'active',
-                    fudoStatus: 'pending', // Control de integración con Fudo
+                    status: 'pending_payment', // Estado inicial: esperando pago
+                    paymentStatus: 'pending',
+                    whatsappStatus: 'pending',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
                 const orderRef = await db.collection('orders').add(orderData);
+                const orderId = orderRef.id;
+
+                // Si es Mercado Pago, crear preferencia y redirigir
+                if (paymentMethod === 'mercadopago') {
+                    try {
+                        // Llamar a la Cloud Function para crear preferencia
+                        const createPreferenceFunction = firebase.functions().httpsCallable('createMercadoPagoPreference');
+                        const result = await createPreferenceFunction({
+                            items: cart,
+                            orderId: orderId,
+                            branch: currentBranch
+                        });
+
+                        if (result.data.success) {
+                            // Redirigir a Mercado Pago
+                            window.location.href = result.data.init_point;
+                        } else {
+                            throw new Error('Error creando preferencia de pago');
+                        }
+                    } catch (mpError) {
+                        console.error('Error con Mercado Pago:', mpError);
+                        alert('Error al procesar el pago con Mercado Pago. Intenta otro método.');
+                        return;
+                    }
+                } else {
+                    // Para otros métodos de pago (efectivo, cuenta corriente)
+                    // Actualizar stock inmediatamente
+                    for (const item of cart) {
+                        const productRef = db.collection('products').doc(item.id);
+                        const productDoc = await productRef.get();
+                        
+                        if (productDoc.exists) {
+                            const currentStock = productDoc.data().stock?.[currentBranch] || 0;
+                            const newStock = Math.max(0, currentStock - item.quantity);
+                            
+                            await productRef.update({
+                                [`stock.${currentBranch}`]: newStock
+                            });
+                        }
+                    }
+
+                    // Actualizar estado de la orden
+                    await orderRef.update({
+                        status: 'active',
+                        paymentStatus: 'paid'
+                    });
+
+                    // Limpiar carrito
+                    cart = [];
+                    updateCartUI();
+                    saveCartToLocalStorage();
+                    closePaymentModal();
+
+                    // Mostrar ticket de confirmación
+                    showTicketModal(orderId);
+                }
 
                 // Actualizar stock de productos
                 for (const item of cart) {
@@ -1981,6 +2037,7 @@ const newDoc = await db.collection('products').add({
             const modal = document.getElementById('branch-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            loadBranches(); // Cargar sucursales dinámicamente
         }
 
         // Ocultar modal
@@ -2002,70 +2059,303 @@ const newDoc = await db.collection('products').add({
                 tt: "https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya",
                 th: "https://threads.net/@uglycookiespilar"
             },
-            san_isidro: {
-                address: "Av. Libertador 1234, San Isidro", // Cambiar por link real
-                maps: "https://www.google.com/maps?q=Av.%20Libertador%201234,%20San%20Isidro&output=embed",
-                whatsapp: "5491198765432",
-                ig: "https://instagram.com/uglycookiesanisidro",
-                tt: "https://tiktok.com/@uglycookiesanisidro",
-                th: "https://threads.net/@uglycookiesanisidro"
+            cañitas: {
+                address: "Baez 738, Palermo (Cañitas), Buenos Aires",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.3650033563586!2d-58.438412423412636!3d-34.56962977296654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5be9579ebeb%3A0xadb196e8996f773c!2sB%C3%A1ez%20738%2C%20C1426BRP%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708820301!5m2!1ses-419!2sar",
+                whatsapp: "+5491112345678", // Número real para Cañitas
+                ig: "https://instagram.com/uglycookiescanitas",
+                tt: "https://tiktok.com/@uglycookiescanitas",
+                th: "https://threads.net/@uglycookiescanitas"
+            },
+            belgrano: {
+                address: "Olazabal 2424, Belgrano, Buenos Aires",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.7298297499497!2d-58.45874732008166!3d-34.56039531098681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d4b8393803%3A0xc2e4c3a152145bbc!2sAv.%20Olaz%C3%A1bal%202424%2C%20C1428DHT%20C1428DHT%2C%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708861415!5m2!1ses-419!2sar",
+                whatsapp: "5491100000000", // Número genérico
+                ig: "https://instagram.com/uglycookiesbelgrano",
+                tt: "https://tiktok.com/@uglycookiesbelgrano",
+                th: "https://threads.net/@uglycookiesbelgrano"
             }
         };
 
-        function updateFooterAndWA(branchKey) {
-            const data = branchDetails[branchKey];
-            if (!data) return;
-
-            // Actualizar Texto Dirección
-            document.getElementById('footer-address').textContent = data.address;
+        // Cargar sucursales dinámicamente desde Firestore
+        async function loadBranches() {
+            const container = document.getElementById('branch-buttons-container');
+            if (!container) return;
             
-            // Actualizar Iframe Maps
-            document.getElementById('footer-map-iframe').src = data.maps;
-
-            // Actualizar WhatsApp Flotante
-            const waLink = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
-            document.getElementById('wa-float-btn').href = waLink;
-
-            // Actualizar Redes Sociales
-            document.getElementById('footer-ig').href = data.ig;
-            document.getElementById('footer-tt').href = data.tt;
-            document.getElementById('footer-th').href = data.th;
+            // Datos estáticos de fallback por si no hay conexión a Firestore
+            const staticBranches = [
+                { id: 'pilar', name: 'Pilar' },
+                { id: 'canitas', name: 'Cañitas' },
+                { id: 'belgrano', name: 'Belgrano' }
+            ];
+            
+            try {
+                console.log('Intentando cargar sucursales desde Firestore...');
+                const snapshot = await db.collection('branches').get();
+                
+                if (snapshot.empty) {
+                    console.log('No hay sucursales en Firestore, usando datos estáticos');
+                    renderBranchButtons(staticBranches);
+                    return;
+                }
+                
+                console.log('Sucursales encontradas en Firestore:', snapshot.size);
+                const branches = [];
+                snapshot.forEach((doc) => {
+                    branches.push({
+                        id: doc.id,
+                        name: doc.data().name
+                    });
+                });
+                
+                renderBranchButtons(branches);
+                
+            } catch (error) {
+                console.error('Error cargando sucursales desde Firestore:', error);
+                console.log('Usando datos estáticos como fallback');
+                renderBranchButtons(staticBranches);
+            }
+        }
+        
+        // Función para renderizar botones de sucursales
+        function renderBranchButtons(branches) {
+            const container = document.getElementById('branch-buttons-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            const colors = ['bg-amber-500 hover:bg-amber-600', 'bg-amber-600 hover:bg-amber-700', 'bg-orange-500 hover:bg-orange-600', 'bg-orange-600 hover:bg-orange-700'];
+            const emojis = ['🏢', '🏛️', '🏪', '🏨'];
+            
+            let colorIndex = 0;
+            branches.forEach((branch) => {
+                const button = document.createElement('button');
+                button.className = `w-full ${colors[colorIndex % colors.length]} text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3`;
+                button.onclick = () => selectBranch(branch.id, branch.name);
+                button.innerHTML = `
+                    <span class="text-2xl">${emojis[colorIndex % emojis.length]}</span>
+                    <span>${branch.name}</span>
+                `;
+                container.appendChild(button);
+                colorIndex++;
+            });
+            
+            console.log('Botones de sucursales renderizados:', branches.length);
         }
 
         // Seleccionar sucursal manualmente
-        function selectBranch(branchName) {
-            const cleanName = branchName.toLowerCase().trim().replace(/\s+/g, '_');
-            localStorage.setItem('selectedBranch', cleanName);
-            currentBranch = cleanName;
+        function selectBranch(branchId, branchName) {
+            console.log('Sucursal seleccionada:', branchName, 'ID:', branchId);
+            
+            localStorage.setItem('selectedBranch', branchId);
+            currentBranch = branchId;
 
             // Actualizar el nombre en el header
             const headerEl = document.getElementById('header-branch-name');
             if (headerEl) {
-                const formatted = cleanName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                headerEl.textContent = formatted;
+                headerEl.textContent = branchName;
             }
 
-            // Actualizar Footer y WA
-            updateFooterAndWA(cleanName);
+            // Actualizar Footer y WA con datos específicos de la sucursal
+            // Usar setTimeout para asegurar que el DOM esté listo
+            setTimeout(() => {
+                updateBranchDetails(branchId);
+            }, 100);
 
             hideBranchModal();
             loadProducts();
             if (typeof loadCookieMonthBanner === 'function') loadCookieMonthBanner();
         }
 
+        // Actualizar detalles de la sucursal desde Firestore
+        function updateBranchDetails(branchId) {
+            try {
+                console.log('updateBranchDetails llamado con ID:', branchId);
+                
+                // Usar datos estáticos basados en el ID - simplificado
+                let details = branchDetails.pilar; // Default a Pilar
+                
+                // Mapeo directo basado en el ID
+                if (branchId === 'pilar' || branchId.includes('pilar')) {
+                    details = branchDetails.pilar;
+                    console.log('Usando detalles de Pilar');
+                } else if (branchId === 'canitas' || branchId === 'cañitas' || branchId.includes('canitas') || branchId.includes('cañitas')) {
+                    details = branchDetails.cañitas;
+                    console.log('Usando detalles de Cañitas');
+                } else if (branchId === 'belgrano' || branchId.includes('belgrano')) {
+                    details = branchDetails.belgrano;
+                    console.log('Usando detalles de Belgrano');
+                }
+                
+                console.log('Detalles a usar:', details);
+                
+                // Actualizar dirección
+                const addressEl = document.getElementById('footer-address');
+                if (addressEl) {
+                    addressEl.textContent = details.address || 'Dirección no disponible';
+                    console.log('Dirección actualizada a:', details.address);
+                } else {
+                    console.error('No se encontró elemento footer-address');
+                }
+                
+                // Actualizar Maps
+                const mapEl = document.getElementById('footer-map-iframe');
+                if (mapEl) {
+                    mapEl.src = details.maps || `https://www.google.com/maps?q=Buenos%20Aires&output=embed`;
+                    console.log('Maps actualizado a:', details.maps);
+                } else {
+                    console.error('No se encontró elemento footer-map-iframe');
+                }
+                
+                // Actualizar WhatsApp flotante
+                const waBtn = document.getElementById('wa-float-btn');
+                if (waBtn) {
+                    const whatsappNumber = details.whatsapp;
+                    if (whatsappNumber) {
+                        const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
+                        waBtn.href = waLink;
+                        console.log('WhatsApp actualizado a:', whatsappNumber);
+                    }
+                } else {
+                    console.error('No se encontró elemento wa-float-btn');
+                }
+                
+                // Actualizar Redes Sociales
+                const footerIg = document.getElementById('footer-ig');
+                const footerTt = document.getElementById('footer-tt');
+                const footerTh = document.getElementById('footer-th');
+                
+                if (footerIg) {
+                    footerIg.href = details.ig || '#';
+                    console.log('Instagram actualizado a:', details.ig);
+                }
+                if (footerTt) {
+                    footerTt.href = details.tt || '#';
+                    console.log('TikTok actualizado a:', details.tt);
+                }
+                if (footerTh) {
+                    footerTh.href = details.th || '#';
+                    console.log('Threads actualizado a:', details.th);
+                }
+                
+                console.log('✅ Actualización de footer completada');
+                
+            } catch (error) {
+                console.error('❌ Error cargando detalles de sucursal:', error);
+            }
+        }
+
         // Función principal de selección de sucursal
-    function detectBranch() {
+    async function detectBranch() {
+        const savedBranchId = localStorage.getItem('selectedBranch');
+        
+        if (savedBranchId) {
+            // Verificar si la sucursal guardada aún existe
+            try {
+                const doc = await db.collection('branches').doc(savedBranchId).get();
+                if (doc.exists) {
+                    const branch = doc.data();
+                    currentBranch = savedBranchId;
+                    
+                    // Actualizar UI
+                    const headerEl = document.getElementById('header-branch-name');
+                    if (headerEl) {
+                        headerEl.textContent = branch.name;
+                    }
+                    
+                    updateBranchDetails(savedBranchId);
+                    loadProducts();
+                    if (typeof loadCookieMonthBanner === 'function') loadCookieMonthBanner();
+                    return; // No mostrar modal si ya hay sucursal válida
+                }
+            } catch (error) {
+                console.error('Error verificando sucursal guardada:', error);
+            }
+        }
+        
         console.log('Solicitando selección manual de sucursal');
-
-        // Elimina cualquier sucursal previamente guardada
+        
+        // Elimina cualquier sucursal previamente guardada inválida
         localStorage.removeItem('selectedBranch');
-
-        // Muestra siempre el selector manual
+        
+        // Muestra el selector manual
         showBranchModal();
     }
 
     // Ejecutar al cargar la página
-    document.addEventListener('DOMContentLoaded', detectBranch);
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('DOM Content Loaded - Inicializando ubicación por defecto');
+        
+        // Cargar datos de Pilar por defecto inmediatamente
+        const addressEl = document.getElementById('footer-address');
+        const mapEl = document.getElementById('footer-map-iframe');
+        const waBtn = document.getElementById('wa-float-btn');
+        
+        if (addressEl) {
+            addressEl.textContent = branchDetails.pilar.address;
+            console.log('Dirección por defecto cargada:', branchDetails.pilar.address);
+        }
+        
+        if (mapEl) {
+            mapEl.src = branchDetails.pilar.maps;
+            console.log('Mapa por defecto cargado:', branchDetails.pilar.maps);
+        }
+        
+        if (waBtn) {
+            const whatsappNumber = branchDetails.pilar.whatsapp;
+            const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
+            waBtn.href = waLink;
+            console.log('WhatsApp por defecto cargado:', whatsappNumber);
+        }
+        
+        // Cargar redes sociales por defecto
+        const footerIg = document.getElementById('footer-ig');
+        const footerTt = document.getElementById('footer-tt');
+        const footerTh = document.getElementById('footer-th');
+        
+        if (footerIg) footerIg.href = branchDetails.pilar.ig || '#';
+        if (footerTt) footerTt.href = branchDetails.pilar.tt || '#';
+        if (footerTh) footerTh.href = branchDetails.pilar.th || '#';
+        
+        console.log('Redes sociales por defecto cargadas');
+        
+        // Luego ejecutar la detección de sucursal
+        detectBranch();
+    });
+
+    // Verificar si viene de retorno de Mercado Pago
+    window.addEventListener('load', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id');
+        const paymentStatus = urlParams.get('payment_status');
+
+        if (orderId) {
+            try {
+                const orderDoc = await db.collection('orders').doc(orderId).get();
+                if (orderDoc.exists) {
+                    const order = orderDoc.data();
+                    
+                    if (order.paymentStatus === 'approved') {
+                        // Mostrar modal de confirmación
+                        showTicketModal(orderId);
+                        
+                        // Limpiar carrito
+                        cart = [];
+                        updateCartUI();
+                        saveCartToLocalStorage();
+                        
+                        // Limpiar URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (paymentStatus === 'failure') {
+                        alert('El pago fue rechazado. Por favor intenta nuevamente.');
+                    } else if (paymentStatus === 'pending') {
+                        alert('El pago está siendo procesado. Te notificaremos cuando se confirme.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error verificando estado del pago:', error);
+            }
+        }
+    });
 </script>
 </body>
 

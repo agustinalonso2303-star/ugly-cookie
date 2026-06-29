@@ -82,6 +82,8 @@
         <button class="nav-tab" onclick="showTab('stats')">📊 Estadísticas</button>
         <button class="nav-tab" onclick="showTab('users')">👥 Usuarios</button>
         <button class="nav-tab" onclick="showTab('branches')">🏪 Sucursales</button>
+        <button class="nav-tab" onclick="showTab('whatsapp')">📱 WhatsApp</button>
+        <button class="nav-tab" onclick="showTab('mercadopago')">💳 Mercado Pago</button>
     </div>
 
     <div id="tab-products" class="tab-content active">
@@ -118,6 +120,102 @@
 
     <div id="tab-branches" class="tab-content">
         <div id="branches-list"></div>
+    </div>
+
+    <div id="tab-whatsapp" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">Configuración de WhatsApp API</h2>
+        
+        <div class="bg-white p-6 rounded-2xl shadow-md max-w-2xl">
+            <form id="whatsapp-config-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2">WhatsApp API Key (Access Token)</label>
+                    <input type="text" id="wa-api-key" placeholder="EAAABxxxxxxxxxxxxxxxxxxx" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">Token de acceso de Meta Business Suite</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-bold mb-2">Phone Number ID</label>
+                    <input type="text" id="wa-phone-id" placeholder="123456789" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">ID del número de WhatsApp Business</p>
+                </div>
+
+                <button type="submit" class="btn-primary w-full font-chewy text-xl">
+                    💾 Guardar Configuración
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+            <h3 class="font-bold text-yellow-800 mb-2">📝 Instrucciones:</h3>
+            <ol class="text-sm text-yellow-700 list-decimal list-inside space-y-1">
+                <li>Ve a <a href="https://developers.facebook.com/apps/" target="_blank" class="underline">Meta Developers</a></li>
+                <li>Crea una aplicación o usa una existente</li>
+                <li>Activa "WhatsApp Business API"</li>
+                <li>Obtén el Access Token y Phone Number ID</li>
+                <li>Configura los números de WhatsApp en cada sucursal</li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="tab-mercadopago" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">Configuración de Mercado Pago</h2>
+        
+        <div class="bg-white p-6 rounded-2xl shadow-md max-w-2xl">
+            <form id="mp-config-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Access Token de Mercado Pago</label>
+                    <input type="text" id="mp-access-token" placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">Token de acceso de Mercado Pago (Producción)</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-bold mb-2">URL de Éxito</label>
+                    <input type="text" id="mp-success-url" placeholder="https://tu-sitio.com/success" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir después de pago exitoso</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">URL de Fallo</label>
+                    <input type="text" id="mp-failure-url" placeholder="https://tu-sitio.com/failure" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir después de pago fallido</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">URL de Pendiente</label>
+                    <input type="text" id="mp-pending-url" placeholder="https://tu-sitio.com/pending" 
+                        class="w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#512874]">
+                    <p class="text-xs text-gray-500 mt-1">URL donde redirigir si el pago está pendiente</p>
+                </div>
+
+                <button type="submit" class="btn-primary w-full font-chewy text-xl">
+                    💾 Guardar Configuración
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-xl">
+            <h3 class="font-bold text-blue-800 mb-2">📝 Instrucciones:</h3>
+            <ol class="text-sm text-blue-700 list-decimal list-inside space-y-1">
+                <li>Ve a <a href="https://www.mercadopago.com.ar/developers/" target="_blank" class="underline">Mercado Pago Developers</a></li>
+                <li>Crea una aplicación o usa una existente</li>
+                <li>Obtén el Access Token en la sección de Credenciales</li>
+                <li>Configura las URLs de redirección según tu sitio</li>
+                <li>El webhook se configurará automáticamente en Firebase Functions</li>
+            </ol>
+        </div>
+
+        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-xl">
+            <h3 class="font-bold text-green-800 mb-2">🔗 Webhook URL:</h3>
+            <p class="text-sm text-green-700 mb-2">Configura esta URL en tu aplicación de Mercado Pago:</p>
+            <code class="text-xs bg-green-100 p-2 rounded block break-all">
+                https://tu-region-proyecto.cloudfunctions.net/mercadoPagoWebhook
+            </code>
+        </div>
     </div>
 
 </div>
@@ -283,10 +381,11 @@ function loadBranches() {
                 <div>
                     <p class="font-bold">${b.name}</p>
                     <p class="text-sm text-gray-500">${b.location || ""}</p>
+                    <p class="text-xs text-green-600">📱 WhatsApp: ${b.whatsappNumber || "No configurado"}</p>
                 </div>
 
                 <div class="flex gap-2">
-                    <button class="btn-secondary text-sm" onclick="editBranch('${doc.id}', '${b.name}', '${b.location || ""}')">
+                    <button class="btn-secondary text-sm" onclick="editBranch('${doc.id}', '${b.name}', '${b.location || ""}', '${b.whatsappNumber || ""}')">
                         Editar
                     </button>
 
@@ -303,28 +402,79 @@ function loadBranches() {
 
 window.loadBranches = loadBranches;
 
+// Función para inicializar sucursales si no existen
+async function initializeDefaultBranches() {
+    const branchesRef = db.collection('branches');
+    const snapshot = await branchesRef.get();
+    
+    if (snapshot.empty) {
+        console.log('Inicializando sucursales por defecto...');
+        
+        // Crear sucursales por defecto
+        const pilarRef = await branchesRef.add({
+            name: 'Pilar',
+            location: 'Pilar, Buenos Aires',
+            whatsappNumber: '', // Se debe configurar después
+            isActive: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        const canitasRef = await branchesRef.add({
+            name: 'Cañitas',
+            location: 'Cañitas, Buenos Aires',
+            whatsappNumber: '', // Se debe configurar después
+            isActive: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        const belgranoRef = await branchesRef.add({
+            name: 'Belgrano',
+            location: 'Belgrano, Buenos Aires',
+            whatsappNumber: '', // Se debe configurar después
+            isActive: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        console.log('Sucursales inicializadas correctamente');
+        console.log('Pilar ID:', pilarRef.id);
+        console.log('Cañitas ID:', canitasRef.id);
+        console.log('Belgrano ID:', belgranoRef.id);
+    }
+}
+
+// Llamar a la inicialización cuando cargue el dashboard
+const originalLoadDashboard = window.loadDashboard;
+window.loadDashboard = function() {
+    initializeDefaultBranches();
+    originalLoadDashboard();
+};
+
 function addBranch() {
     const name = prompt("Nombre de la sucursal:");
     if (!name) return;
 
     const location = prompt("Ubicación (opcional):");
+    const whatsappNumber = prompt("Número de WhatsApp (con código país, ej: 5491112345678):");
 
     db.collection("branches").add({
         name,
         location: location || "",
+        whatsappNumber: whatsappNumber || "",
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 }
 
-function editBranch(id, currentName, currentLocation) {
+function editBranch(id, currentName, currentLocation, currentWhatsappNumber) {
     const name = prompt("Editar nombre:", currentName);
     if (!name) return;
 
     const location = prompt("Editar ubicación:", currentLocation);
+    const whatsappNumber = prompt("Editar número WhatsApp:", currentWhatsappNumber || "");
 
     db.collection("branches").doc(id).update({
         name,
-        location: location || ""
+        location: location || "",
+        whatsappNumber: whatsappNumber || ""
     });
 }
 
@@ -356,6 +506,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
+
+    // Verificar si viene del botón provisorio (modo bypass)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bypassAuth = urlParams.get('bypass') === 'true';
+
+    if (bypassAuth) {
+        console.log('Modo provisorio: Saltando autenticación');
+        document.getElementById("login-view").classList.add("hidden");
+        document.getElementById("admin-panel").classList.remove("hidden");
+        document.getElementById("admin-email-display").textContent = "Modo Provisorio (Sin Auth)";
+        loadDashboard();
+        return;
+    }
 
     document.getElementById("login-button").addEventListener("click", async () => {
         try {
@@ -619,6 +782,107 @@ async function toggleWebVisibility(productId, estadoActual) {
         alert("No se pudo actualizar la web");
     }
 }
+
+// ============================================
+// WHATSAPP CONFIG
+// ============================================
+
+function loadWhatsAppConfig() {
+    db.collection('admin_config').doc('whatsapp_config').get().then((doc) => {
+        if (doc.exists) {
+            const config = doc.data();
+            document.getElementById('wa-api-key').value = config.apiKey || '';
+            document.getElementById('wa-phone-id').value = config.phoneNumberId || '';
+        }
+    }).catch(error => {
+        console.error("Error cargando config WhatsApp:", error);
+    });
+}
+
+document.getElementById('whatsapp-config-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const apiKey = document.getElementById('wa-api-key').value.trim();
+    const phoneNumberId = document.getElementById('wa-phone-id').value.trim();
+    
+    if (!apiKey || !phoneNumberId) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    try {
+        await db.collection('admin_config').doc('whatsapp_config').set({
+            apiKey: apiKey,
+            phoneNumberId: phoneNumberId,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Configuración de WhatsApp guardada exitosamente');
+    } catch (error) {
+        console.error("Error guardando config WhatsApp:", error);
+        alert('Error al guardar la configuración');
+    }
+});
+
+// Cargar configuración cuando se abra el tab
+const originalShowTab = window.showTab;
+window.showTab = function(tabName, event) {
+    originalShowTab(tabName, event);
+    if (tabName === 'whatsapp') {
+        loadWhatsAppConfig();
+    }
+    if (tabName === 'mercadopago') {
+        loadMercadoPagoConfig();
+    }
+};
+
+// ============================================
+// MERCADO PAGO CONFIG
+// ============================================
+
+function loadMercadoPagoConfig() {
+    db.collection('admin_config').doc('mercadopago_config').get().then((doc) => {
+        if (doc.exists) {
+            const config = doc.data();
+            document.getElementById('mp-access-token').value = config.accessToken || '';
+            document.getElementById('mp-success-url').value = config.successUrl || '';
+            document.getElementById('mp-failure-url').value = config.failureUrl || '';
+            document.getElementById('mp-pending-url').value = config.pendingUrl || '';
+        }
+    }).catch(error => {
+        console.error("Error cargando config Mercado Pago:", error);
+    });
+}
+
+document.getElementById('mp-config-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const accessToken = document.getElementById('mp-access-token').value.trim();
+    const successUrl = document.getElementById('mp-success-url').value.trim();
+    const failureUrl = document.getElementById('mp-failure-url').value.trim();
+    const pendingUrl = document.getElementById('mp-pending-url').value.trim();
+    
+    if (!accessToken || !successUrl || !failureUrl || !pendingUrl) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    try {
+        await db.collection('admin_config').doc('mercadopago_config').set({
+            accessToken: accessToken,
+            successUrl: successUrl,
+            failureUrl: failureUrl,
+            pendingUrl: pendingUrl,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Configuración de Mercado Pago guardada exitosamente');
+    } catch (error) {
+        console.error("Error guardando config Mercado Pago:", error);
+        alert('Error al guardar la configuración');
+    }
+});
+
 // ============================================
 // STOCK
 // ============================================
