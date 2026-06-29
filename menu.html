@@ -128,6 +128,36 @@
     </div>
 </div>
 
+<!-- Flavor Selection Modal -->
+<div id="flavor-modal" class="fixed inset-0 bg-black/50 z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+            <h2 class="text-2xl font-chewy text-[#512874]">Selecciona tus Gustos</h2>
+            <button onclick="closeFlavorModal()" class="text-3xl text-[#a55641]">&times;</button>
+        </div>
+        
+        <div class="p-4">
+            <p class="text-center text-[#a55641] mb-4">
+                Selecciona <span id="flavor-total-count" class="font-bold">0</span> de <span id="flavor-max-count" class="font-bold">0</span> cookies
+            </p>
+            
+            <div id="flavors-container" class="grid grid-cols-2 gap-3">
+                <p class="text-center text-gray-500">Cargando gustos...</p>
+            </div>
+        </div>
+        
+        <div class="sticky bottom-0 bg-white p-4 border-t">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-bold text-[#512874]">Seleccionados:</span>
+                <span id="flavor-selected-count" class="font-bold text-2xl text-[#a55641]">0</span>
+            </div>
+            <button onclick="confirmFlavorSelection()" class="w-full bg-[#512874] text-white font-chewy py-3 rounded-xl hover:bg-[#3a1a52] transition-all">
+                Confirmar Selección
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 // Firebase Config
 const menuFirebaseConfig = {
@@ -154,6 +184,8 @@ console.log("Firestore:", db);
 let cart = [];
 let products = [];
 let currentBranch = localStorage.getItem('selectedBranch') || 'pilar';
+let selectedBox = null;
+let selectedFlavors = {};
 
 // Actualizar nombre de sucursal
 const branchNames = {
@@ -219,7 +251,7 @@ async function loadProducts() {
                             <h3 class="font-bold text-white text-sm mb-1">${product.name}</h3>
                             <p class="text-white/80 text-xs">${product.description || ''}</p>
                         `;
-                        boxCard.onclick = () => addToCart(product.id);
+                        boxCard.onclick = () => openFlavorModal(product);
                         boxesContainer.appendChild(boxCard);
                     } else {
                         // Merch - Tarjeta normal
@@ -298,22 +330,51 @@ function updateCartUI() {
     if (cart.length === 0) {
         cartItems.innerHTML = '<p class="text-center text-gray-500">Tu carrito está vacío</p>';
     } else {
-        cartItems.innerHTML = cart.map(item => `
-            <div class="flex justify-between items-center bg-[#efe6da] p-3 rounded-xl">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">${item.emoji}</span>
-                    <div>
-                        <p class="font-bold text-[#512874]">${item.name}</p>
-                        <p class="text-sm text-[#a55641]">$${item.price.toFixed(2)}</p>
+        cartItems.innerHTML = cart.map(item => {
+            if (item.isBox && item.flavors) {
+                // Box con gustos
+                const flavorsList = item.flavors.map(f => {
+                    const flavor = products.find(p => p.id === f.id);
+                    return flavor ? `${flavor.name} x${f.count}` : f.id;
+                }).join(', ');
+                
+                return `
+                    <div class="flex justify-between items-center bg-[#efe6da] p-3 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📦</span>
+                            <div>
+                                <p class="font-bold text-[#512874]">${item.name}</p>
+                                <p class="text-xs text-[#a55641]">${flavorsList}</p>
+                                <p class="text-sm text-[#a55641]">$${item.price.toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">-</button>
+                            <span class="font-bold text-[#512874]">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">+</button>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="updateQuantity('${item.id}', -1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">-</button>
-                    <span class="font-bold text-[#512874]">${item.quantity}</span>
-                    <button onclick="updateQuantity('${item.id}', 1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">+</button>
-                </div>
-            </div>
-        `).join('');
+                `;
+            } else {
+                // Producto normal
+                return `
+                    <div class="flex justify-between items-center bg-[#efe6da] p-3 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${item.emoji}</span>
+                            <div>
+                                <p class="font-bold text-[#512874]">${item.name}</p>
+                                <p class="text-sm text-[#a55641]">$${item.price.toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">-</button>
+                            <span class="font-bold text-[#512874]">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="bg-[#512874] text-white w-8 h-8 rounded-lg hover:bg-[#3a1a52]">+</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }).join('');
     }
 
     cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
@@ -345,9 +406,129 @@ function processCheckout() {
         return;
     }
     
-    // Guardar carrito en localStorage y redirigir
+    // Calcular total
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Por ahora, redirigir a Mercado Pago con una implementación básica
+    // TODO: Integrar con Cloudflare Workers para producción
+    
+    // Generar items para Mercado Pago
+    const items = cart.map(item => ({
+        title: item.name,
+        quantity: item.quantity,
+        unit_price: item.price,
+        currency_id: "ARS"
+    }));
+    
+    // Guardar carrito en localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
-    window.location.href = 'index.html#checkout';
+    
+    // Por ahora mostrar alerta con el total
+    alert(`Total a pagar: $${total.toFixed(2)}\n\nIntegración con Mercado Pago pendiente.\n\nPróximo paso: Configurar Cloudflare Workers.`);
+    
+    // TODO: Cuando tengas Cloudflare Workers, descomentar esto:
+    // const response = await fetch('TU_CLOUDFLARE_WORKER_URL/create_preference', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ items })
+    // });
+    // const data = await response.json();
+    // window.location.href = data.init_point;
+}
+
+// Modal de selección de gustos
+function openFlavorModal(box) {
+    selectedBox = box;
+    selectedFlavors = {};
+    
+    document.getElementById('flavor-max-count').textContent = box.boxQuantity || 4;
+    document.getElementById('flavor-total-count').textContent = 0;
+    document.getElementById('flavor-selected-count').textContent = 0;
+    
+    // Cargar gustos disponibles
+    const flavorsContainer = document.getElementById('flavors-container');
+    flavorsContainer.innerHTML = '<p class="text-center text-gray-500">Cargando gustos...</p>';
+    
+    const flavors = products.filter(p => p.category === 'gusto' && p.available === true);
+    
+    if (flavors.length === 0) {
+        flavorsContainer.innerHTML = '<p class="text-center text-gray-500">No hay gustos disponibles</p>';
+    } else {
+        flavorsContainer.innerHTML = '';
+        flavors.forEach(flavor => {
+            const flavorCard = document.createElement('div');
+            flavorCard.className = 'bg-[#efe6da] p-3 rounded-xl border-2 border-[#512874] cursor-pointer hover:bg-[#512874] hover:text-white transition-all';
+            flavorCard.innerHTML = `
+                <div class="text-2xl mb-1">${flavor.image ? `<img src="${flavor.image}" class="w-8 h-8 object-cover rounded">` : '🍪'}</div>
+                <div class="font-bold text-sm">${flavor.name}</div>
+                <div class="text-xs opacity-75">$${(flavor.price || 0).toFixed(2)}</div>
+            `;
+            flavorCard.onclick = () => selectFlavor(flavor.id, flavor.name);
+            flavorsContainer.appendChild(flavorCard);
+        });
+    }
+    
+    document.getElementById('flavor-modal').classList.remove('hidden');
+    document.getElementById('flavor-modal').classList.add('flex');
+}
+
+function closeFlavorModal() {
+    document.getElementById('flavor-modal').classList.add('hidden');
+    document.getElementById('flavor-modal').classList.remove('flex');
+    selectedBox = null;
+    selectedFlavors = {};
+}
+
+function selectFlavor(flavorId, flavorName) {
+    const boxQuantity = selectedBox.boxQuantity || 4;
+    const currentTotal = Object.values(selectedFlavors).reduce((sum, count) => sum + count, 0);
+    
+    if (currentTotal >= boxQuantity) {
+        alert(`Ya seleccionaste ${boxQuantity} cookies. Máximo permitido.`);
+        return;
+    }
+    
+    if (selectedFlavors[flavorId]) {
+        selectedFlavors[flavorId]++;
+    } else {
+        selectedFlavors[flavorId] = 1;
+    }
+    
+    updateFlavorUI();
+}
+
+function updateFlavorUI() {
+    const total = Object.values(selectedFlavors).reduce((sum, count) => sum + count, 0);
+    document.getElementById('flavor-selected-count').textContent = total;
+    document.getElementById('flavor-total-count').textContent = total;
+}
+
+function confirmFlavorSelection() {
+    const boxQuantity = selectedBox.boxQuantity || 4;
+    const total = Object.values(selectedFlavors).reduce((sum, count) => sum + count, 0);
+    
+    if (total !== boxQuantity) {
+        alert(`Debes seleccionar exactamente ${boxQuantity} cookies. Seleccionaste ${total}.`);
+        return;
+    }
+    
+    // Agregar box con gustos al carrito
+    const flavorsArray = Object.entries(selectedFlavors).map(([id, count]) => ({
+        id,
+        count
+    }));
+    
+    cart.push({
+        id: selectedBox.id,
+        name: selectedBox.name,
+        price: selectedBox.price,
+        quantity: 1,
+        flavors: flavorsArray,
+        isBox: true
+    });
+    
+    updateCartUI();
+    closeFlavorModal();
 }
 
 // Cargar productos al iniciar

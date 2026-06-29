@@ -264,11 +264,17 @@
 
             <div>
                 <label class="block text-sm font-bold mb-1">Categoría</label>
-                <select id="product-category" class="w-full border rounded-xl p-3">
+                <select id="product-category" class="w-full border rounded-xl p-3" onchange="toggleBoxFields()">
                     <option value="producto">Producto</option>
                     <option value="box">Box</option>
                     <option value="gusto">Gusto</option>
                 </select>
+            </div>
+
+            <div id="box-fields" class="hidden">
+                <label class="block text-sm font-bold mb-1">Cantidad de Cookies</label>
+                <input type="number" id="box-quantity" class="w-full border rounded-xl p-3" value="4" min="1">
+                <p class="text-xs text-gray-500 mt-1">Número de cookies que lleva la box</p>
             </div>
 
             <div>
@@ -548,6 +554,13 @@ db.collection('cookies').onSnapshot((snapshot) => {
             document.getElementById('product-price').value = product.price || 0;
             document.getElementById('product-category').value = product.category || 'producto';
             document.getElementById('product-available').checked = product.available !== false;
+            
+            // Mostrar campos de box si es box
+            toggleBoxFields();
+            
+            if (product.category === 'box' && product.boxQuantity) {
+                document.getElementById('box-quantity').value = product.boxQuantity;
+            }
         });
     }
 
@@ -558,6 +571,17 @@ db.collection('cookies').onSnapshot((snapshot) => {
             document.getElementById('product-modal').classList.add('hidden');
             // DEVUELVE EL SCROLL NORMAL A LA PÁGINA
             document.body.style.overflow = 'auto';
+        }
+
+        function toggleBoxFields() {
+            const category = document.getElementById('product-category').value;
+            const boxFields = document.getElementById('box-fields');
+            
+            if (category === 'box') {
+                boxFields.classList.remove('hidden');
+            } else {
+                boxFields.classList.add('hidden');
+            }
         }
 
         function editProduct(productId) {
@@ -602,6 +626,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         description: document.getElementById('product-description').value.trim(),
         price: price,
         category: document.getElementById('product-category').value,
+        boxQuantity: document.getElementById('box-quantity') ? parseInt(document.getElementById('box-quantity').value) || 0 : 0,
         image: "", // Campo vacío por defecto
         available: document.getElementById('product-available').checked,
         featured: false, // Campo por defecto

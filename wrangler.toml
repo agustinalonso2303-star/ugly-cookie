@@ -1,0 +1,6 @@
+name = "ugly-mp-worker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Variables de entorno aquí
