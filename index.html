@@ -2280,22 +2280,34 @@ const newDoc = await db.collection('products').add({
 
     // Ejecutar al cargar la página
     document.addEventListener('DOMContentLoaded', async () => {
-        console.log('DOM Content Loaded - Inicializando ubicación por defecto');
+        console.log('DOM Content Loaded - Inicializando selección de sucursal');
         
-        // Cargar datos de Pilar por defecto inmediatamente
-        const addressEl = document.getElementById('footer-address');
-        const mapEl = document.getElementById('footer-map-iframe');
-        const waBtn = document.getElementById('wa-float-btn');
+        // Llamar a detectBranch para verificar si hay sucursal guardada o mostrar modal
+        await detectBranch();
         
-        if (addressEl) {
-            addressEl.textContent = branchDetails.pilar.address;
-            console.log('Dirección por defecto cargada:', branchDetails.pilar.address);
+        // Si no hay sucursal seleccionada, mostrar datos de Pilar por defecto temporalmente
+        const savedBranchId = localStorage.getItem('selectedBranch');
+        if (!savedBranchId) {
+            console.log('No hay sucursal guardada, cargando datos de Pilar temporalmente');
+            const addressEl = document.getElementById('footer-address');
+            const mapEl = document.getElementById('footer-map-iframe');
+            const waBtn = document.getElementById('wa-float-btn');
+            
+            if (addressEl) {
+                addressEl.textContent = branchDetails.pilar.address;
+            }
+            if (mapEl) {
+                mapEl.src = branchDetails.pilar.maps;
+            }
+            if (waBtn) {
+                const whatsappNumber = branchDetails.pilar.whatsapp;
+                if (whatsappNumber) {
+                    const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
+                    waBtn.href = waLink;
+                }
+            }
         }
         
-        if (mapEl) {
-            mapEl.src = branchDetails.pilar.maps;
-            console.log('Mapa por defecto cargado:', branchDetails.pilar.maps);
-        }
         
         if (waBtn) {
             const whatsappNumber = branchDetails.pilar.whatsapp;

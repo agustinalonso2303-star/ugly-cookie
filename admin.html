@@ -138,6 +138,7 @@
     </div>
 
     <div id="tab-branches" class="tab-content">
+        <button onclick="showBranchModal()" class="btn-primary font-chewy mb-6">+ Nueva Sucursal</button>
         <div id="branches-list"></div>
     </div>
 
@@ -259,6 +260,60 @@
         </div>
     </div>
 
+</div>
+
+<!-- Modal Nueva Sucursal -->
+<div id="branch-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 id="branch-modal-title" class="text-2xl font-bold text-[#512874]">Nueva Sucursal</h3>
+            <button onclick="closeBranchModal()" class="text-3xl text-[#a55641]">&times;</button>
+        </div>
+        
+        <form id="branch-form" class="space-y-4">
+            <input type="hidden" id="branch-id">
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Nombre</label>
+                <input type="text" id="branch-name" required class="w-full border rounded-xl p-3" placeholder="ej: Pilar">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">Dirección</label>
+                <input type="text" id="branch-address" required class="w-full border rounded-xl p-3" placeholder="ej: Rua Caamaño 844, Pilar">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">WhatsApp (número)</label>
+                <input type="text" id="branch-whatsapp" required class="w-full border rounded-xl p-3" placeholder="ej: 5491123456789">
+                <p class="text-xs text-gray-500 mt-1">Solo números, sin signos ni espacios</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">URL de Maps</label>
+                <input type="text" id="branch-maps" required class="w-full border rounded-xl p-3" placeholder="https://www.google.com/maps/embed?pb=...">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">URL de Instagram (opcional)</label>
+                <input type="text" id="branch-instagram" class="w-full border rounded-xl p-3" placeholder="https://instagram.com/...">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold mb-1">URL de TikTok (opcional)</label>
+                <input type="text" id="branch-tiktok" class="w-full border rounded-xl p-3" placeholder="https://tiktok.com/@...">
+            </div>
+            
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="branch-active" checked>
+                    <span class="text-sm">Activa</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-primary w-full font-chewy text-xl">Guardar</button>
+        </form>
+    </div>
 </div>
 
 <!-- Modal Producto -->
@@ -389,7 +444,47 @@ function deleteBranch(id) {
     db.collection("branches").doc(id).delete();
 }
 
-window.addBranch = addBranch;
+// Formulario de sucursales
+document.getElementById('branch-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const branchId = document.getElementById('branch-id').value;
+
+    const branchData = {
+        name: document.getElementById('branch-name').value.trim(),
+        address: document.getElementById('branch-address').value.trim(),
+        whatsapp: document.getElementById('branch-whatsapp').value.trim(),
+        maps: document.getElementById('branch-maps').value.trim(),
+        instagram: document.getElementById('branch-instagram').value.trim(),
+        tiktok: document.getElementById('branch-tiktok').value.trim(),
+        isActive: document.getElementById('branch-active').checked,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (!branchData.name || !branchData.address || !branchData.whatsapp) {
+        alert('Por favor completa los campos obligatorios: Nombre, Dirección y WhatsApp');
+        return;
+    }
+
+    try {
+        if (branchId) {
+            await db.collection('branches').doc(branchId).update(branchData);
+            alert('Sucursal actualizada con éxito');
+        } else {
+            branchData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('branches').add(branchData);
+            alert('Sucursal creada con éxito');
+        }
+
+        closeBranchModal();
+    } catch (error) {
+        console.error("Error guardando sucursal:", error);
+        alert("Error al guardar la sucursal: " + error.message);
+    }
+});
+
+window.showBranchModal = showBranchModal;
+window.closeBranchModal = closeBranchModal;
 window.editBranch = editBranch;
 window.deleteBranch = deleteBranch;
 // =========================
@@ -897,6 +992,72 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
                         <div class="flex justify-between items-center">
                             <div>
                                 <h3 class="font-bold text-lg">${branch.name}</h3>
+                                <p class="text-sm text-gray-600">${branch.address}</p>
+                                <p class="text-sm text-gray-600">WhatsApp: ${branch.whatsapp || 'No configurado'}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editBranch('${doc.id}')" class="btn-primary text-sm">Editar</button>
+                                <button onclick="deleteBranch('${doc.id}')" class="btn-danger text-sm">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function showBranchModal() {
+            const modal = document.getElementById('branch-modal');
+            const form = document.getElementById('branch-form');
+            const title = document.getElementById('branch-modal-title');
+
+            if (!modal || !form) {
+                console.error("Modal o form no encontrado en el DOM");
+                return;
+            }
+
+            form.reset();
+            const idInput = document.getElementById('branch-id');
+            if (idInput) idInput.value = '';
+
+            document.body.style.overflow = 'hidden';
+
+            if (title.textContent !== undefined) {
+                title.textContent = 'Nueva Sucursal';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBranchModal() {
+            document.getElementById('branch-modal').classList.add('hidden');
+            document.getElementById('branch-modal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        function editBranch(id) {
+            db.collection('branches').doc(id).get().then((doc) => {
+                if (!doc.exists) return;
+
+                const branch = doc.data();
+
+                document.getElementById('branch-id').value = id;
+                document.getElementById('branch-name').value = branch.name || '';
+                document.getElementById('branch-address').value = branch.address || '';
+                document.getElementById('branch-whatsapp').value = branch.whatsapp || '';
+                document.getElementById('branch-maps').value = branch.maps || '';
+                document.getElementById('branch-instagram').value = branch.instagram || '';
+                document.getElementById('branch-tiktok')?.value = branch.tiktok || '';
+                document.getElementById('branch-active').checked = branch.isActive !== false;
+
+                document.getElementById('branch-modal-title').textContent = 'Editar Sucursal';
+
+                const modal = document.getElementById('branch-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        }
                                 <p class="text-sm text-gray-600">${branch.location}</p>
                                 <p class="text-sm text-gray-600">WhatsApp: ${branch.whatsappNumber || 'No configurado'}</p>
                             </div>
