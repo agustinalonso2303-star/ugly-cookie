@@ -102,6 +102,7 @@
         <button class="nav-tab" onclick="showTab('branches')">🏪 Sucursales</button>
         <button class="nav-tab" onclick="showTab('whatsapp')">📱 WhatsApp</button>
         <button class="nav-tab" onclick="showTab('mercadopago')">💳 Mercado Pago</button>
+        <button class="nav-tab" onclick="showTab('migration')">🔄 Migración</button>
     </div>
 
     <div id="tab-products" class="tab-content active">
@@ -174,6 +175,30 @@
                 <li>Obtén el Access Token y Phone Number ID</li>
                 <li>Configura los números de WhatsApp en cada sucursal</li>
             </ol>
+        </div>
+    </div>
+
+    <div id="tab-migration" class="tab-content">
+        <h2 class="text-2xl font-bold mb-6">Migración de Sucursales</h2>
+        
+        <div class="bg-white p-6 rounded-2xl shadow-md max-w-2xl">
+            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-6">
+                <h3 class="font-bold text-yellow-800 mb-2">⚠️ Migración de Sucursales Hardcoded a Firestore</h3>
+                <p class="text-sm text-yellow-700 mb-4">
+                    Esta función migrará las sucursales que están hardcoded en el código a la colección "branches" de Firestore.
+                    Esto permitirá editar las sucursales dinámicamente desde el panel admin.
+                </p>
+                <ol class="text-sm text-yellow-700 list-decimal list-inside space-y-1">
+                    <li>Clic en "Ejecutar Migración"</li>
+                    <li>Las sucursales se guardarán en Firestore</li>
+                    <li>Puedes editarlas en la pestaña "Sucursales"</li>
+                    <li>El código leerá dinámicamente de Firestore</li>
+                </ol>
+            </div>
+            
+            <button onclick="migrateBranchesToFirestore()" class="btn-primary w-full font-chewy text-xl">
+                🔄 Ejecutar Migración
+            </button>
         </div>
     </div>
 
@@ -694,6 +719,61 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
             db.collection('products').doc(productId).update({
                 [`stock.${branch}`]: parseInt(value)
             });
+        }
+
+        // ============================================
+        // MIGRACIÓN DE SUCURSALES A FIRESTORE
+        // ============================================
+        function migrateBranchesToFirestore() {
+            const branches = [
+                {
+                    id: 'pilar',
+                    name: 'Pilar',
+                    address: "Rua Caamaño 844, Pilar",
+                    maps: "https://www.google.com/maps?q=Rua%20Caamaño%20844,%20Pilar&output=embed",
+                    whatsapp: "+5491124786507",
+                    instagram: "https://www.instagram.com/uglyamericancookie?igsh=MXJ0eGU5MWs1d3VuZA==",
+                    tiktok: "https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya",
+                    threads: "https://threads.net/@uglycookiespilar",
+                    isActive: true
+                },
+                {
+                    id: 'canitas',
+                    name: 'Cañitas',
+                    address: "Baez 738, Palermo (Cañitas), Buenos Aires",
+                    maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.3650033563586!2d-58.438412423412636!3d-34.56962977296654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5be9579ebeb%3A0xadb196e8996f773c!2sB%C3%A1ez%20738%2C%20C1426BRP%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708820301!5m2!1ses-419!2sar",
+                    whatsapp: "+5491112345678",
+                    instagram: "https://instagram.com/uglycookiescanitas",
+                    tiktok: "https://tiktok.com/@uglycookiescanitas",
+                    threads: "https://threads.net/@uglycookiescanitas",
+                    isActive: true
+                },
+                {
+                    id: 'belgrano',
+                    name: 'Belgrano',
+                    address: "Olazabal 2424, Belgrano, Buenos Aires",
+                    maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.7298297499497!2d-58.45874732008166!3d-34.56039531098681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d4b8393803%3A0xc2e4c3a152145bbc!2sAv.%20Olaz%C3%A1bal%202424%2C%20C1428DHT%20C1428DHT%2C%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708861415!5m2!1ses-419!2sar",
+                    whatsapp: "5491100000000",
+                    instagram: "https://instagram.com/uglycookiesbelgrano",
+                    tiktok: "https://tiktok.com/@uglycookiesbelgrano",
+                    threads: "https://threads.net/@uglycookiesbelgrano",
+                    isActive: true
+                }
+            ];
+
+            branches.forEach(branch => {
+                db.collection('branches').doc(branch.id).set({
+                    ...branch,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log(`Sucursal ${branch.name} migrada exitosamente`);
+                }).catch(error => {
+                    console.error(`Error migrando ${branch.name}:`, error);
+                });
+            });
+
+            alert('Migración de sucursales iniciada. Revisa la consola para detalles.');
         }
 
         // ============================================

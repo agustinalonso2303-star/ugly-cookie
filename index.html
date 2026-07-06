@@ -2019,32 +2019,36 @@ const newDoc = await db.collection('products').add({
         // ============================================
         // INFORMACIÓN DE SUCURSALES (FOOTER & WA)
         // ============================================
+        // Datos de fallback por si no hay conexión a Firestore
         const branchDetails = {
             pilar: {
                 address: "Rua Caamaño 844, Pilar",
                 maps: "https://www.google.com/maps?q=Rua%20Caamaño%20844,%20Pilar&output=embed",
                 whatsapp: "+5491124786507",
-                ig: "https://www.instagram.com/uglyamericancookie?igsh=MXJ0eGU5MWs1d3VuZA==",
-                tt: "https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya",
-                th: "https://threads.net/@uglycookiespilar"
+                instagram: "https://www.instagram.com/uglyamericancookie?igsh=MXJ0eGU5MWs1d3VuZA==",
+                tiktok: "https://www.tiktok.com/@uglyamericancookie?_r=1&_t=ZS-96wNbFbOxya",
+                threads: "https://threads.net/@uglycookiespilar"
             },
-            cañitas: {
+            canitas: {
                 address: "Baez 738, Palermo (Cañitas), Buenos Aires",
                 maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.3650033563586!2d-58.438412423412636!3d-34.56962977296654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5be9579ebeb%3A0xadb196e8996f773c!2sB%C3%A1ez%20738%2C%20C1426BRP%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708820301!5m2!1ses-419!2sar",
-                whatsapp: "+5491112345678", // Número real para Cañitas
-                ig: "https://instagram.com/uglycookiescanitas",
-                tt: "https://tiktok.com/@uglycookiescanitas",
-                th: "https://threads.net/@uglycookiescanitas"
+                whatsapp: "+5491112345678",
+                instagram: "https://instagram.com/uglycookiescanitas",
+                tiktok: "https://tiktok.com/@uglycookiescanitas",
+                threads: "https://threads.net/@uglycookiescanitas"
             },
             belgrano: {
                 address: "Olazabal 2424, Belgrano, Buenos Aires",
                 maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.7298297499497!2d-58.45874732008166!3d-34.56039531098681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d4b8393803%3A0xc2e4c3a152145bbc!2sAv.%20Olaz%C3%A1bal%202424%2C%20C1428DHT%20C1428DHT%2C%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses-419!2sar!4v1782708861415!5m2!1ses-419!2sar",
-                whatsapp: "5491100000000", // Número genérico
-                ig: "https://instagram.com/uglycookiesbelgrano",
-                tt: "https://tiktok.com/@uglycookiesbelgrano",
-                th: "https://threads.net/@uglycookiesbelgrano"
+                whatsapp: "5491100000000",
+                instagram: "https://instagram.com/uglycookiesbelgrano",
+                tiktok: "https://tiktok.com/@uglycookiesbelgrano",
+                threads: "https://threads.net/@uglycookiesbelgrano"
             }
         };
+
+        // Variable global para almacenar sucursales de Firestore
+        let firestoreBranches = {};
 
         // Cargar sucursales dinámicamente desde Firestore
         async function loadBranches() {
@@ -2070,9 +2074,25 @@ const newDoc = await db.collection('products').add({
                 
                 console.log('Sucursales encontradas en Firestore:', snapshot.size);
                 const branches = [];
+                firestoreBranches = {}; // Guardar en variable global
+                
                 snapshot.forEach((doc) => {
+                    const branchData = doc.data();
                     branches.push({
                         id: doc.id,
+                        name: branchData.name || doc.id,
+                        ...branchData
+                    });
+                    firestoreBranches[doc.id] = branchData; // Guardar detalles
+                });
+                
+                renderBranchButtons(branches);
+            } catch (error) {
+                console.error('Error cargando sucursales de Firestore:', error);
+                console.log('Usando datos estáticos como fallback');
+                renderBranchButtons(staticBranches);
+            }
+        }
                         name: doc.data().name
                     });
                 });
@@ -2140,43 +2160,51 @@ const newDoc = await db.collection('products').add({
             try {
                 console.log('updateBranchDetails llamado con ID:', branchId);
                 
-                // Usar datos estáticos basados en el ID - simplificado
-                let details = branchDetails.pilar; // Default a Pilar
+                // Primero intentar usar datos de Firestore
+                if (firestoreBranches[branchId]) {
+                    const details = firestoreBranches[branchId];
+                    console.log('Usando detalles de Firestore para:', branchId);
+                    applyBranchDetails(details);
+                    return;
+                }
                 
-                // Mapeo directo basado en el ID
-                if (branchId === 'pilar' || branchId.includes('pilar')) {
-                    details = branchDetails.pilar;
-                    console.log('Usando detalles de Pilar');
                 } else if (branchId === 'canitas' || branchId === 'cañitas' || branchId.includes('canitas') || branchId.includes('cañitas')) {
-                    details = branchDetails.cañitas;
-                    console.log('Usando detalles de Cañitas');
+                    details = branchDetails.canitas;
+                    console.log('Usando detalles estáticos de Cañitas');
                 } else if (branchId === 'belgrano' || branchId.includes('belgrano')) {
                     details = branchDetails.belgrano;
-                    console.log('Usando detalles de Belgrano');
+                    console.log('Usando detalles estáticos de Belgrano');
                 }
                 
                 console.log('Detalles a usar:', details);
-                
-                // Actualizar dirección
-                const addressEl = document.getElementById('footer-address');
-                if (addressEl) {
-                    addressEl.textContent = details.address || 'Dirección no disponible';
-                    console.log('Dirección actualizada a:', details.address);
-                } else {
-                    console.error('No se encontró elemento footer-address');
-                }
-                
-                // Actualizar Maps
-                const mapEl = document.getElementById('footer-map-iframe');
-                if (mapEl) {
-                    mapEl.src = details.maps || `https://www.google.com/maps?q=Buenos%20Aires&output=embed`;
-                    console.log('Maps actualizado a:', details.maps);
-                } else {
-                    console.error('No se encontró elemento footer-map-iframe');
-                }
-                
-                // Actualizar WhatsApp flotante
-                const waBtn = document.getElementById('wa-float-btn');
+                applyBranchDetails(details);
+            } catch (error) {
+                console.error('Error en updateBranchDetails:', error);
+            }
+        }
+
+        // Función auxiliar para aplicar detalles de sucursal al DOM
+        function applyBranchDetails(details) {
+            // Actualizar dirección
+            const addressEl = document.getElementById('footer-address');
+            if (addressEl) {
+                addressEl.textContent = details.address || 'Dirección no disponible';
+                console.log('Dirección actualizada a:', details.address);
+            } else {
+                console.error('No se encontró elemento footer-address');
+            }
+            
+            // Actualizar Maps
+            const mapEl = document.getElementById('footer-map-iframe');
+            if (mapEl) {
+                mapEl.src = details.maps || `https://www.google.com/maps?q=Buenos%20Aires&output=embed`;
+                console.log('Maps actualizado a:', details.maps);
+            } else {
+                console.error('No se encontró elemento footer-map-iframe');
+            }
+            
+            // Actualizar WhatsApp flotante
+            const waBtn = document.getElementById('wa-float-btn');
                 if (waBtn) {
                     const whatsappNumber = details.whatsapp;
                     if (whatsappNumber) {
@@ -2194,22 +2222,22 @@ const newDoc = await db.collection('products').add({
                 const footerTh = document.getElementById('footer-th');
                 
                 if (footerIg) {
-                    footerIg.href = details.ig || '#';
-                    console.log('Instagram actualizado a:', details.ig);
+                    footerIg.href = details.ig || details.instagram || '#';
+                    console.log('Instagram actualizado');
                 }
                 if (footerTt) {
-                    footerTt.href = details.tt || '#';
-                    console.log('TikTok actualizado a:', details.tt);
+                    footerTt.href = details.tt || details.tiktok || '#';
+                    console.log('TikTok actualizado');
                 }
                 if (footerTh) {
-                    footerTh.href = details.th || '#';
-                    console.log('Threads actualizado a:', details.th);
+                    footerTh.href = details.th || details.threads || '#';
+                    console.log('Threads actualizado');
                 }
                 
                 console.log('✅ Actualización de footer completada');
                 
             } catch (error) {
-                console.error('❌ Error cargando detalles de sucursal:', error);
+                console.error('❌ Error en applyBranchDetails:', error);
             }
         }
 
