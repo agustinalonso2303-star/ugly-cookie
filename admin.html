@@ -1070,19 +1070,6 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
                 modal.classList.add('flex');
             });
         }
-                                <p class="text-sm text-gray-600">${branch.location}</p>
-                                <p class="text-sm text-gray-600">WhatsApp: ${branch.whatsappNumber || 'No configurado'}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="editBranch('${doc.id}')" class="btn-primary text-sm">Editar</button>
-                                <button onclick="deleteBranch('${doc.id}')" class="btn-danger text-sm">Eliminar</button>
-                            </div>
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            });
-        }
 
         // ============================================
         // WHATSAPP CONFIG
