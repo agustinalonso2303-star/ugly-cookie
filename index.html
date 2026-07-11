@@ -2179,26 +2179,27 @@ const newDoc = await db.collection('products').add({
 
         // Función auxiliar para aplicar detalles de sucursal al DOM
         function applyBranchDetails(details) {
-            // Actualizar dirección
-            const addressEl = document.getElementById('footer-address');
-            if (addressEl) {
-                addressEl.textContent = details.address || 'Dirección no disponible';
-                console.log('Dirección actualizada a:', details.address);
-            } else {
-                console.error('No se encontró elemento footer-address');
-            }
-            
-            // Actualizar Maps
-            const mapEl = document.getElementById('footer-map-iframe');
-            if (mapEl) {
-                mapEl.src = details.maps || `https://www.google.com/maps?q=Buenos%20Aires&output=embed`;
-                console.log('Maps actualizado a:', details.maps);
-            } else {
-                console.error('No se encontró elemento footer-map-iframe');
-            }
-            
-            // Actualizar WhatsApp flotante
-            const waBtn = document.getElementById('wa-float-btn');
+            try {
+                // Actualizar dirección
+                const addressEl = document.getElementById('footer-address');
+                if (addressEl) {
+                    addressEl.textContent = details.address || 'Dirección no disponible';
+                    console.log('Dirección actualizada a:', details.address);
+                } else {
+                    console.error('No se encontró elemento footer-address');
+                }
+                
+                // Actualizar Maps
+                const mapEl = document.getElementById('footer-map-iframe');
+                if (mapEl) {
+                    mapEl.src = details.maps || `https://www.google.com/maps?q=Buenos%20Aires&output=embed`;
+                    console.log('Maps actualizado a:', details.maps);
+                } else {
+                    console.error('No se encontró elemento footer-map-iframe');
+                }
+                
+                // Actualizar WhatsApp flotante
+                const waBtn = document.getElementById('wa-float-btn');
                 if (waBtn) {
                     const whatsappNumber = details.whatsapp;
                     if (whatsappNumber) {
@@ -2237,35 +2238,9 @@ const newDoc = await db.collection('products').add({
 
         // Función principal de selección de sucursal
     async function detectBranch() {
-        const savedBranchId = localStorage.getItem('selectedBranch');
-        
-        if (savedBranchId) {
-            // Verificar si la sucursal guardada aún existe
-            try {
-                const doc = await db.collection('branches').doc(savedBranchId).get();
-                if (doc.exists) {
-                    const branch = doc.data();
-                    currentBranch = savedBranchId;
-                    
-                    // Actualizar UI
-                    const headerEl = document.getElementById('header-branch-name');
-                    if (headerEl) {
-                        headerEl.textContent = branch.name;
-                    }
-                    
-                    updateBranchDetails(savedBranchId);
-                    loadProducts();
-                    if (typeof loadCookieMonthBanner === 'function') loadCookieMonthBanner();
-                    return; // No mostrar modal si ya hay sucursal válida
-                }
-            } catch (error) {
-                console.error('Error verificando sucursal guardada:', error);
-            }
-        }
-        
         console.log('Solicitando selección manual de sucursal');
         
-        // Elimina cualquier sucursal previamente guardada inválida
+        // Elimina cualquier sucursal previamente guardada
         localStorage.removeItem('selectedBranch');
         
         // Muestra el selector manual
@@ -2276,45 +2251,7 @@ const newDoc = await db.collection('products').add({
     document.addEventListener('DOMContentLoaded', async () => {
         console.log('DOM Content Loaded - Inicializando selección de sucursal');
         
-        // Llamar a detectBranch para verificar si hay sucursal guardada o mostrar modal
-        await detectBranch();
-        
-        // Si no hay sucursal seleccionada, mostrar datos de Pilar por defecto temporalmente
-        const savedBranchId = localStorage.getItem('selectedBranch');
-        if (!savedBranchId) {
-            console.log('No hay sucursal guardada, cargando datos de Pilar temporalmente');
-            const addressEl = document.getElementById('footer-address');
-            const mapEl = document.getElementById('footer-map-iframe');
-            const waBtn = document.getElementById('wa-float-btn');
-            
-            if (addressEl) {
-                addressEl.textContent = branchDetails.pilar.address;
-            }
-            if (mapEl) {
-                mapEl.src = branchDetails.pilar.maps;
-            }
-            if (waBtn) {
-                const whatsappNumber = branchDetails.pilar.whatsapp;
-                if (whatsappNumber) {
-                    const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
-                    waBtn.href = waLink;
-                    console.log('WhatsApp por defecto cargado:', whatsappNumber);
-                }
-            }
-        }
-        
-        // Cargar redes sociales por defecto
-        const footerIg = document.getElementById('footer-ig');
-        const footerTt = document.getElementById('footer-tt');
-        const footerTh = document.getElementById('footer-th');
-        
-        if (footerIg) footerIg.href = branchDetails.pilar.ig || '#';
-        if (footerTt) footerTt.href = branchDetails.pilar.tt || '#';
-        if (footerTh) footerTh.href = branchDetails.pilar.th || '#';
-        
-        console.log('Redes sociales por defecto cargadas');
-        
-        // Luego ejecutar la detección de sucursal
+        // Ejecutar la detección de sucursal (siempre mostrar modal)
         detectBranch();
     });
 
