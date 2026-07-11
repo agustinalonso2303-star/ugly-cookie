@@ -207,8 +207,8 @@ async function loadProducts() {
     console.log("Firebase db:", db);
 
     try {
-        // Usar colección 'cookies' con versión compat
-        db.collection('cookies').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+        // Usar colección 'products' con versión compat
+        db.collection('products').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
             console.log("Snapshot recibido, cantidad de documentos:", snapshot.size);
             merchContainer.innerHTML = '';
             boxesContainer.innerHTML = '';
@@ -228,8 +228,8 @@ async function loadProducts() {
                 const product = { id: doc.id, ...doc.data() };
                 console.log("Producto:", product.name, "Category:", product.category, "Available:", product.available);
                 
-                // Solo mostrar productos disponibles
-                if (product.available === true) {
+                // Solo mostrar productos disponibles y publicados
+                if (product.available === true && product.published === true) {
                     products.push(product);
                     
                     const imageUrl = product.image || '';

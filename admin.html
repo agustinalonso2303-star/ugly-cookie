@@ -347,6 +347,14 @@
                     <span class="text-sm">Disponible</span>
                 </label>
             </div>
+
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" id="product-published">
+                    <span class="text-sm">Publicar en Web</span>
+                </label>
+                <p class="text-xs text-gray-500 mt-1">Si no está marcado, solo será visible en modo edición</p>
+            </div>
             
             <button type="submit" class="btn-primary w-full font-chewy text-xl">Guardar</button>
         </form>
@@ -601,7 +609,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ============================================
         function loadProducts() {
             const container = document.getElementById('products-container');
-db.collection('cookies').onSnapshot((snapshot) => {
+db.collection('products').onSnapshot((snapshot) => {
     container.innerHTML = '';
 
     if (snapshot.empty) {
@@ -635,6 +643,10 @@ db.collection('cookies').onSnapshot((snapshot) => {
                     <span>Disponible: ${product.available ? 'Sí' : 'No'}</span>
                 </div>
                 <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full ${product.published ? 'bg-blue-500' : 'bg-gray-300'}"></span>
+                    <span>Publicado: ${product.published ? 'Sí' : 'No'}</span>
+                </div>
+                <div class="flex items-center gap-2">
                     <span class="w-3 h-3 rounded-full ${product.featured ? 'bg-yellow-500' : 'bg-gray-300'}"></span>
                     <span>Destacado: ${product.featured ? 'Sí' : 'No'}</span>
                 </div>
@@ -645,6 +657,7 @@ db.collection('cookies').onSnapshot((snapshot) => {
             
             <div class="flex gap-2">
                 <button onclick="editProduct('${doc.id}')" class="btn-primary text-xs flex-1">Editar</button>
+                <button onclick="togglePublish('${doc.id}', ${product.published})" class="btn-secondary text-xs flex-1">${product.published ? 'Despublicar' : 'Publicar'}</button>
                 <button onclick="deleteProduct('${doc.id}')" class="btn-danger text-xs flex-1">Eliminar</button>
             </div>
         `;
@@ -674,7 +687,7 @@ db.collection('cookies').onSnapshot((snapshot) => {
 }
 
     if (productId) {
-        db.collection('cookies').doc(productId).get().then((doc) => {
+        db.collection('products').doc(productId).get().then((doc) => {
             if (!doc.exists) return;
 
             const product = doc.data();
@@ -685,6 +698,7 @@ db.collection('cookies').onSnapshot((snapshot) => {
             document.getElementById('product-price').value = product.price || 0;
             document.getElementById('product-category').value = product.category || 'producto';
             document.getElementById('product-available').checked = product.available !== false;
+            document.getElementById('product-published').checked = product.published === true;
             
             // Mostrar campos de box si es box
             toggleBoxFields();
@@ -721,12 +735,29 @@ db.collection('cookies').onSnapshot((snapshot) => {
 
         function deleteProduct(productId) {
             if (confirm('¿Estás seguro de eliminar este producto?')) {
-                db.collection('cookies').doc(productId).delete()
+                db.collection('products').doc(productId).delete()
                     .then(() => alert('Producto eliminado correctamente'))
                     .catch(error => {
                         console.error("Error delete:", error);
                         alert("Error al eliminar producto");
                     });
+            }
+        }
+
+        function togglePublish(productId, currentStatus) {
+            const newStatus = !currentStatus;
+            const action = newStatus ? 'publicar' : 'despublicar';
+            
+            if (confirm(`¿Estás seguro de ${action} este producto?`)) {
+                db.collection('products').doc(productId).update({
+                    published: newStatus,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => alert(`Producto ${action === 'publicar' ? 'publicado' : 'despublicado'} correctamente`))
+                .catch(error => {
+                    console.error("Error toggle publish:", error);
+                    alert("Error al cambiar estado de publicación");
+                });
             }
         }
 // ============================================
@@ -760,6 +791,7 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         boxQuantity: document.getElementById('box-quantity') ? parseInt(document.getElementById('box-quantity').value) || 0 : 0,
         image: "", // Campo vacío por defecto
         available: document.getElementById('product-available').checked,
+        published: document.getElementById('product-published').checked,
         featured: false, // Campo por defecto
         stock: 0, // Campo por defecto
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -768,14 +800,14 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
     try {
         if (productId) {
             // Actualizar producto existente
-            await db.collection('cookies')
+            await db.collection('products')
                 .doc(productId)
                 .update(productData);
             alert('Producto actualizado con éxito');
         } else {
             // Crear nuevo producto
             productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            await db.collection('cookies').add(productData);
+            await db.collection('products').add(productData);
             alert('Producto creado con éxito');
         }
 
