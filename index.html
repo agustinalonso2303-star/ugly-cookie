@@ -1105,7 +1105,6 @@ auth.onAuthStateChanged(async (user) => {
                                     renderProduct(product, container, false);
                                 }
                             }
-                            }
                         });
                     }, (error) => {
                         console.error('Error al cargar productos:', error);
@@ -2089,18 +2088,6 @@ const newDoc = await db.collection('products').add({
                 renderBranchButtons(branches);
             } catch (error) {
                 console.error('Error cargando sucursales de Firestore:', error);
-                console.log('Usando datos estáticos como fallback');
-                renderBranchButtons(staticBranches);
-            }
-        }
-                        name: doc.data().name
-                    });
-                });
-                
-                renderBranchButtons(branches);
-                
-            } catch (error) {
-                console.error('Error cargando sucursales desde Firestore:', error);
                 console.log('Usando datos estáticos como fallback');
                 renderBranchButtons(staticBranches);
             }
