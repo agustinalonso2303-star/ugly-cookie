@@ -512,12 +512,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             console.log("Usuario autenticado exitosamente:", user.email);
 
-            document.getElementById("admin-email-display").textContent = user.email;
+            // Verificar si el usuario es administrador
+            const isAdmin = user.email === 'agustinalonso2303@gmail.com' || 
+                           user.email === 'vantuwebsite@gmail.com';
+            
+            if (isAdmin) {
+                document.getElementById("admin-email-display").textContent = user.email;
+                document.getElementById("login-view").classList.add("hidden");
+                document.getElementById("admin-panel").classList.remove("hidden");
+                loadDashboard();
+            } else {
+                console.log("Usuario no es administrador:", user.email);
+                document.getElementById("login-error").textContent = "Acceso denegado. No eres administrador.";
+                document.getElementById("login-error").classList.remove("hidden");
+                // Cerrar sesión del usuario no autorizado
+                await auth.signOut();
+            }
 
-            document.getElementById("login-view").classList.add("hidden");
-            document.getElementById("admin-panel").classList.remove("hidden");
-
-            loadDashboard();
+            // Restaurar botón
+            loginButton.textContent = "Iniciar Sesión con Google";
+            loginButton.disabled = false;
 
         } catch (error) {
             console.error("Error completo:", error);
@@ -544,15 +558,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
             console.log("Estado de autenticación: Usuario logueado", user.email);
-            document.getElementById("login-view").classList.add("hidden");
-            document.getElementById("admin-panel").classList.remove("hidden");
-
-            document.getElementById("admin-email-display").textContent = user.email;
-
-            loadDashboard();
+            
+            // Verificar si el usuario es administrador
+            const isAdmin = user.email === 'agustinalonso2303@gmail.com' || 
+                           user.email === 'vantuwebsite@gmail.com';
+            
+            if (isAdmin) {
+                document.getElementById("login-view").classList.add("hidden");
+                document.getElementById("admin-panel").classList.remove("hidden");
+                document.getElementById("admin-email-display").textContent = user.email;
+                loadDashboard();
+            } else {
+                console.log("Usuario no es administrador:", user.email);
+                document.getElementById("login-error").textContent = "Acceso denegado. No eres administrador.";
+                document.getElementById("login-error").classList.remove("hidden");
+                document.getElementById("login-view").classList.remove("hidden");
+                document.getElementById("admin-panel").classList.add("hidden");
+                // Cerrar sesión del usuario no autorizado
+                await auth.signOut();
+            }
         } else {
             console.log("Estado de autenticación: Usuario no logueado");
             document.getElementById("login-view").classList.remove("hidden");
