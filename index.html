@@ -1582,7 +1582,13 @@ const newDoc = await db.collection('products').add({
         }
 
         // Conectar botón del carrito
-        document.querySelector('#cart-total').parentElement.parentElement.querySelector('button').addEventListener('click', showPaymentModal);
+        const cartTotal = document.querySelector('#cart-total');
+        if (cartTotal && cartTotal.parentElement && cartTotal.parentElement.parentElement) {
+            const cartButton = cartTotal.parentElement.parentElement.querySelector('button');
+            if (cartButton) {
+                cartButton.addEventListener('click', showPaymentModal);
+            }
+        }
     </script>
 
     <script>
@@ -2147,20 +2153,21 @@ const newDoc = await db.collection('products').add({
             try {
                 console.log('updateBranchDetails llamado con ID:', branchId);
                 
+                let details;
+                
                 // Primero intentar usar datos de Firestore
                 if (firestoreBranches[branchId]) {
-                    const details = firestoreBranches[branchId];
+                    details = firestoreBranches[branchId];
                     console.log('Usando detalles de Firestore para:', branchId);
-                    applyBranchDetails(details);
-                    return;
-                }
-                
                 } else if (branchId === 'canitas' || branchId === 'cañitas' || branchId.includes('canitas') || branchId.includes('cañitas')) {
                     details = branchDetails.canitas;
                     console.log('Usando detalles estáticos de Cañitas');
                 } else if (branchId === 'belgrano' || branchId.includes('belgrano')) {
                     details = branchDetails.belgrano;
                     console.log('Usando detalles estáticos de Belgrano');
+                } else {
+                    details = branchDetails.pilar;
+                    console.log('Usando detalles estáticos de Pilar (default)');
                 }
                 
                 console.log('Detalles a usar:', details);
@@ -2291,16 +2298,9 @@ const newDoc = await db.collection('products').add({
                 if (whatsappNumber) {
                     const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
                     waBtn.href = waLink;
+                    console.log('WhatsApp por defecto cargado:', whatsappNumber);
                 }
             }
-        }
-        
-        
-        if (waBtn) {
-            const whatsappNumber = branchDetails.pilar.whatsapp;
-            const waLink = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Ugly Cookies! Quiero hacer una consulta sobre mi pedido.')}`;
-            waBtn.href = waLink;
-            console.log('WhatsApp por defecto cargado:', whatsappNumber);
         }
         
         // Cargar redes sociales por defecto
