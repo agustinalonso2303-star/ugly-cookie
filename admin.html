@@ -1059,7 +1059,8 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
                 document.getElementById('branch-whatsapp').value = branch.whatsapp || '';
                 document.getElementById('branch-maps').value = branch.maps || '';
                 document.getElementById('branch-instagram').value = branch.instagram || '';
-                document.getElementById('branch-tiktok')?.value = branch.tiktok || '';
+                const tiktokInput = document.getElementById('branch-tiktok');
+                if (tiktokInput) tiktokInput.value = branch.tiktok || '';
                 document.getElementById('branch-active').checked = branch.isActive !== false;
 
                 document.getElementById('branch-modal-title').textContent = 'Editar Sucursal';
